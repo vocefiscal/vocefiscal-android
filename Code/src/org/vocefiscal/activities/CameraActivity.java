@@ -19,13 +19,14 @@ import org.vocefiscal.asynctasks.SendEmailAsyncTask.OnSentMailListener;
 import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
 import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.bitmaps.RecyclingImageView;
+import org.vocefiscal.dialogs.CustomDialogClass;
+import org.vocefiscal.dialogs.CustomDialogClass.BtnsControl;
 import org.vocefiscal.utils.ImageHandler;
 import org.vocefiscal.views.CameraPreview;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.hardware.Camera;
@@ -34,6 +35,7 @@ import android.hardware.Camera.PictureCallback;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.media.SoundPool.OnLoadCompleteListener;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -43,6 +45,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -55,17 +58,17 @@ import android.widget.TextView;
 public class CameraActivity extends Activity implements OnSentMailListener
 {
 	private int pictureHeight = -1;
-	
+
 	private int pictureWidth = -1;
-	
+
 	private static final String TAG = "CameraActivity";
-	
+
 	private Camera mCamera;
-	
+
 	private CameraPreview mPreview;
-	
+
 	private PictureCallback mPicture;
-	
+
 	private AutoFocusCallback myAutoFocusCallback;
 
 	private ArrayList<String> picturePathList = null;
@@ -83,9 +86,9 @@ public class CameraActivity extends Activity implements OnSentMailListener
 	private FrameLayout preview;
 
 	private WakeLock wl;
-	
+
 	private static final int desiredPictureHeight = 720;
-	
+
 	private static final int desiredPictureWidth = 1280;
 
 	private static final float FOTO_SIZE_REF_30PC_WIDTH = 720;
@@ -95,22 +98,26 @@ public class CameraActivity extends Activity implements OnSentMailListener
 	private static final long tempoDeEsperaEntreFotos = 7000;
 
 	private ImageFetcher imageFetcherFoto30PC;
-	
+
 	private RecyclingImageView trinta_por_cento;
-	
+
 	private int foto30PCwidth = -1;
-	
+
 	private int foto30PCheight = -1;
-	
+
 	private SoundPool spool;
-	
+
 	private int soundID=-1;
-	
+
 	private boolean canPlaySound = false;
-	
+
 	private LinearLayout progressBarLayout;
-	
+
 	private LinearLayout progressLayout;
+
+	private CustomDialogClass envio;
+	
+	private TextView photo_trigger;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -176,7 +183,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 		trinta_por_cento = (RecyclingImageView) findViewById(R.id.trinta_por_cento);
 		trinta_por_cento.setVisibility(View.GONE);
-		trinta_por_cento.setAlpha(0.5f);
+		setAlpha(trinta_por_cento, 0.5f);
 
 		TextView up_text = (TextView) findViewById(R.id.up_text);
 
@@ -184,11 +191,11 @@ public class CameraActivity extends Activity implements OnSentMailListener
 		photo_counter.setText(String.valueOf(photoCount));
 
 		preview = (FrameLayout) findViewById(R.id.camera_preview);
-		
+
 		progressBarLayout = (LinearLayout) findViewById(R.id.progressbarlayout);
 		progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
 
-		ImageView photo_trigger = (ImageView) findViewById(R.id.photo_trigger);
+		photo_trigger = (TextView) findViewById(R.id.photo_trigger);
 		photo_trigger.setOnClickListener(new OnClickListener() 
 		{
 
@@ -199,9 +206,11 @@ public class CameraActivity extends Activity implements OnSentMailListener
 				{
 					isTakingPictures = false;
 					handler.removeCallbacks(takePicture);
+					trinta_por_cento.setVisibility(View.GONE);
 					enviarPorEmail();
 				}else
 				{
+					photo_trigger.setText("Parar");
 					isTakingPictures = true;
 					handler.post(takePicture);					
 				}								
@@ -217,7 +226,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 				mCamera.takePicture(null, null, mPicture);
 				handler.post(new Runnable() 
 				{
-					
+
 					@Override
 					public void run() 
 					{
@@ -244,7 +253,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 			@Override
 			public void onPictureTaken(byte[] data, Camera camera) 
 			{										
-				File pictureFile = getOutputMediaFile();
+				File pictureFile = getOutputMediaFile(false);
 
 				if (pictureFile == null)
 				{
@@ -279,15 +288,15 @@ public class CameraActivity extends Activity implements OnSentMailListener
 					FileOutputStream out = new FileOutputStream(pictureFile);
 					bMap.compress(Bitmap.CompressFormat.JPEG, 100, out);
 					out.close();
-					
+
 					if (bMap != null) 
 					{
 						bMap = ImageHandler.cropBitmapLastThird(bMap);						
-						File lastThirdPicture = getOutputMediaFile();
+						File lastThirdPicture = getOutputMediaFile(true);
 						FileOutputStream outLastThirdPicture = new FileOutputStream(lastThirdPicture);
 						bMap.compress(Bitmap.CompressFormat.JPEG, 100, outLastThirdPicture);
 						outLastThirdPicture.close();
-						
+
 						bMap.recycle();
 						bMap = null;
 						picturePathList.add(pictureFile.getAbsolutePath());
@@ -302,6 +311,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 						else
 						{
+							trinta_por_cento.setVisibility(View.GONE);
 							enviarPorEmail();
 						}						
 					}
@@ -324,37 +334,39 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "WakeLock");
-		
+
 		setupSound();
+
+		envio = new CustomDialogClass(CameraActivity.this, "Título", "Msg");
 	}
 
 	private void enviarPorEmail()
 	{
 		if(picturePathList!=null&&picturePathList.size()>0)
 		{	          	        
-	        /*
-	         * Conteúdo
-	         */
-	        StringBuilder sb = new StringBuilder();
-	        sb.append("Enviadas com o Você Fiscal Android.");
-	    	sb.append("\n\n");
-	    	sb.append("Debug-infos:");
-	    	sb.append("\n OS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")");
-	    	sb.append("\n OS API Level: " + android.os.Build.VERSION.SDK);
-	    	sb.append("\n Device: " + android.os.Build.DEVICE);
-	    	sb.append("\n Model (and Product): " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")");
-    
-	              
-	    	String from = "vocefiscal@gmail.com";
-	        String[] to = new String[]{"dedecun@gmail.com","helder@gmail.com","dfaranha@gmail.com"}; 
-	        String body = sb.toString();
-	        String subject = "[Você Fiscal] - Fotos de teste da versão A (temporização automática entre fotos)";
-	        List<String> attachments = new ArrayList<String>();
-	        attachments.addAll(picturePathList);   
-	        
-	        SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this, to, from, subject, body, attachments, progressBarLayout, progressLayout);
-	        sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-	        
+			/*
+			 * Conteúdo
+			 */
+			StringBuilder sb = new StringBuilder();
+			sb.append("Enviadas com o Você Fiscal Android.");
+			sb.append("\n\n");
+			sb.append("Debug-infos:");
+			sb.append("\n OS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")");
+			sb.append("\n OS API Level: " + android.os.Build.VERSION.SDK);
+			sb.append("\n Device: " + android.os.Build.DEVICE);
+			sb.append("\n Model (and Product): " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")");
+
+
+			String from = "vocefiscal@gmail.com";
+			String[] to = new String[]{"dedecun@gmail.com","helder@gmail.com","dfaranha@gmail.com"}; 
+			String body = sb.toString();
+			String subject = "[Você Fiscal] - Fotos de teste da versão A (temporização automática entre fotos)";
+			List<String> attachments = new ArrayList<String>();
+			attachments.addAll(picturePathList);   
+
+			SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this, to, from, subject, body, attachments, progressBarLayout, progressLayout);
+			sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
 		}else
 		{
 			emailFalhou(-1);
@@ -362,12 +374,20 @@ public class CameraActivity extends Activity implements OnSentMailListener
 	}
 
 	/** Create a File for saving an image or video */
-	private File getOutputMediaFile()
+	private File getOutputMediaFile(boolean isLastThird)
 	{
 		// Create a media file name
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
-		String filePath = "IMG_"+ timeStamp + ".jpg";
+		String filePath = null;
+
+		if(isLastThird)
+		{
+			filePath = "IMG_LT"+ timeStamp + ".jpg";
+		}else
+		{
+			filePath = "IMG_"+ timeStamp + ".jpg";
+		}
 
 		File mediaFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), filePath);		
 
@@ -408,7 +428,8 @@ public class CameraActivity extends Activity implements OnSentMailListener
 					pictureHeight = height;				
 				}
 			}	
-
+			
+			params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
 			params.setPictureSize(pictureWidth, pictureHeight);
 			params.setJpegQuality(100);	
 			mCamera.setParameters(params);
@@ -472,13 +493,13 @@ public class CameraActivity extends Activity implements OnSentMailListener
 			mCamera = null;
 		}
 	}
-	
+
 	private void setupSound() 
 	{		
 		spool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
 		spool.setOnLoadCompleteListener(new OnLoadCompleteListener() 
 		{
-			
+
 			@Override
 			public void onLoadComplete(SoundPool soundPool, int sampleId, int status) 
 			{
@@ -489,8 +510,8 @@ public class CameraActivity extends Activity implements OnSentMailListener
 				}				
 			}
 		});
-		
-		
+
+
 		soundID = spool.load(getApplicationContext(), R.raw.one_click, 1);
 	}
 
@@ -504,39 +525,39 @@ public class CameraActivity extends Activity implements OnSentMailListener
 		{
 			emailFalhou(errorCode);
 		}	
-		
+
 	}
-	
+
 	public void doNothing(View view)
 	{
 		//do nothing
 	}
-	
+
 	private void emailEnviadoCorretamente() 
 	{
-		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() 
+		BtnsControl btnsEnvio = new BtnsControl() 
 		{
+
 			@Override
-			public void onClick(DialogInterface dialog, int which) 
+			public void positiveBtnClicked() 
 			{
-				switch (which)
-				{
-				case DialogInterface.BUTTON_POSITIVE:					
-					CameraActivity.this.finish();
+				finish();
+			}
 
-					break;
-
-				case DialogInterface.BUTTON_NEGATIVE:
-					CameraActivity.this.finish();
-					break;
-				}
+			@Override
+			public void negativeBtnClicked() 
+			{
+				finish();
 			}
 		};
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(CameraActivity.this);
-		builder.setMessage("Fotos do BU enviadas com sucesso!").setPositiveButton("OK", dialogClickListener).setTitle("Sucesso").show();			
+		envio.setBtnsControl(btnsEnvio, "OK", null);
+		envio.setTitulo("Sucesso");
+		envio.setPergunta("Fotos do BU enviadas com sucesso!");
+		envio.show();
+		envio.negativeButtonGone();			
 	}
-	
+
 	private void emailFalhou(int errorCode)
 	{			
 		String msg = "Não foi possível enviar as fotos.";
@@ -544,26 +565,40 @@ public class CameraActivity extends Activity implements OnSentMailListener
 		{
 			msg = "Sem conexão com a internet";
 		}
-		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() 
-		{
-			@Override
-			public void onClick(DialogInterface dialog, int which) 
-			{
-				switch (which)
-				{
-				case DialogInterface.BUTTON_POSITIVE:					
-					enviarPorEmail();
-					break;
 
-				case DialogInterface.BUTTON_NEGATIVE:
-					CameraActivity.this.finish();
-					break;
-				}
+		BtnsControl btnsErrosEnvio = new BtnsControl() 
+		{
+
+			@Override
+			public void positiveBtnClicked() 
+			{
+				enviarPorEmail();
+			}
+
+			@Override
+			public void negativeBtnClicked() 
+			{
+				finish();
 			}
 		};
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(CameraActivity.this);
-		builder.setMessage(msg).setPositiveButton("Tentar novamente", dialogClickListener)
-		.setNegativeButton("Cancelar", dialogClickListener).setTitle("Falhou").show();
+
+		envio.setBtnsControl(btnsErrosEnvio, "Tentar", "Cancelar");
+		envio.setTitulo("Falhou");
+		envio.setPergunta(msg);
+		envio.show();				
+	}
+
+	@SuppressLint("NewApi")
+	public static void setAlpha(View view, float alpha)
+	{
+		if (Build.VERSION.SDK_INT < 11)
+		{
+			final AlphaAnimation animation = new AlphaAnimation(alpha, alpha);
+			animation.setDuration(0);
+			animation.setFillAfter(true);
+			view.startAnimation(animation);
+		}
+		else view.setAlpha(alpha);
 	}
 }

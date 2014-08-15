@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_pressed="true" android:drawable="@color/azul_vocefiscal_escuro"/>
+    <item android:state_activated="true" android:drawable="@color/azul_vocefiscal_escuro"/>
+    <item android:state_enabled="false" android:drawable="@color/azul_vocefiscal_claro" /> 
+    <item android:drawable="@color/azul_vocefiscal"/>
+
+</selector>
