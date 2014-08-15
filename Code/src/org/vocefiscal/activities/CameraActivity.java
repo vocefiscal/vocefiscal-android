@@ -15,7 +15,6 @@ import java.util.List;
 import org.vocefiscal.R;
 import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
 import org.vocefiscal.bitmaps.ImageFetcher;
-import org.vocefiscal.bitmaps.ImageResizer;
 import org.vocefiscal.bitmaps.RecyclingImageView;
 import org.vocefiscal.utils.ImageHandler;
 import org.vocefiscal.views.CameraPreview;
@@ -27,6 +26,9 @@ import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.PictureCallback;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.media.SoundPool.OnLoadCompleteListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -94,6 +96,12 @@ public class CameraActivity extends Activity
 	private int foto30PCwidth = -1;
 	
 	private int foto30PCheight = -1;
+	
+	private SoundPool spool;
+	
+	private int soundID=-1;
+	
+	private boolean canPlaySound = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -195,6 +203,24 @@ public class CameraActivity extends Activity
 			public void onAutoFocus(boolean arg0, Camera arg1) 
 			{
 				mCamera.takePicture(null, null, mPicture);
+				handler.post(new Runnable() 
+				{
+					
+					@Override
+					public void run() 
+					{
+						if(soundID!=-1)
+						{
+							if(canPlaySound)
+							{
+								spool.play(soundID, 100, 100, 1, 0, 1.0f);
+							}else
+							{
+								handler.postDelayed(this, 100);
+							}			
+						}			
+					}
+				});	
 				photoCount++;
 				photo_counter.setText(String.valueOf(photoCount));
 			}
@@ -205,7 +231,7 @@ public class CameraActivity extends Activity
 
 			@Override
 			public void onPictureTaken(byte[] data, Camera camera) 
-			{				
+			{										
 				File pictureFile = getOutputMediaFile();
 
 				if (pictureFile == null)
@@ -286,6 +312,8 @@ public class CameraActivity extends Activity
 
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "WakeLock");
+		
+		setupSound();
 	}
 
 	private void enviarPorEmail()
@@ -403,5 +431,26 @@ public class CameraActivity extends Activity
 			mCamera.release();        // release the camera for other applications
 			mCamera = null;
 		}
-	}		
+	}
+	
+	private void setupSound() 
+	{		
+		spool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+		spool.setOnLoadCompleteListener(new OnLoadCompleteListener() 
+		{
+			
+			@Override
+			public void onLoadComplete(SoundPool soundPool, int sampleId, int status) 
+			{
+				if(status==0)
+				{
+					if(sampleId==soundID)
+						canPlaySound = true;
+				}				
+			}
+		});
+		
+		
+		soundID = spool.load(getApplicationContext(), R.raw.one_click, 1);
+	}
 }
