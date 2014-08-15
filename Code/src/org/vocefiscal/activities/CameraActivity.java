@@ -79,7 +79,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 	private Handler handler;
 
-	private boolean isTakingPictures = false;
+	//private boolean isTakingPictures = false;
 
 	private Runnable takePicture;
 
@@ -117,7 +117,9 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 	private CustomDialogClass envio;
 	
-	private TextView photo_trigger;
+	private ImageView photo_trigger;
+	
+	private TextView photo_concluido;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -163,6 +165,8 @@ public class CameraActivity extends Activity implements OnSentMailListener
 				try
 				{
 					mCamera.autoFocus(myAutoFocusCallback);
+					photo_trigger.setVisibility(View.GONE);
+					photo_concluido.setVisibility(View.GONE);	
 				}catch(Exception e)
 				{
 					Log.i(TAG, e.getMessage());
@@ -184,8 +188,22 @@ public class CameraActivity extends Activity implements OnSentMailListener
 		trinta_por_cento = (RecyclingImageView) findViewById(R.id.trinta_por_cento);
 		trinta_por_cento.setVisibility(View.GONE);
 		setAlpha(trinta_por_cento, 0.5f);
+		
+		photo_concluido =  (TextView) findViewById(R.id.photo_concluido);
+		photo_concluido.setVisibility(View.GONE);
+		photo_concluido.setOnClickListener(new OnClickListener() 
+		{
+			
+			@Override
+			public void onClick(View v) 
+			{
+				handler.removeCallbacks(takePicture);
+				trinta_por_cento.setVisibility(View.GONE);
+				enviarPorEmail();				
+			}
+		});
 
-		TextView up_text = (TextView) findViewById(R.id.up_text);
+		TextView up_text = (TextView) findViewById(R.id.up_text);		
 
 		photo_counter = (TextView) findViewById(R.id.photo_counter);
 		photo_counter.setText(String.valueOf(photoCount));
@@ -195,25 +213,27 @@ public class CameraActivity extends Activity implements OnSentMailListener
 		progressBarLayout = (LinearLayout) findViewById(R.id.progressbarlayout);
 		progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
 
-		photo_trigger = (TextView) findViewById(R.id.photo_trigger);
+		photo_trigger = (ImageView) findViewById(R.id.photo_trigger);
 		photo_trigger.setOnClickListener(new OnClickListener() 
 		{
 
 			@Override
 			public void onClick(View v) 
 			{
-				if(isTakingPictures)
-				{
-					isTakingPictures = false;
-					handler.removeCallbacks(takePicture);
-					trinta_por_cento.setVisibility(View.GONE);
-					enviarPorEmail();
-				}else
-				{
-					photo_trigger.setText("Parar");
-					isTakingPictures = true;
-					handler.post(takePicture);					
-				}								
+//				if(isTakingPictures)
+//				{
+//					isTakingPictures = false;
+//					handler.removeCallbacks(takePicture);
+//					trinta_por_cento.setVisibility(View.GONE);
+//					enviarPorEmail();
+//				}else
+//				{
+//					photo_trigger.setText("Parar");
+//					isTakingPictures = true;
+//					handler.post(takePicture);					
+//				}	
+												
+				handler.post(takePicture);	
 			}
 		});
 
@@ -242,8 +262,8 @@ public class CameraActivity extends Activity implements OnSentMailListener
 						}			
 					}
 				});	
-				photoCount++;
-				photo_counter.setText(String.valueOf(photoCount));
+				photoCount++;				
+				photo_counter.setText(String.valueOf(photoCount));				
 			}
 		};
 
@@ -301,19 +321,26 @@ public class CameraActivity extends Activity implements OnSentMailListener
 						bMap = null;
 						picturePathList.add(pictureFile.getAbsolutePath());
 
-						if(isTakingPictures)
-						{										
-							trinta_por_cento.setVisibility(View.VISIBLE);
-							imageFetcherFoto30PC.loadImage(lastThirdPicture.getAbsolutePath(), trinta_por_cento);	
-							mPreview.surfaceChanged(null, 0, 0, 0);
-							handler.postDelayed(takePicture, tempoDeEsperaEntreFotos);
-						}
-
-						else
-						{
-							trinta_por_cento.setVisibility(View.GONE);
-							enviarPorEmail();
-						}						
+//						if(isTakingPictures)
+//						{										
+//							trinta_por_cento.setVisibility(View.VISIBLE);
+//							imageFetcherFoto30PC.loadImage(lastThirdPicture.getAbsolutePath(), trinta_por_cento);	
+//							mPreview.surfaceChanged(null, 0, 0, 0);
+//							handler.postDelayed(takePicture, tempoDeEsperaEntreFotos);
+//						}
+//
+//						else
+//						{
+//							trinta_por_cento.setVisibility(View.GONE);
+//							enviarPorEmail();
+//						}	
+						
+						photo_trigger.setVisibility(View.VISIBLE);
+						photo_concluido.setVisibility(View.VISIBLE);						
+						trinta_por_cento.setVisibility(View.VISIBLE);
+						imageFetcherFoto30PC.loadImage(lastThirdPicture.getAbsolutePath(), trinta_por_cento);	
+						mPreview.surfaceChanged(null, 0, 0, 0);
+						
 					}
 
 				} catch (FileNotFoundException e) 
@@ -360,7 +387,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 			String from = "vocefiscal@gmail.com";
 			String[] to = new String[]{"dedecun@gmail.com","helder@gmail.com","dfaranha@gmail.com"}; 
 			String body = sb.toString();
-			String subject = "[Você Fiscal] - Fotos de teste da versão A (temporização automática entre fotos)";
+			String subject = "[Você Fiscal] - Fotos de teste da versão B (controle manual entre fotos)";
 			List<String> attachments = new ArrayList<String>();
 			attachments.addAll(picturePathList);   
 

@@ -27,9 +27,10 @@
                 android:id="@+id/up_text"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Aperte o botão &apos;Começar&apos;, delize do topo ao fim do BU ouvindo os bipes das fotos e ao fim aperte o botão &apos;Parar&apos;."
+                android:text="Tire as fotos do topo ao fim do BU, ouvindo os bipes das fotos e ao fim aperte o botão &apos;Concluir.&apos;"
                 android:textColor="@color/azul_vocefiscal"
                 android:textSize="10sp" />
+            <!-- android:text="Aperte o botão &apos;Começar&apos;, delize do topo ao fim do BU ouvindo os bipes das fotos e ao fim aperte o botão &apos;Parar&apos;." -->
         </LinearLayout>
 
         <RelativeLayout
@@ -66,7 +67,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:src="@drawable/side_photo_guide" />
-                <!--
+
                 <ImageView
                     android:id="@+id/photo_trigger"
                     android:layout_width="wrap_content"
@@ -74,8 +75,8 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:src="@drawable/photo_trigger" />
-                -->
 
+                <!--
                 <TextView
                     android:id="@+id/photo_trigger"
                     android:layout_width="wrap_content"
@@ -87,6 +88,7 @@
                     android:text="Começar"
                     android:textColor="@color/azul_vocefiscal"
                     android:textSize="10sp" />
+                -->
 
                 <TextView
                     android:id="@+id/photo_counter"
@@ -99,6 +101,21 @@
                     android:text="1"
                     android:textColor="@color/azul_vocefiscal"
                     android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/photo_concluido"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    android:text="CONCLUIR"
+                    android:textColor="@color/azul_vocefiscal"
+                    android:textSize="18sp" 
+                    android:background="@drawable/bg_concluir"
+                    android:padding="5dp"
+                    android:layout_marginBottom="10dp"/>
             </RelativeLayout>
         </RelativeLayout>
     </LinearLayout>
