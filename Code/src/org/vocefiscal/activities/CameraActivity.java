@@ -13,6 +13,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.vocefiscal.R;
+import org.vocefiscal.asynctasks.AsyncTask;
+import org.vocefiscal.asynctasks.SendEmailAsyncTask;
+import org.vocefiscal.asynctasks.SendEmailAsyncTask.OnSentMailListener;
 import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
 import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.bitmaps.RecyclingImageView;
@@ -20,7 +23,9 @@ import org.vocefiscal.utils.ImageHandler;
 import org.vocefiscal.views.CameraPreview;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.hardware.Camera;
@@ -40,15 +45,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
  * @author andre
  *
  */
-public class CameraActivity extends Activity 
+public class CameraActivity extends Activity implements OnSentMailListener
 {
-
 	private int pictureHeight = -1;
 	
 	private int pictureWidth = -1;
@@ -102,6 +107,10 @@ public class CameraActivity extends Activity
 	private int soundID=-1;
 	
 	private boolean canPlaySound = false;
+	
+	private LinearLayout progressBarLayout;
+	
+	private LinearLayout progressLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -175,6 +184,9 @@ public class CameraActivity extends Activity
 		photo_counter.setText(String.valueOf(photoCount));
 
 		preview = (FrameLayout) findViewById(R.id.camera_preview);
+		
+		progressBarLayout = (LinearLayout) findViewById(R.id.progressbarlayout);
+		progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
 
 		ImageView photo_trigger = (ImageView) findViewById(R.id.photo_trigger);
 		photo_trigger.setOnClickListener(new OnClickListener() 
@@ -318,7 +330,35 @@ public class CameraActivity extends Activity
 
 	private void enviarPorEmail()
 	{
-		finish();		
+		if(picturePathList!=null&&picturePathList.size()>0)
+		{	          	        
+	        /*
+	         * Conteúdo
+	         */
+	        StringBuilder sb = new StringBuilder();
+	        sb.append("Enviadas com o Você Fiscal Android.");
+	    	sb.append("\n\n");
+	    	sb.append("Debug-infos:");
+	    	sb.append("\n OS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")");
+	    	sb.append("\n OS API Level: " + android.os.Build.VERSION.SDK);
+	    	sb.append("\n Device: " + android.os.Build.DEVICE);
+	    	sb.append("\n Model (and Product): " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")");
+    
+	              
+	    	String from = "vocefiscal@gmail.com";
+	        String[] to = new String[]{"dedecun@gmail.com","helder@gmail.com","dfaranha@gmail.com"}; 
+	        String body = sb.toString();
+	        String subject = "[Você Fiscal] - Fotos de teste da versão A (temporização automática entre fotos)";
+	        List<String> attachments = new ArrayList<String>();
+	        attachments.addAll(picturePathList);   
+	        
+	        SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this, to, from, subject, body, attachments, progressBarLayout, progressLayout);
+	        sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	        
+		}else
+		{
+			emailFalhou(-1);
+		}	
 	}
 
 	/** Create a File for saving an image or video */
@@ -452,5 +492,78 @@ public class CameraActivity extends Activity
 		
 		
 		soundID = spool.load(getApplicationContext(), R.raw.one_click, 1);
+	}
+
+	@Override
+	public void finishedSendingEmail(Boolean result, int errorCode) 
+	{
+		if(result)
+		{
+			emailEnviadoCorretamente();
+		}else
+		{
+			emailFalhou(errorCode);
+		}	
+		
+	}
+	
+	public void doNothing(View view)
+	{
+		//do nothing
+	}
+	
+	private void emailEnviadoCorretamente() 
+	{
+		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() 
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which) 
+			{
+				switch (which)
+				{
+				case DialogInterface.BUTTON_POSITIVE:					
+					CameraActivity.this.finish();
+
+					break;
+
+				case DialogInterface.BUTTON_NEGATIVE:
+					CameraActivity.this.finish();
+					break;
+				}
+			}
+		};
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(CameraActivity.this);
+		builder.setMessage("Fotos do BU enviadas com sucesso!").setPositiveButton("OK", dialogClickListener).setTitle("Sucesso").show();			
+	}
+	
+	private void emailFalhou(int errorCode)
+	{			
+		String msg = "Não foi possível enviar as fotos.";
+		if(errorCode == SendEmailAsyncTask.SEM_CONEXAO_COM_A_INTERNET)
+		{
+			msg = "Sem conexão com a internet";
+		}
+		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() 
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which) 
+			{
+				switch (which)
+				{
+				case DialogInterface.BUTTON_POSITIVE:					
+					enviarPorEmail();
+					break;
+
+				case DialogInterface.BUTTON_NEGATIVE:
+					CameraActivity.this.finish();
+					break;
+				}
+			}
+		};
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(CameraActivity.this);
+		builder.setMessage(msg).setPositiveButton("Tentar novamente", dialogClickListener)
+		.setNegativeButton("Cancelar", dialogClickListener).setTitle("Falhou").show();
 	}
 }
