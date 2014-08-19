@@ -21,6 +21,7 @@ import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.bitmaps.RecyclingImageView;
 import org.vocefiscal.dialogs.CustomDialogClass;
 import org.vocefiscal.dialogs.CustomDialogClass.BtnsControl;
+import org.vocefiscal.models.enums.FlashModeEnum;
 import org.vocefiscal.utils.ImageHandler;
 import org.vocefiscal.views.CameraPreview;
 
@@ -29,6 +30,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Typeface;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.PictureCallback;
@@ -79,8 +81,6 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 	private Handler handler;
 
-	//private boolean isTakingPictures = false;
-
 	private Runnable takePicture;
 
 	private FrameLayout preview;
@@ -120,12 +120,19 @@ public class CameraActivity extends Activity implements OnSentMailListener
 	private ImageView photo_trigger;
 	
 	private TextView photo_concluido;
+	
+	private ImageView flash_status;
+	
+	private int flashStatus = FlashModeEnum.AUTO.ordinal();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera);
+		
+		//Typeface unisansthin = Typeface.createFromAsset(this.getAssets(),"fonts/unisansthin.otf");
+		Typeface unisansheavy = Typeface.createFromAsset(this.getAssets(),"fonts/unisansheavy.otf");
 
 		/*
 		 * Customização de tamanhos para as diferentes telas dos dispositivos Android
@@ -190,6 +197,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 		setAlpha(trinta_por_cento, 0.5f);
 		
 		photo_concluido =  (TextView) findViewById(R.id.photo_concluido);
+		photo_concluido.setTypeface(unisansheavy);
 		photo_concluido.setVisibility(View.GONE);
 		photo_concluido.setOnClickListener(new OnClickListener() 
 		{
@@ -202,11 +210,29 @@ public class CameraActivity extends Activity implements OnSentMailListener
 				enviarPorEmail();				
 			}
 		});
+		
+		flash_status = (ImageView) findViewById(R.id.flash_status);
+		flash_status.setOnClickListener(new OnClickListener() 
+		{
+			
+			@Override
+			public void onClick(View v) 
+			{
+				flashStatus = FlashModeEnum.nextFlashMode(flashStatus);												
+				
+				Camera.Parameters params = mCamera.getParameters();				
+				params.setFlashMode(FlashModeEnum.getFlashMode(flashStatus));				
+				mCamera.setParameters(params);
+				
+				flash_status.setImageResource(FlashModeEnum.getImageResource(flashStatus));
+			}
+		});
 
-		TextView up_text = (TextView) findViewById(R.id.up_text);		
+		//TextView up_text = (TextView) findViewById(R.id.up_text);			
 
 		photo_counter = (TextView) findViewById(R.id.photo_counter);
 		photo_counter.setText(String.valueOf(photoCount));
+		photo_concluido.setTypeface(unisansheavy);
 
 		preview = (FrameLayout) findViewById(R.id.camera_preview);
 
@@ -219,20 +245,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 			@Override
 			public void onClick(View v) 
-			{
-//				if(isTakingPictures)
-//				{
-//					isTakingPictures = false;
-//					handler.removeCallbacks(takePicture);
-//					trinta_por_cento.setVisibility(View.GONE);
-//					enviarPorEmail();
-//				}else
-//				{
-//					photo_trigger.setText("Parar");
-//					isTakingPictures = true;
-//					handler.post(takePicture);					
-//				}	
-												
+			{												
 				handler.post(takePicture);	
 			}
 		});
@@ -320,20 +333,6 @@ public class CameraActivity extends Activity implements OnSentMailListener
 						bMap.recycle();
 						bMap = null;
 						picturePathList.add(pictureFile.getAbsolutePath());
-
-//						if(isTakingPictures)
-//						{										
-//							trinta_por_cento.setVisibility(View.VISIBLE);
-//							imageFetcherFoto30PC.loadImage(lastThirdPicture.getAbsolutePath(), trinta_por_cento);	
-//							mPreview.surfaceChanged(null, 0, 0, 0);
-//							handler.postDelayed(takePicture, tempoDeEsperaEntreFotos);
-//						}
-//
-//						else
-//						{
-//							trinta_por_cento.setVisibility(View.GONE);
-//							enviarPorEmail();
-//						}	
 						
 						photo_trigger.setVisibility(View.VISIBLE);
 						photo_concluido.setVisibility(View.VISIBLE);						
@@ -456,7 +455,8 @@ public class CameraActivity extends Activity implements OnSentMailListener
 				}
 			}	
 			
-			params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+			params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+			params.setFlashMode(FlashModeEnum.getFlashMode(flashStatus));
 			params.setPictureSize(pictureWidth, pictureHeight);
 			params.setJpegQuality(100);	
 			mCamera.setParameters(params);
