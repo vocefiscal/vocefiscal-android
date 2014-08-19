@@ -95,7 +95,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 	private static final float FOTO_SIZE_REF_30PC_HEIGHT = 250;
 
-	private static final long tempoDeEsperaEntreFotos = 7000;
+	//private static final long tempoDeEsperaEntreFotos = 7000;
 
 	private ImageFetcher imageFetcherFoto30PC;
 
@@ -235,6 +235,22 @@ public class CameraActivity extends Activity implements OnSentMailListener
 		photo_concluido.setTypeface(unisansheavy);
 
 		preview = (FrameLayout) findViewById(R.id.camera_preview);
+		preview.setOnClickListener(new OnClickListener() 
+		{
+			
+			@Override
+			public void onClick(View v) 
+			{				
+				mCamera.autoFocus(new AutoFocusCallback() 
+				{					
+					@Override
+					public void onAutoFocus(boolean success, Camera camera) 
+					{
+						// do nothing here					
+					}
+				});				
+			}
+		});
 
 		progressBarLayout = (LinearLayout) findViewById(R.id.progressbarlayout);
 		progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
