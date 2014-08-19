@@ -41,12 +41,69 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" />
 
-            <org.vocefiscal.bitmaps.RecyclingImageView
-                android:id="@+id/trinta_por_cento"
+            <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:scaleType="fitXY" />
+                android:layout_alignParentTop="true" >
+
+                <org.vocefiscal.bitmaps.RecyclingImageView
+                    android:id="@+id/trinta_por_cento"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitXY" />
+
+                <RelativeLayout
+                    android:id="@+id/linha_vermelha_foto_anterior"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/trinta_por_cento"
+                    android:layout_marginTop="-15dp">
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/linha_camera"/>
+
+                    <TextView
+                        android:id="@+id/photo_counter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="35dp"
+                        android:background="@drawable/number_circle"
+                        android:gravity="center"
+                        android:text="1"
+                        android:textColor="@color/vermelho_linha_foto"
+                        android:textSize="20sp" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/linha_vermelha_foto"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="100dp" >
+
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/linha_camera" />
+
+                <TextView
+                    android:id="@+id/photo_counter_next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="35dp"
+                    android:background="@drawable/number_circle"
+                    android:gravity="center"
+                    android:text="2"
+                    android:textColor="@color/vermelho_linha_foto"
+                    android:textSize="20sp" />
+            </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="fill_parent"
@@ -75,25 +132,13 @@
                     android:layout_centerHorizontal="true"
                     android:src="@drawable/photo_trigger" />
 
-                <TextView
-                    android:id="@+id/photo_counter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerHorizontal="true"
-                    android:background="@drawable/photo_counter"
-                    android:gravity="center"
-                    android:text="1"
-                    android:textColor="@color/azul_vocefiscal"
-                    android:textSize="24sp" />
-
                 <ImageView
                     android:id="@+id/flash_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:src="@drawable/flash_auto" 
-                    android:padding="5dp"/>
+                    android:padding="5dp"
+                    android:src="@drawable/flash_auto" />
 
                 <TextView
                     android:id="@+id/photo_concluido"
