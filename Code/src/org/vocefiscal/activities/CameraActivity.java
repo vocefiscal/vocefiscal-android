@@ -89,13 +89,11 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 	private static final int desiredPictureHeight = 720;
 
-	private static final int desiredPictureWidth = 1280;
+	private static final int desiredPictureWidth = 1088;
 
 	private static final float FOTO_SIZE_REF_30PC_WIDTH = 720;
 
-	private static final float FOTO_SIZE_REF_30PC_HEIGHT = 250;
-
-	//private static final long tempoDeEsperaEntreFotos = 7000;
+	private static final float FOTO_SIZE_REF_30PC_HEIGHT = 100;
 
 	private ImageFetcher imageFetcherFoto30PC;
 
@@ -104,6 +102,10 @@ public class CameraActivity extends Activity implements OnSentMailListener
 	private int foto30PCwidth = -1;
 
 	private int foto30PCheight = -1;
+	
+	private int desiredPictureHeightAdjusted = -1;
+
+	private int desiredPictureWidthAdjusted = -1;
 
 	private SoundPool spool;
 
@@ -146,6 +148,14 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 		foto30PCwidth = (int) (FOTO_SIZE_REF_30PC_WIDTH*deltaDisplay);	
 		foto30PCheight = (int) (FOTO_SIZE_REF_30PC_HEIGHT*deltaDisplay);
+		
+		desiredPictureHeightAdjusted = (int) (desiredPictureHeight*deltaDisplay);	
+		desiredPictureWidthAdjusted = (int) (desiredPictureWidth*deltaDisplay);	
+//		
+//		Log.i("CameraActivity", "foto30PCwidth: "+String.valueOf(foto30PCwidth));
+//		Log.i("CameraActivity", "foto30PCheight: "+String.valueOf(foto30PCheight));
+//		Log.i("CameraActivity", "desiredPictureHeightAdjusted: "+String.valueOf(desiredPictureHeightAdjusted));
+//		Log.i("CameraActivity", "desiredPictureWidthAdjusted: "+String.valueOf(desiredPictureWidthAdjusted));
 
 		/* 
 		 * ImageFetcher e Cache 
@@ -312,7 +322,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 				try 
 				{
-					Bitmap bMap = ImageHandler.decodeByteArrayToBitmap(data,pictureWidth, pictureHeight);
+					Bitmap bMap = ImageHandler.decodeByteArrayToBitmap(data,desiredPictureWidthAdjusted, desiredPictureHeightAdjusted);
 
 					int orientation = 0;
 					if(bMap.getHeight() < bMap.getWidth())
@@ -340,7 +350,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 					if (bMap != null) 
 					{
-						bMap = ImageHandler.cropBitmapLastThird(bMap);						
+						bMap = ImageHandler.cropBitmapLastThird(bMap,desiredPictureWidthAdjusted,foto30PCheight);						
 						File lastThirdPicture = getOutputMediaFile(true);
 						FileOutputStream outLastThirdPicture = new FileOutputStream(lastThirdPicture);
 						bMap.compress(Bitmap.CompressFormat.JPEG, 100, outLastThirdPicture);
@@ -454,33 +464,71 @@ public class CameraActivity extends Activity implements OnSentMailListener
 			mCamera.setDisplayOrientation(90);
 
 			Camera.Parameters params = mCamera.getParameters();
-			List<Camera.Size> sizes = params.getSupportedPictureSizes();
-
-			int currentDiffSize = Integer.MAX_VALUE;
-
-			for (int i = 0; i < sizes.size(); i++)
-			{			
-				int width = sizes.get(i).width;
-				int height = sizes.get(i).height;
-				int diffSize = Math.abs(desiredPictureWidth-width)+Math.abs(desiredPictureHeight-height);
-				if (Math.abs(diffSize)<currentDiffSize) 
-				{ 			
-					currentDiffSize = diffSize;
-					pictureWidth = width;
-					pictureHeight = height;				
-				}
-			}	
+			List<Camera.Size> pictureSizes = params.getSupportedPictureSizes();
+			List<Camera.Size> previewSizes = params.getSupportedPreviewSizes();
 			
+			Camera.Size bestPictureSize = getOptimalCameraSize(pictureSizes, desiredPictureWidthAdjusted, desiredPictureHeightAdjusted);
+			pictureWidth = bestPictureSize.width;
+			pictureHeight = bestPictureSize.height;
+			
+			Camera.Size bestPreviewSize = getOptimalCameraSize(previewSizes, desiredPictureWidthAdjusted, desiredPictureHeightAdjusted);
+							
 			params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
 			params.setFlashMode(FlashModeEnum.getFlashMode(flashStatus));
+			params.setPreviewSize(bestPreviewSize.width, bestPreviewSize.height);
 			params.setPictureSize(pictureWidth, pictureHeight);
 			params.setJpegQuality(100);	
 			mCamera.setParameters(params);
+			
+//			Log.e("CameraActivity", "pictureWidth: "+String.valueOf(pictureWidth));
+//			Log.e("CameraActivity", "pictureHeight: "+String.valueOf(pictureHeight));
+//			
+//			Log.e("CameraActivity", "previewWidth: "+String.valueOf(bestPreviewSize.width));
+//			Log.e("CameraActivity", "previewHeight: "+String.valueOf(bestPreviewSize.height));
 
 			// Create our Preview view and set it as the content of our activity.
 			mPreview = new CameraPreview(this, mCamera);			
+			
 			preview.addView(mPreview);
 		}
+	}
+	
+	private Camera.Size getOptimalCameraSize(List<Camera.Size> sizes, int w, int h) 
+	{
+		final double ASPECT_TOLERANCE = 0.1;
+		double targetRatio=(double)h / w;
+
+		if (sizes == null) return null;
+
+		Camera.Size optimalSize = null;
+		double minDiff = Double.MAX_VALUE;
+
+		int targetHeight = h;
+
+		for (Camera.Size size : sizes) 
+		{
+			double ratio = (double) size.width / size.height;
+			if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
+			if (Math.abs(size.height - targetHeight) < minDiff) 
+			{
+				optimalSize = size;
+				minDiff = Math.abs(size.height - targetHeight);
+			}
+		}
+
+		if (optimalSize == null) 
+		{
+			minDiff = Double.MAX_VALUE;
+			for (Camera.Size size : sizes) 
+			{
+				if (Math.abs(size.height - targetHeight) < minDiff) 
+				{
+					optimalSize = size;
+					minDiff = Math.abs(size.height - targetHeight);
+				}
+			}
+		}
+		return optimalSize;
 	}
 
 	/* (non-Javadoc)

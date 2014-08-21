@@ -17,27 +17,45 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
+import android.util.Log;
 
 public class ImageHandler 
 {
 
 	public static final String IMAGE_CACHE_DIR ="vocefiscal_cache";
 	
-	public static Bitmap overlayReference(Bitmap bmp1, Bitmap bmp2,int pixelsFromBottom) 
-	{		
-		Bitmap bmOverlay = Bitmap.createBitmap(bmp1.getWidth(), bmp1.getHeight(), bmp1.getConfig());
-        Canvas canvas = new Canvas(bmOverlay);
-        canvas.drawBitmap(bmp1, 0, 0, null);
-        canvas.drawBitmap(bmp2, 0, bmp1.getHeight()-pixelsFromBottom, null);
-        return bmOverlay;
-	}
+//	public static Bitmap overlayReference(Bitmap bmp1, Bitmap bmp2,int pixelsFromBottom) 
+//	{		
+//		Bitmap bmOverlay = Bitmap.createBitmap(bmp1.getWidth(), bmp1.getHeight(), bmp1.getConfig());
+//        Canvas canvas = new Canvas(bmOverlay);
+//        canvas.drawBitmap(bmp1, 0, 0, null);
+//        canvas.drawBitmap(bmp2, 0, bmp1.getHeight()-pixelsFromBottom, null);
+//        return bmOverlay;
+//	}
 	
-	public static Bitmap cropBitmapLastThird(Bitmap bmp)
+	public static Bitmap cropBitmapLastThird(Bitmap bmp,int height,int cutHeight)
 	{	    
 	    int width = bmp.getWidth();
-	    int height = bmp.getHeight();
-	    int cutHeight = height/4;
-	    Bitmap bmOverlay = Bitmap.createBitmap(bmp, 0, height-cutHeight, width, cutHeight);
+	    int pictureHeight = bmp.getHeight();
+	    
+//	    Log.e("ImageHandler", "width: "+String.valueOf(width));
+//	    Log.e("ImageHandler", "height: "+String.valueOf(height));
+//	    Log.e("ImageHandler", "pictureHeight: "+String.valueOf(pictureHeight));
+//	    Log.e("ImageHandler", "cutHeight: "+String.valueOf(cutHeight));
+	    
+	    float dh = pictureHeight/(float) height;
+		
+	    int beginCut = (int) (pictureHeight-1.5*cutHeight*dh);
+	    
+//	    Log.e("ImageHandler", "beginCut: "+String.valueOf(beginCut));
+	    
+	    int heightSpan = cutHeight;
+	    
+	    //só por segurança
+	    if((beginCut+ heightSpan) > pictureHeight)
+	    	heightSpan = pictureHeight - beginCut;
+	    
+	    Bitmap bmOverlay = Bitmap.createBitmap(bmp, 0, beginCut, width, heightSpan);
 
 	    return bmOverlay;
 	}
