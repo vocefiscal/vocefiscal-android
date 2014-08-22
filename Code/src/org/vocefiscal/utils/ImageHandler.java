@@ -33,15 +33,17 @@ public class ImageHandler
 //        return bmOverlay;
 //	}
 	
-	public static Bitmap cropBitmapLastThird(Bitmap bmp,int height,int cutHeight)
+	public static Bitmap cropBitmapLastThird(Bitmap bmp,int height,int cutHeight, int screenWidth)
 	{	    
-	    int width = bmp.getWidth();
+	    int pictureWidth = bmp.getWidth();
 	    int pictureHeight = bmp.getHeight();
 	    
 //	    Log.e("ImageHandler", "width: "+String.valueOf(width));
 //	    Log.e("ImageHandler", "height: "+String.valueOf(height));
 //	    Log.e("ImageHandler", "pictureHeight: "+String.valueOf(pictureHeight));
 //	    Log.e("ImageHandler", "cutHeight: "+String.valueOf(cutHeight));
+	    
+	    int cutWidth = (pictureWidth-screenWidth)/2;
 	    
 	    float dh = pictureHeight/(float) height;
 		
@@ -55,7 +57,7 @@ public class ImageHandler
 	    if((beginCut+ heightSpan) > pictureHeight)
 	    	heightSpan = pictureHeight - beginCut;
 	    
-	    Bitmap bmOverlay = Bitmap.createBitmap(bmp, 0, beginCut, width, heightSpan);
+	    Bitmap bmOverlay = Bitmap.createBitmap(bmp, 0+cutWidth, beginCut, screenWidth, heightSpan);
 
 	    return bmOverlay;
 	}

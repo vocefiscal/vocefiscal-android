@@ -31,6 +31,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Typeface;
+import android.graphics.drawable.AnimationDrawable;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.PictureCallback;
@@ -126,6 +127,10 @@ public class CameraActivity extends Activity implements OnSentMailListener
 	private ImageView flash_status;
 	
 	private int flashStatus = FlashModeEnum.AUTO.ordinal();
+	
+	private AnimationDrawable animationDrawable;
+	
+	private RecyclingImageView animateImageView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -157,6 +162,10 @@ public class CameraActivity extends Activity implements OnSentMailListener
 //		Log.i("CameraActivity", "desiredPictureHeightAdjusted: "+String.valueOf(desiredPictureHeightAdjusted));
 //		Log.i("CameraActivity", "desiredPictureWidthAdjusted: "+String.valueOf(desiredPictureWidthAdjusted));
 
+		animateImageView = (RecyclingImageView) findViewById(R.id.animacao_camera);		
+		animateImageView.setBackgroundResource(R.drawable.animacao_camera);
+		animationDrawable = (AnimationDrawable) animateImageView.getBackground();
+		
 		/* 
 		 * ImageFetcher e Cache 
 		 */
@@ -180,10 +189,8 @@ public class CameraActivity extends Activity implements OnSentMailListener
 			{				
 				// get an image from the camera
 				try
-				{
-					mCamera.autoFocus(myAutoFocusCallback);
-					photo_trigger.setVisibility(View.GONE);
-					photo_concluido.setVisibility(View.GONE);	
+				{						
+					mCamera.autoFocus(myAutoFocusCallback);				
 				}catch(Exception e)
 				{
 					Log.i(TAG, e.getMessage());
@@ -271,7 +278,13 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 			@Override
 			public void onClick(View v) 
-			{												
+			{				
+				//animacao de camera 
+				animationDrawable.setVisible(true, true); 
+				animateImageView.setVisibility(View.VISIBLE);
+				
+				photo_trigger.setVisibility(View.GONE);
+				photo_concluido.setVisibility(View.GONE);
 				handler.post(takePicture);	
 			}
 		});
@@ -301,6 +314,11 @@ public class CameraActivity extends Activity implements OnSentMailListener
 						}			
 					}
 				});	
+				
+				//animacao da camera
+				animationDrawable.setVisible(false, false);
+				animateImageView.setVisibility(View.GONE);
+				
 				photoCount++;				
 				photo_counter.setText(String.valueOf(photoCount));				
 			}
@@ -321,7 +339,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 				}								
 
 				try 
-				{
+				{										
 					Bitmap bMap = ImageHandler.decodeByteArrayToBitmap(data,desiredPictureWidthAdjusted, desiredPictureHeightAdjusted);
 
 					int orientation = 0;
@@ -350,7 +368,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 					if (bMap != null) 
 					{
-						bMap = ImageHandler.cropBitmapLastThird(bMap,desiredPictureWidthAdjusted,foto30PCheight);						
+						bMap = ImageHandler.cropBitmapLastThird(bMap,desiredPictureWidthAdjusted,foto30PCheight,desiredPictureHeightAdjusted);						
 						File lastThirdPicture = getOutputMediaFile(true);
 						FileOutputStream outLastThirdPicture = new FileOutputStream(lastThirdPicture);
 						bMap.compress(Bitmap.CompressFormat.JPEG, 100, outLastThirdPicture);

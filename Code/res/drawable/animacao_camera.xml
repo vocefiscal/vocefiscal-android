@@ -1,0 +1,20 @@
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false" >
+
+    <item
+        android:drawable="@drawable/camera_loader1"
+        android:duration="150"/>
+    <item
+        android:drawable="@drawable/camera_loader2"
+        android:duration="150"/>
+    <item
+        android:drawable="@drawable/camera_loader3"
+        android:duration="150"/>
+    <item
+        android:drawable="@drawable/camera_loader4"
+        android:duration="150"/>
+    <item
+        android:drawable="@drawable/camera_loader5"
+        android:duration="150"/>
+
+</animation-list>
