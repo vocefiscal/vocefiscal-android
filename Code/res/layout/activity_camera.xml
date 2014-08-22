@@ -199,48 +199,4 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/progresslayout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#AA000000"
-        android:onClick="doNothing"
-        android:orientation="vertical"
-        android:visibility="gone" />
-
-    <LinearLayout
-        android:id="@+id/progressbarlayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <TextView
-            android:id="@+id/criando_grupo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Enviando fotos"
-            android:textColor="#ffffff"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/por_favor_aguarde"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
-            android:text="Por favor, aguarde"
-            android:textColor="#ffffff"
-            android:textSize="18sp" />
-
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp" />
-    </LinearLayout>
-
 </RelativeLayout>

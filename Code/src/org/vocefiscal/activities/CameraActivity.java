@@ -13,14 +13,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.vocefiscal.R;
-import org.vocefiscal.asynctasks.AsyncTask;
-import org.vocefiscal.asynctasks.SendEmailAsyncTask;
-import org.vocefiscal.asynctasks.SendEmailAsyncTask.OnSentMailListener;
 import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
 import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.bitmaps.RecyclingImageView;
-import org.vocefiscal.dialogs.CustomDialogClass;
-import org.vocefiscal.dialogs.CustomDialogClass.BtnsControl;
 import org.vocefiscal.models.enums.FlashModeEnum;
 import org.vocefiscal.utils.ImageHandler;
 import org.vocefiscal.views.CameraPreview;
@@ -52,7 +47,6 @@ import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -61,7 +55,7 @@ import android.widget.TextView;
  * @author andre
  *
  */
-public class CameraActivity extends Activity implements OnSentMailListener
+public class CameraActivity extends Activity
 {
 	private int pictureHeight = -1;
 
@@ -78,7 +72,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 	private AutoFocusCallback myAutoFocusCallback;
 
 	private ArrayList<String> picturePathList = null;
-	
+
 	private ArrayList<String> picture30PCPathList = null;
 
 	private int photoCount = 0;
@@ -105,6 +99,8 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 	protected static final int PICTURE_PREVIEW_REQUEST_CODE = 1000;
 
+	public static final String PICTURE_PATH_LIST = "picture_path_list";
+
 	private ImageFetcher imageFetcherFoto30PC;
 
 	private RecyclingImageView trinta_por_cento;
@@ -121,13 +117,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 	private int soundID=-1;
 
-	private boolean canPlaySound = false;
-
-	private LinearLayout progressBarLayout;
-
-	private LinearLayout progressLayout;
-
-	private CustomDialogClass envio;
+	private boolean canPlaySound = false;	
 
 	private ImageView photo_trigger;
 
@@ -148,7 +138,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 	private ImageView editar_foto_anterior;
 
 	private TextView photo_counter_next;
-	
+
 	private ProgressBar progress_bar_foto_preview;
 
 	@Override
@@ -207,7 +197,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 		handler = new Handler();
 
 		picturePathList = new ArrayList<String>();
-		
+
 		picture30PCPathList = new ArrayList<String>();
 
 		takePicture = new Runnable() 
@@ -252,7 +242,24 @@ public class CameraActivity extends Activity implements OnSentMailListener
 			{
 				handler.removeCallbacks(takePicture);
 				trinta_por_cento.setVisibility(View.GONE);
-				enviarPorEmail();				
+
+				Intent intent = new Intent(getApplicationContext(), ConferirImagensActivity.class);
+
+				Bundle bundle = new Bundle();
+				bundle.putStringArrayList(PICTURE_PATH_LIST, picturePathList);
+
+				intent.putExtras(bundle);
+
+				startActivity(intent);
+
+				handler.postDelayed(new Runnable() 
+				{
+					@Override
+					public void run() 
+					{
+						CameraActivity.this.finish();					
+					}
+				}, 1000);
 			}
 		});
 
@@ -397,7 +404,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 						bMap.recycle();
 						bMap = null;
-						
+
 						picturePathList.add(pictureFile.getAbsolutePath());
 						picture30PCPathList.add(lastThirdPicture.getAbsolutePath());
 
@@ -410,12 +417,10 @@ public class CameraActivity extends Activity implements OnSentMailListener
 						photoCount++;				
 						photo_counter.setText(String.valueOf(photoCount));
 						photo_counter_next.setText(String.valueOf(photoCount+1));
-						
-						imageFetcherFoto30PC.loadImage(lastThirdPicture.getAbsolutePath(), trinta_por_cento,progress_bar_foto_preview);	
-						
-						mPreview.surfaceChanged(null, 0, 0, 0);
-						
 
+						imageFetcherFoto30PC.loadImage(lastThirdPicture.getAbsolutePath(), trinta_por_cento,progress_bar_foto_preview);	
+
+						mPreview.surfaceChanged(null, 0, 0, 0);
 					}
 
 				} catch (FileNotFoundException e) 
@@ -449,7 +454,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 				startActivityForResult(intent, PICTURE_PREVIEW_REQUEST_CODE);
 			}
 		});
-		
+
 		progress_bar_foto_preview = (ProgressBar) findViewById(R.id.progress_bar_foto_preview);
 
 		/*
@@ -466,47 +471,6 @@ public class CameraActivity extends Activity implements OnSentMailListener
 		 */
 
 		setupSound();
-
-		/*
-		 * Envio de fotos por email - não estará presente na versão final, apenas em versões intermediarias para testar experiencia e resultados
-		 */
-
-		progressBarLayout = (LinearLayout) findViewById(R.id.progressbarlayout);
-		progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
-		envio = new CustomDialogClass(CameraActivity.this, "Título", "Msg");
-	}
-
-	private void enviarPorEmail()
-	{
-		if(picturePathList!=null&&picturePathList.size()>0)
-		{	          	        
-			/*
-			 * Conteúdo
-			 */
-			StringBuilder sb = new StringBuilder();
-			sb.append("Enviadas com o Você Fiscal Android.");
-			sb.append("\n\n");
-			sb.append("Debug-infos:");
-			sb.append("\n OS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")");
-			sb.append("\n OS API Level: " + android.os.Build.VERSION.SDK);
-			sb.append("\n Device: " + android.os.Build.DEVICE);
-			sb.append("\n Model (and Product): " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")");
-
-
-			String from = "vocefiscal@gmail.com";
-			String[] to = new String[]{"dedecun@gmail.com","helder@gmail.com","dfaranha@gmail.com"}; 
-			String body = sb.toString();
-			String subject = "[Você Fiscal] - Fotos de teste da versão B (controle manual entre fotos)";
-			List<String> attachments = new ArrayList<String>();
-			attachments.addAll(picturePathList);   
-
-			SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this, to, from, subject, body, attachments, progressBarLayout, progressLayout);
-			sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-		}else
-		{
-			emailFalhou(-1);
-		}	
 	}
 
 	/** Create a File for saving an image or video */
@@ -690,80 +654,6 @@ public class CameraActivity extends Activity implements OnSentMailListener
 		soundID = spool.load(getApplicationContext(), R.raw.one_click, 1);
 	}
 
-	@Override
-	public void finishedSendingEmail(Boolean result, int errorCode) 
-	{
-		if(result)
-		{
-			emailEnviadoCorretamente();
-		}else
-		{
-			emailFalhou(errorCode);
-		}	
-
-	}
-
-	public void doNothing(View view)
-	{
-		//do nothing
-	}
-
-	private void emailEnviadoCorretamente() 
-	{
-		BtnsControl btnsEnvio = new BtnsControl() 
-		{
-
-			@Override
-			public void positiveBtnClicked() 
-			{
-				finish();
-			}
-
-			@Override
-			public void negativeBtnClicked() 
-			{
-				finish();
-			}
-		};
-
-		envio.setBtnsControl(btnsEnvio, "OK", null);
-		envio.setTitulo("Sucesso");
-		envio.setPergunta("Fotos do BU enviadas com sucesso!");
-		envio.show();
-		envio.negativeButtonGone();			
-	}
-
-	private void emailFalhou(int errorCode)
-	{			
-		String msg = "Não foi possível enviar as fotos.";
-		if(errorCode == SendEmailAsyncTask.SEM_CONEXAO_COM_A_INTERNET)
-		{
-			msg = "Sem conexão com a internet";
-		}
-
-		BtnsControl btnsErrosEnvio = new BtnsControl() 
-		{
-
-			@Override
-			public void positiveBtnClicked() 
-			{
-				enviarPorEmail();
-			}
-
-			@Override
-			public void negativeBtnClicked() 
-			{
-				finish();
-			}
-		};
-
-
-		envio.setBtnsControl(btnsErrosEnvio, "Tentar", "Cancelar");
-		envio.setTitulo("Falhou");
-		envio.setPergunta(msg);
-		envio.show();				
-	}
-
 	@SuppressLint("NewApi")
 	public static void setAlpha(View view, float alpha)
 	{
@@ -791,7 +681,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 			{
 				picturePathList.remove(picturePathList.size()-1);
 				picture30PCPathList.remove(picture30PCPathList.size()-1);								
-				
+
 				photoCount--;
 				photo_counter.setText(String.valueOf(photoCount));
 				photo_counter_next.setText(String.valueOf(photoCount+1));
