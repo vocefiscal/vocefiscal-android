@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:background="#f3f3f3"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/up_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/selector_up_logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/excluir_foto"
+            android:layout_toRightOf="@+id/up_logo"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="Verifique a última foto tirada. Se não gostou, exclua clicando na lixeira."
+            android:textColor="@color/azul_vocefiscal"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/excluir_foto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/selector_delete" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <org.vocefiscal.bitmaps.RecyclingImageView
+            android:id="@+id/preview_foto"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/loading_image" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" 
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+</LinearLayout>

@@ -31,7 +31,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 /**
  * This class wraps up completing some arbitrary long running work when loading a bitmap to an
@@ -106,6 +108,44 @@ public abstract class ImageWorker {
             //END_INCLUDE(execute_background_task)
         }
     }
+    
+    public void loadImage(Object data, ImageView imageView,ProgressBar progressBar) 
+    {
+    	 if (data == null) 
+         {
+             return;
+         }
+
+         BitmapDrawable value = null;
+         
+         if(progressBar!=null)
+          	progressBar.setVisibility(View.VISIBLE);
+
+         if (mImageCache != null) 
+         {
+             value = mImageCache.getBitmapFromMemCache(String.valueOf(data));
+         }
+
+         if (value != null) 
+         {
+             // Bitmap found in memory cache
+             imageView.setImageDrawable(value);
+             if(progressBar!=null)
+             	progressBar.setVisibility(View.GONE);
+         } else if (cancelPotentialWork(data, imageView)) 
+         {
+        	 final BitmapWorkerTask task = new BitmapWorkerTask(data, imageView,progressBar);
+             final AsyncDrawable asyncDrawable =  new AsyncDrawable(mResources, mLoadingBitmap, task);
+             imageView.setImageDrawable(asyncDrawable);
+             // NOTE: This uses a custom version of AsyncTask that has been pulled from the
+             // framework and slightly modified. Refer to the docs at the top of the class
+             // for more info on what was changed.
+             
+             task.executeOnExecutor(AsyncTask.DUAL_THREAD_EXECUTOR);
+         }
+    }
+    
+    
 
     /**
      * Set placeholder bitmap that shows when the the background thread is running.
@@ -247,6 +287,7 @@ public abstract class ImageWorker {
     {
         private Object mData;
         private final WeakReference<ImageView> imageViewReference;
+        private ProgressBar progressBar;
 
         public BitmapWorkerTask(Object data, ImageView imageView) 
         {
@@ -254,7 +295,14 @@ public abstract class ImageWorker {
             imageViewReference = new WeakReference<ImageView>(imageView);
         }
 
-        /**
+        public BitmapWorkerTask(Object data, ImageView imageView, ProgressBar progressBar) 
+        {
+        	mData = data;
+            imageViewReference = new WeakReference<ImageView>(imageView);
+            this.progressBar = progressBar;
+		}
+
+		/**
          * Background processing.
          */
         @Override
@@ -336,27 +384,35 @@ public abstract class ImageWorker {
          * Once the image is processed, associates it to the imageView
          */
         @Override
-        protected void onPostExecute(BitmapDrawable value) {
+        protected void onPostExecute(BitmapDrawable value) 
+        {
             //BEGIN_INCLUDE(complete_background_work)
             // if cancel was called on this task or the "exit early" flag is set then we're done
-            if (isCancelled() || mExitTasksEarly) {
+            if (isCancelled() || mExitTasksEarly) 
+            {
                 value = null;
             }
 
             final ImageView imageView = getAttachedImageView();
-            if (value != null && imageView != null) {
-                if (BuildConfig.DEBUG) {
+            if (value != null && imageView != null) 
+            {
+                if (BuildConfig.DEBUG)
+                {
                     Log.d(TAG, "onPostExecute - setting bitmap");
                 }
                 setImageDrawable(imageView, value);
+                if(progressBar!=null)
+                	progressBar.setVisibility(View.GONE);   
             }
             //END_INCLUDE(complete_background_work)
         }
 
         @Override
-        protected void onCancelled(BitmapDrawable value) {
+        protected void onCancelled(BitmapDrawable value) 
+        {
             super.onCancelled(value);
-            synchronized (mPauseWorkLock) {
+            synchronized (mPauseWorkLock) 
+            {
                 mPauseWorkLock.notifyAll();
             }
         }
@@ -404,11 +460,14 @@ public abstract class ImageWorker {
      * @param imageView
      * @param drawable
      */
-    private void setImageDrawable(ImageView imageView, Drawable drawable) {
-        if (mFadeInBitmap) {
+    private void setImageDrawable(ImageView imageView, Drawable drawable) 
+    {
+        if (mFadeInBitmap) 
+        {
             // Transition drawable with a transparent drawable and the final drawable
             final TransitionDrawable td =
-                    new TransitionDrawable(new Drawable[] {
+                    new TransitionDrawable(new Drawable[] 
+                    		{
                             new ColorDrawable(android.R.color.transparent),
                             drawable
                     });

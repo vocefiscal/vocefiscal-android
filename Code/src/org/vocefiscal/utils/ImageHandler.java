@@ -43,21 +43,31 @@ public class ImageHandler
 //	    Log.e("ImageHandler", "pictureHeight: "+String.valueOf(pictureHeight));
 //	    Log.e("ImageHandler", "cutHeight: "+String.valueOf(cutHeight));
 	    
-	    int cutWidth = (pictureWidth-screenWidth)/2;
+	    int cutWidth = (int) ((pictureWidth-screenWidth)/2.0f);
+	    if(cutWidth<0)
+	    	cutWidth=0;
 	    
 	    float dh = pictureHeight/(float) height;
 		
-	    int beginCut = (int) (pictureHeight-1.5*cutHeight*dh);
+	    int beginCutHeight = (int) (pictureHeight-1.5*cutHeight*dh);
+	    
+	    int beginCutWidth = 0+cutWidth;
 	    
 //	    Log.e("ImageHandler", "beginCut: "+String.valueOf(beginCut));
 	    
 	    int heightSpan = cutHeight;
+	    int widthSpan = screenWidth;
 	    
-	    //só por segurança
-	    if((beginCut+ heightSpan) > pictureHeight)
-	    	heightSpan = pictureHeight - beginCut;
+	    /*
+	     * Respeitando os limites da foto tirada na hora do corte (resolução da foto != da resolução da tela e do preview!)
+	     */
+	    if((beginCutHeight+ heightSpan) > pictureHeight)
+	    	heightSpan = pictureHeight - beginCutHeight;
 	    
-	    Bitmap bmOverlay = Bitmap.createBitmap(bmp, 0+cutWidth, beginCut, screenWidth, heightSpan);
+	    if((beginCutWidth+widthSpan)>pictureWidth)
+	    	widthSpan = pictureWidth - beginCutWidth;
+	    
+	    Bitmap bmOverlay = Bitmap.createBitmap(bmp, beginCutWidth, beginCutHeight, widthSpan, heightSpan);
 
 	    return bmOverlay;
 	}

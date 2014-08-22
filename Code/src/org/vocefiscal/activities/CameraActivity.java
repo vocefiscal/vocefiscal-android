@@ -28,6 +28,7 @@ import org.vocefiscal.views.CameraPreview;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Typeface;
@@ -52,6 +53,8 @@ import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
@@ -75,6 +78,8 @@ public class CameraActivity extends Activity implements OnSentMailListener
 	private AutoFocusCallback myAutoFocusCallback;
 
 	private ArrayList<String> picturePathList = null;
+	
+	private ArrayList<String> picture30PCPathList = null;
 
 	private int photoCount = 0;
 
@@ -96,6 +101,10 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 	private static final float FOTO_SIZE_REF_30PC_HEIGHT = 100;
 
+	public static final String PICTURE_PREVIEW_PATH = "picture_preview";
+
+	protected static final int PICTURE_PREVIEW_REQUEST_CODE = 1000;
+
 	private ImageFetcher imageFetcherFoto30PC;
 
 	private RecyclingImageView trinta_por_cento;
@@ -103,7 +112,7 @@ public class CameraActivity extends Activity implements OnSentMailListener
 	private int foto30PCwidth = -1;
 
 	private int foto30PCheight = -1;
-	
+
 	private int desiredPictureHeightAdjusted = -1;
 
 	private int desiredPictureWidthAdjusted = -1;
@@ -119,26 +128,38 @@ public class CameraActivity extends Activity implements OnSentMailListener
 	private LinearLayout progressLayout;
 
 	private CustomDialogClass envio;
-	
+
 	private ImageView photo_trigger;
-	
+
 	private TextView photo_concluido;
-	
+
 	private ImageView flash_status;
-	
+
 	private int flashStatus = FlashModeEnum.AUTO.ordinal();
-	
+
 	private AnimationDrawable animationDrawable;
-	
+
 	private RecyclingImageView animateImageView;
+
+	private RelativeLayout linha_vermelha_foto_anterior;	
+
+	private ImageView linha_vermelha_foto_anterior_baixo;	
+
+	private ImageView editar_foto_anterior;
+
+	private TextView photo_counter_next;
+	
+	private ProgressBar progress_bar_foto_preview;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera);
-		
-		//Typeface unisansthin = Typeface.createFromAsset(this.getAssets(),"fonts/unisansthin.otf");
+
+		/*
+		 * Fonte UniSans Heavy
+		 */		
 		Typeface unisansheavy = Typeface.createFromAsset(this.getAssets(),"fonts/unisansheavy.otf");
 
 		/*
@@ -153,19 +174,22 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 		foto30PCwidth = (int) (FOTO_SIZE_REF_30PC_WIDTH*deltaDisplay);	
 		foto30PCheight = (int) (FOTO_SIZE_REF_30PC_HEIGHT*deltaDisplay);
-		
+
 		desiredPictureHeightAdjusted = (int) (desiredPictureHeight*deltaDisplay);	
 		desiredPictureWidthAdjusted = (int) (desiredPictureWidth*deltaDisplay);	
-//		
-//		Log.i("CameraActivity", "foto30PCwidth: "+String.valueOf(foto30PCwidth));
-//		Log.i("CameraActivity", "foto30PCheight: "+String.valueOf(foto30PCheight));
-//		Log.i("CameraActivity", "desiredPictureHeightAdjusted: "+String.valueOf(desiredPictureHeightAdjusted));
-//		Log.i("CameraActivity", "desiredPictureWidthAdjusted: "+String.valueOf(desiredPictureWidthAdjusted));
+		//		
+		//		Log.i("CameraActivity", "foto30PCwidth: "+String.valueOf(foto30PCwidth));
+		//		Log.i("CameraActivity", "foto30PCheight: "+String.valueOf(foto30PCheight));
+		//		Log.i("CameraActivity", "desiredPictureHeightAdjusted: "+String.valueOf(desiredPictureHeightAdjusted));
+		//		Log.i("CameraActivity", "desiredPictureWidthAdjusted: "+String.valueOf(desiredPictureWidthAdjusted));
 
+		/*
+		 * Animação foto camera loader
+		 */
 		animateImageView = (RecyclingImageView) findViewById(R.id.animacao_camera);		
 		animateImageView.setBackgroundResource(R.drawable.animacao_camera);
 		animationDrawable = (AnimationDrawable) animateImageView.getBackground();
-		
+
 		/* 
 		 * ImageFetcher e Cache 
 		 */
@@ -173,13 +197,18 @@ public class CameraActivity extends Activity implements OnSentMailListener
 		cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
 
 		//The ImageFetcher takes care of loading images into our ImageView children asynchronously
-		imageFetcherFoto30PC = new ImageFetcher(ImageFetcher.CARREGAR_DO_DISCO, getApplicationContext(), foto30PCwidth, foto30PCheight);
-		//mImageFetcher.setLoadingImage(R.drawable.foto_grupo);		
+		imageFetcherFoto30PC = new ImageFetcher(ImageFetcher.CARREGAR_DO_DISCO, getApplicationContext(), foto30PCwidth, foto30PCheight);	
 		imageFetcherFoto30PC.addImageCache(cacheParams);
+
+		/*
+		 * Elementos dinâmicos, itens de UI e seus comportamentos
+		 */
 
 		handler = new Handler();
 
 		picturePathList = new ArrayList<String>();
+		
+		picture30PCPathList = new ArrayList<String>();
 
 		takePicture = new Runnable() 
 		{
@@ -207,18 +236,17 @@ public class CameraActivity extends Activity implements OnSentMailListener
 			{
 				finish();				
 			}
-		});
+		});		
 
 		trinta_por_cento = (RecyclingImageView) findViewById(R.id.trinta_por_cento);
 		trinta_por_cento.setVisibility(View.GONE);
 		setAlpha(trinta_por_cento, 0.5f);
-		
+
 		photo_concluido =  (TextView) findViewById(R.id.photo_concluido);
 		photo_concluido.setTypeface(unisansheavy);
-		photo_concluido.setVisibility(View.GONE);
 		photo_concluido.setOnClickListener(new OnClickListener() 
 		{
-			
+
 			@Override
 			public void onClick(View v) 
 			{
@@ -227,34 +255,32 @@ public class CameraActivity extends Activity implements OnSentMailListener
 				enviarPorEmail();				
 			}
 		});
-		
+
 		flash_status = (ImageView) findViewById(R.id.flash_status);
 		flash_status.setOnClickListener(new OnClickListener() 
 		{
-			
+
 			@Override
 			public void onClick(View v) 
 			{
 				flashStatus = FlashModeEnum.nextFlashMode(flashStatus);												
-				
+
 				Camera.Parameters params = mCamera.getParameters();				
 				params.setFlashMode(FlashModeEnum.getFlashMode(flashStatus));				
 				mCamera.setParameters(params);
-				
+
 				flash_status.setImageResource(FlashModeEnum.getImageResource(flashStatus));
 			}
-		});
+		});		
 
-		//TextView up_text = (TextView) findViewById(R.id.up_text);			
+		photo_counter = (TextView) findViewById(R.id.photo_counter);		
 
-		photo_counter = (TextView) findViewById(R.id.photo_counter);
-		photo_counter.setText(String.valueOf(photoCount));
-		photo_concluido.setTypeface(unisansheavy);
+		photo_counter_next = (TextView) findViewById(R.id.photo_counter_next );		
 
 		preview = (FrameLayout) findViewById(R.id.camera_preview);
 		preview.setOnClickListener(new OnClickListener() 
 		{
-			
+
 			@Override
 			public void onClick(View v) 
 			{				
@@ -269,9 +295,6 @@ public class CameraActivity extends Activity implements OnSentMailListener
 			}
 		});
 
-		progressBarLayout = (LinearLayout) findViewById(R.id.progressbarlayout);
-		progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
-
 		photo_trigger = (ImageView) findViewById(R.id.photo_trigger);
 		photo_trigger.setOnClickListener(new OnClickListener() 
 		{
@@ -282,9 +305,10 @@ public class CameraActivity extends Activity implements OnSentMailListener
 				//animacao de camera 
 				animationDrawable.setVisible(true, true); 
 				animateImageView.setVisibility(View.VISIBLE);
-				
+
 				photo_trigger.setVisibility(View.GONE);
 				photo_concluido.setVisibility(View.GONE);
+				editar_foto_anterior.setVisibility(View.GONE);
 				handler.post(takePicture);	
 			}
 		});
@@ -314,13 +338,10 @@ public class CameraActivity extends Activity implements OnSentMailListener
 						}			
 					}
 				});	
-				
+
 				//animacao da camera
 				animationDrawable.setVisible(false, false);
-				animateImageView.setVisibility(View.GONE);
-				
-				photoCount++;				
-				photo_counter.setText(String.valueOf(photoCount));				
+				animateImageView.setVisibility(View.GONE);								
 			}
 		};
 
@@ -376,14 +397,25 @@ public class CameraActivity extends Activity implements OnSentMailListener
 
 						bMap.recycle();
 						bMap = null;
-						picturePathList.add(pictureFile.getAbsolutePath());
 						
+						picturePathList.add(pictureFile.getAbsolutePath());
+						picture30PCPathList.add(lastThirdPicture.getAbsolutePath());
+
 						photo_trigger.setVisibility(View.VISIBLE);
 						photo_concluido.setVisibility(View.VISIBLE);						
 						trinta_por_cento.setVisibility(View.VISIBLE);
-						imageFetcherFoto30PC.loadImage(lastThirdPicture.getAbsolutePath(), trinta_por_cento);	
+						linha_vermelha_foto_anterior.setVisibility(View.VISIBLE);						
+						linha_vermelha_foto_anterior_baixo.setVisibility(View.VISIBLE);						
+						editar_foto_anterior.setVisibility(View.VISIBLE);
+						photoCount++;				
+						photo_counter.setText(String.valueOf(photoCount));
+						photo_counter_next.setText(String.valueOf(photoCount+1));
+						
+						imageFetcherFoto30PC.loadImage(lastThirdPicture.getAbsolutePath(), trinta_por_cento,progress_bar_foto_preview);	
+						
 						mPreview.surfaceChanged(null, 0, 0, 0);
 						
+
 					}
 
 				} catch (FileNotFoundException e) 
@@ -396,6 +428,30 @@ public class CameraActivity extends Activity implements OnSentMailListener
 			}			
 		};  
 
+		linha_vermelha_foto_anterior = (RelativeLayout) findViewById(R.id.linha_vermelha_foto_anterior);
+
+		linha_vermelha_foto_anterior_baixo = (ImageView) findViewById(R.id.linha_vermelha_foto_anterior_baixo);	
+
+		editar_foto_anterior = (ImageView) findViewById(R.id.editar_foto_anterior);
+		editar_foto_anterior.setOnClickListener(new OnClickListener() 
+		{
+
+			@Override
+			public void onClick(View v) 
+			{
+				Intent intent = new Intent(getApplicationContext(), EditarFotoActivity.class);
+
+				Bundle bundle = new Bundle();
+				bundle.putString(PICTURE_PREVIEW_PATH, picturePathList.get(picturePathList.size()-1));
+
+				intent.putExtras(bundle);
+
+				startActivityForResult(intent, PICTURE_PREVIEW_REQUEST_CODE);
+			}
+		});
+		
+		progress_bar_foto_preview = (ProgressBar) findViewById(R.id.progress_bar_foto_preview);
+
 		/*
 		 * ************************************************
 		 * Power management
@@ -405,8 +461,18 @@ public class CameraActivity extends Activity implements OnSentMailListener
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "WakeLock");
 
+		/*
+		 * Som do click de foto
+		 */
+
 		setupSound();
 
+		/*
+		 * Envio de fotos por email - não estará presente na versão final, apenas em versões intermediarias para testar experiencia e resultados
+		 */
+
+		progressBarLayout = (LinearLayout) findViewById(R.id.progressbarlayout);
+		progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
 		envio = new CustomDialogClass(CameraActivity.this, "Título", "Msg");
 	}
 
@@ -484,33 +550,33 @@ public class CameraActivity extends Activity implements OnSentMailListener
 			Camera.Parameters params = mCamera.getParameters();
 			List<Camera.Size> pictureSizes = params.getSupportedPictureSizes();
 			List<Camera.Size> previewSizes = params.getSupportedPreviewSizes();
-			
+
 			Camera.Size bestPictureSize = getOptimalCameraSize(pictureSizes, desiredPictureWidthAdjusted, desiredPictureHeightAdjusted);
 			pictureWidth = bestPictureSize.width;
 			pictureHeight = bestPictureSize.height;
-			
+
 			Camera.Size bestPreviewSize = getOptimalCameraSize(previewSizes, desiredPictureWidthAdjusted, desiredPictureHeightAdjusted);
-							
+
 			params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
 			params.setFlashMode(FlashModeEnum.getFlashMode(flashStatus));
 			params.setPreviewSize(bestPreviewSize.width, bestPreviewSize.height);
 			params.setPictureSize(pictureWidth, pictureHeight);
 			params.setJpegQuality(100);	
 			mCamera.setParameters(params);
-			
-//			Log.e("CameraActivity", "pictureWidth: "+String.valueOf(pictureWidth));
-//			Log.e("CameraActivity", "pictureHeight: "+String.valueOf(pictureHeight));
-//			
-//			Log.e("CameraActivity", "previewWidth: "+String.valueOf(bestPreviewSize.width));
-//			Log.e("CameraActivity", "previewHeight: "+String.valueOf(bestPreviewSize.height));
+
+			//			Log.e("CameraActivity", "pictureWidth: "+String.valueOf(pictureWidth));
+			//			Log.e("CameraActivity", "pictureHeight: "+String.valueOf(pictureHeight));
+			//			
+			//			Log.e("CameraActivity", "previewWidth: "+String.valueOf(bestPreviewSize.width));
+			//			Log.e("CameraActivity", "previewHeight: "+String.valueOf(bestPreviewSize.height));
 
 			// Create our Preview view and set it as the content of our activity.
 			mPreview = new CameraPreview(this, mCamera);			
-			
+
 			preview.addView(mPreview);
 		}
 	}
-	
+
 	private Camera.Size getOptimalCameraSize(List<Camera.Size> sizes, int w, int h) 
 	{
 		final double ASPECT_TOLERANCE = 0.1;
@@ -709,5 +775,38 @@ public class CameraActivity extends Activity implements OnSentMailListener
 			view.startAnimation(animation);
 		}
 		else view.setAlpha(alpha);
+	}
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
+	 */
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) 
+	{		
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if(requestCode==PICTURE_PREVIEW_REQUEST_CODE)
+		{
+			if(resultCode==RESULT_OK)
+			{
+				picturePathList.remove(picturePathList.size()-1);
+				picture30PCPathList.remove(picture30PCPathList.size()-1);								
+				
+				photoCount--;
+				photo_counter.setText(String.valueOf(photoCount));
+				photo_counter_next.setText(String.valueOf(photoCount+1));
+				if(photoCount==0)
+				{
+					photo_concluido.setVisibility(View.GONE);						
+					trinta_por_cento.setVisibility(View.GONE);
+					linha_vermelha_foto_anterior.setVisibility(View.GONE);						
+					linha_vermelha_foto_anterior_baixo.setVisibility(View.GONE);						
+					editar_foto_anterior.setVisibility(View.GONE);
+				}else
+				{
+					imageFetcherFoto30PC.loadImage(picture30PCPathList.get(picture30PCPathList.size()-1), trinta_por_cento,progress_bar_foto_preview);
+				}
+			}
+		}
 	}
 }

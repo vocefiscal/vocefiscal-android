@@ -52,7 +52,8 @@
                 android:id="@+id/linha_vermelha_foto_anterior"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp" >
+                android:layout_marginTop="10dp"
+                android:visibility="gone" >
 
                 <ImageView
                     android:layout_width="fill_parent"
@@ -68,7 +69,7 @@
                     android:layout_marginLeft="35dp"
                     android:background="@drawable/number_circle"
                     android:gravity="center"
-                    android:text="1"
+                    android:text="0"
                     android:textColor="@color/vermelho_linha_foto"
                     android:textSize="20sp" />
             </RelativeLayout>
@@ -78,14 +79,24 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="75dp"
-                android:src="@drawable/linha_camera" />
+                android:src="@drawable/linha_camera"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar_foto_preview"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="37.5dp"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/editar_foto_anterior"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/linha_vermelha_foto_anterior_baixo"
-                android:src="@drawable/editar" />
+                android:src="@drawable/selector_editar"
+                android:visibility="gone" />
 
             <RelativeLayout
                 android:id="@+id/linha_vermelha_foto"
@@ -108,7 +119,7 @@
                     android:layout_marginLeft="35dp"
                     android:background="@drawable/number_circle"
                     android:gravity="center"
-                    android:text="2"
+                    android:text="1"
                     android:textColor="@color/vermelho_linha_foto"
                     android:textSize="20sp" />
             </RelativeLayout>
@@ -147,7 +158,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="80dp"
-                    android:src="@drawable/photo_trigger" />
+                    android:src="@drawable/selector_photo_trigger" />
 
                 <ImageView
                     android:id="@+id/flash_status"
@@ -168,12 +179,13 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="90dp"
                     android:layout_marginLeft="5dp"
-                    android:background="@drawable/bg_concluir"
+                    android:background="@drawable/selector_concluir"
                     android:gravity="center"
                     android:padding="5dp"
                     android:text="CONCLUIR"
                     android:textColor="@color/azul_vocefiscal"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:visibility="gone" />
             </RelativeLayout>
 
             <!-- Animação da camera -->
@@ -182,7 +194,7 @@
                 android:id="@+id/animacao_camera"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-				android:layout_centerInParent="true"
+                android:layout_centerInParent="true"
                 android:visibility="gone" />
         </RelativeLayout>
     </LinearLayout>
