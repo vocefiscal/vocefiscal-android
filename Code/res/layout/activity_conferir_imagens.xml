@@ -21,9 +21,9 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/up_logo"
-            android:text="Confira todas as imagens em sequência"
+            android:text="Confira se as fotos estão legíveis. Não precisam estar alinhadas perfeitamente."
             android:textColor="@color/azul_vocefiscal"
-            android:textSize="14sp" />
+            android:textSize="12sp"/>
     </RelativeLayout>
 
     <ListView
@@ -33,7 +33,9 @@
         android:layout_above="@+id/botoes"
         android:layout_below="@+id/header"
         android:fadingEdge="none"
-        android:overScrollMode="never" />
+        android:overScrollMode="never" 
+        android:dividerHeight="15dp"
+        android:divider="#f3f3f3"/>
 
     <RelativeLayout
         android:id="@+id/botoes"

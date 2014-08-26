@@ -1,10 +1,16 @@
 package org.vocefiscal.utils;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -17,21 +23,58 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
-import android.util.Log;
 
 public class ImageHandler 
 {
-
 	public static final String IMAGE_CACHE_DIR ="vocefiscal_cache";
 	
-//	public static Bitmap overlayReference(Bitmap bmp1, Bitmap bmp2,int pixelsFromBottom) 
-//	{		
-//		Bitmap bmOverlay = Bitmap.createBitmap(bmp1.getWidth(), bmp1.getHeight(), bmp1.getConfig());
-//        Canvas canvas = new Canvas(bmOverlay);
-//        canvas.drawBitmap(bmp1, 0, 0, null);
-//        canvas.drawBitmap(bmp2, 0, bmp1.getHeight()-pixelsFromBottom, null);
-//        return bmOverlay;
-//	}
+	public static String nomeDaMidia(File file)
+	{
+		String nomeDaMidia = null;
+
+		if(file!=null)
+		{
+			/*
+			 * Ler o arquivo em bytes para poder
+			 */
+			int size = (int) file.length();
+			byte[] bytes = new byte[size];
+			try 
+			{
+				BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+				buf.read(bytes, 0, bytes.length);
+				buf.close();
+				
+				nomeDaMidia = MD5_Hash(bytes);
+				
+			} catch (FileNotFoundException e) 
+			{
+				e.printStackTrace();
+			} catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+
+		return(nomeDaMidia);
+	}
+	
+	public static String MD5_Hash(byte[] bytes) 
+	{
+		MessageDigest m = null;
+
+		try 
+		{
+			m = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) 
+		{
+			e.printStackTrace();
+		}
+
+		m.update(bytes,0,bytes.length);
+		String hash = new BigInteger(1, m.digest()).toString(16);
+		return hash;
+	}
 	
 	public static Bitmap cropBitmapLastThird(Bitmap bmp,int height,int cutHeight, int screenWidth)
 	{	    
@@ -72,38 +115,6 @@ public class ImageHandler
 	    return bmOverlay;
 	}
 	
-//	public static Bitmap drawBmpCircle(Bitmap source, int color, int radius)
-//	{	
-//		float scaleFactor = 2f;
-//		Bitmap scaleBmp = Bitmap.createScaledBitmap(source,	(int)(source.getWidth()*scaleFactor), (int)(source.getHeight()*scaleFactor), true);
-//		Bitmap newBmp = Bitmap.createBitmap(scaleBmp.getWidth(), scaleBmp.getHeight(), Bitmap.Config.ARGB_8888);
-//		int x = newBmp.getWidth()/2;
-//		int y = newBmp.getHeight()/2;
-//		for (int xBmp = 0; xBmp < newBmp.getWidth(); xBmp++) 
-//		{
-//			for (int yBmp = 0; yBmp < newBmp.getHeight(); yBmp++) 
-//			{
-//				int dist = distance(xBmp,yBmp,x,y);
-//				if (dist > radius*scaleFactor)
-//				{	
-//					newBmp.setPixel(xBmp, yBmp, color);
-//				}
-//				else 
-//				{
-//					newBmp.setPixel(xBmp, yBmp, scaleBmp.getPixel(xBmp, yBmp));
-//				}
-//			}
-//		}
-//		scaleBmp = null;
-//		return Bitmap.createScaledBitmap(newBmp, 
-//				(int)(newBmp.getWidth()/scaleFactor), (int)(newBmp.getHeight()/scaleFactor), true);
-//	}
-//
-//	private static int distance (int x1, int y1, int x2, int y2) 
-//	{
-//		return (int)Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
-//	}
-
 	public static byte[] bitmapToByteArray(Bitmap bmp)
 	{
 		if(bmp!=null)
@@ -211,36 +222,6 @@ public class ImageHandler
 		
 	}
 
-	/*
-	 * Making image in circular shape
-//	 */
-//	public static Bitmap getRoundedShape(Bitmap sourceBitmap,int targetWidth,int targetHeight) 
-//	{
-//		Bitmap targetBitmap = Bitmap.createBitmap(targetWidth,targetHeight,Bitmap.Config.ARGB_8888);
-//
-//
-//		Canvas canvas = new Canvas(targetBitmap);
-//		Path path = new Path();
-//		path.addCircle(((float) targetWidth) / 2.0f,((float) targetHeight) / 2.0f,(Math.min(((float) targetWidth),((float) targetHeight)) / 2.0f),Path.Direction.CW);
-//
-//		Paint paint = new Paint();
-//		paint.setColor(Color.WHITE);
-//		paint.setStyle(Paint.Style.FILL);
-//		paint.setAntiAlias(true);
-//		paint.setDither(true);
-//		paint.setFilterBitmap(true);
-//		canvas.drawCircle(((float) targetWidth) / 2.0f, ((float) targetHeight) / 2.0f, (Math.min(((float) targetWidth),((float) targetHeight)) / 2.0f), paint);
-//		
-//		canvas.clipPath(path);
-//		//Bitmap sourceBitmap = scaleBitmapImage;	
-//
-//		canvas.drawBitmap(sourceBitmap, new Rect(0, 0, sourceBitmap.getWidth(),	sourceBitmap.getHeight()), new RectF(0, 0, targetWidth,targetHeight), paint); 
-//
-//		return targetBitmap;
-//	}
-
-
-
 	public static Bitmap decodeFileDescriptorToBitmap(Context context, String filePath) 
 	{
 		// Decode image size
@@ -288,7 +269,8 @@ public class ImageHandler
 
 	}
 
-	public static Bitmap decodeByteArrayToBitmap(byte[] pic) {
+	public static Bitmap decodeByteArrayToBitmap(byte[] pic)
+	{
 		// Decode image size
 		Bitmap bitmap = null;
 		try{
@@ -397,69 +379,6 @@ public class ImageHandler
 		}
 		return inSampleSize;
 	}
-
-//	public static Bitmap getRoundedCornerBitmap(Context context, Bitmap input, int pixels , int w , int h , boolean squareTL, boolean squareTR, boolean squareBL, boolean squareBR, boolean withAlpha  ) 
-//	{
-//
-//		Bitmap output = Bitmap.createBitmap(w, h, Config.ARGB_8888);
-//		
-//		Canvas canvas = new Canvas(output);
-//		final float densityMultiplier = context.getResources().getDisplayMetrics().density;
-//
-//		int color;
-//		if(withAlpha)
-//			color = 0xAA424242;
-//		else
-//			color = 0xFF424242;
-//
-//		final Paint paint = new Paint();
-//		final Rect rect = new Rect(0, 0, w, h);
-//		final RectF rectF = new RectF(rect);
-//
-//		//make sure that our rounded corner is scaled appropriately
-//		
-//		 float roundPx = pixels*densityMultiplier;
-//		 float roundPy = roundPx;
-//		
-//
-//		if(pixels < 0)
-//		{
-//			roundPx = (w*.265f) *densityMultiplier;
-//			roundPy = (h*.265f) *densityMultiplier;
-//		}
-//		paint.setAntiAlias(true);
-//		canvas.drawARGB(0, 0, 0, 0);
-//		paint.setColor(color);
-//		canvas.drawRoundRect(rectF, roundPx, roundPy, paint);
-//
-//
-//		//draw rectangles over the corners we want to be square
-//		if (squareTL )
-//		{
-//			canvas.drawRect(0, 0, w/2, h/2, paint);
-//		}
-//		if (squareTR )
-//		{
-//			canvas.drawRect(w/2, 0, w, h/2, paint);
-//		}
-//		if (squareBL )
-//		{
-//			canvas.drawRect(0, h/2, w/2, h, paint);
-//		}
-//		if (squareBR )
-//		{
-//			canvas.drawRect(w/2, h/2, w, h, paint);
-//		}
-//
-//		paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-//		canvas.drawBitmap(input, 0,0, paint);
-//		
-//		input.recycle();
-//		
-//		return output;
-//	}
-	
-	
 
 	/**
 	 * @param displayHeight

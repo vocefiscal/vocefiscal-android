@@ -48,16 +48,19 @@ public class SendEmailAsyncTask extends AsyncTask <Void, Void, Boolean>
         m.setFrom(from); 
         m.setSubject(subject); 
         m.setBody(body); 
-        for(String file : attachments)
+        if(attachments!=null)
         {
-        	 try 
-        	 {
-				m.addAttachment(file);
-			} catch (Exception e) 
-			{
-				e.printStackTrace();
-			} 
-        }       
+        	for(String file : attachments)
+            {
+            	 try 
+            	 {
+    				m.addAttachment(file);
+    			} catch (Exception e) 
+    			{
+    				e.printStackTrace();
+    			} 
+            }     
+        }        
 	}
 
 	/* (non-Javadoc)

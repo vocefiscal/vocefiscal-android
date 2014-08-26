@@ -4,17 +4,19 @@
 package org.vocefiscal.activities;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.vocefiscal.R;
 import org.vocefiscal.adapters.FotoAdapter;
 import org.vocefiscal.asynctasks.AsyncTask;
+import org.vocefiscal.asynctasks.SalvarFotoS3AsyncTask;
+import org.vocefiscal.asynctasks.SalvarFotoS3AsyncTask.OnSalvarFotoS3PostExecuteListener;
 import org.vocefiscal.asynctasks.SendEmailAsyncTask;
 import org.vocefiscal.asynctasks.SendEmailAsyncTask.OnSentMailListener;
 import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
 import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.dialogs.CustomDialogClass;
 import org.vocefiscal.dialogs.CustomDialogClass.BtnsControl;
+import org.vocefiscal.models.S3TaskResult;
 import org.vocefiscal.utils.ImageHandler;
 
 import android.app.Activity;
@@ -28,15 +30,18 @@ import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 /**
  * @author andre
  *
  */
-public class ConferirImagensActivity extends Activity  implements OnSentMailListener
+public class ConferirImagensActivity extends Activity  implements OnSentMailListener,OnSalvarFotoS3PostExecuteListener<Object>
 {
 
 	private ArrayList<String> picturePathList;
+	
+	private ArrayList<String> pictureURLList;
 
 	private ImageFetcher imageFetcher;
 
@@ -90,6 +95,8 @@ public class ConferirImagensActivity extends Activity  implements OnSentMailList
 				picturePathList = bundle.getStringArrayList(CameraActivity.PICTURE_PATH_LIST);
 			}
 		}
+		
+		pictureURLList = new ArrayList<String>();
 
 		/* 
 		 * ImageFetcher e Cache 
@@ -111,8 +118,7 @@ public class ConferirImagensActivity extends Activity  implements OnSentMailList
 		FotoAdapter fotoAdapter = new FotoAdapter(getApplicationContext(), imageFetcher);
 
 		ListView listview = (ListView) findViewById(R.id.listview);
-		listview.setAdapter(fotoAdapter);
-		listview.setDivider(this.getResources().getDrawable(R.color.transparent));
+		listview.setAdapter(fotoAdapter);	
 		listview.setOnScrollListener(new AbsListView.OnScrollListener() 
 		{
 			@Override
@@ -164,7 +170,7 @@ public class ConferirImagensActivity extends Activity  implements OnSentMailList
 			@Override
 			public void onClick(View v) 
 			{
-				enviarPorEmail();	
+				enviarFotosParaS3();
 			}
 		});
 
@@ -176,7 +182,7 @@ public class ConferirImagensActivity extends Activity  implements OnSentMailList
 		progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
 		envio = new CustomDialogClass(ConferirImagensActivity.this, "Título", "Msg");
 
-	}
+	}	
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onResume()
@@ -235,9 +241,29 @@ public class ConferirImagensActivity extends Activity  implements OnSentMailList
 		}, 1000);		
 	}
 
-	private void enviarPorEmail()
+	protected void enviarFotosParaS3() 
 	{
 		if(picturePathList!=null&&picturePathList.size()>0)
+		{	
+			if(progressBarLayout!=null)
+				progressBarLayout.setVisibility(View.VISIBLE);
+			if(progressLayout!=null)
+				progressLayout.setVisibility(View.VISIBLE);
+			
+			SalvarFotoS3AsyncTask salvarFotoS3AsyncTask = new SalvarFotoS3AsyncTask(this, getApplicationContext(), picturePathList.get(0), 0);
+			salvarFotoS3AsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			
+		}else
+		{
+			Toast.makeText(getApplicationContext(), "Não há fotos para enviar para o S3", Toast.LENGTH_LONG).show();
+		}
+		
+	}
+	
+	
+	private void enviarPorEmail()
+	{
+		if(pictureURLList!=null&&pictureURLList.size()>0)
 		{	          	        
 			/*
 			 * Conteúdo
@@ -250,16 +276,20 @@ public class ConferirImagensActivity extends Activity  implements OnSentMailList
 			sb.append("\n OS API Level: " + android.os.Build.VERSION.SDK);
 			sb.append("\n Device: " + android.os.Build.DEVICE);
 			sb.append("\n Model (and Product): " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")");
+			sb.append("\n\n");
+			for(int i=0;i<pictureURLList.size();i++)
+			{
+				String url = pictureURLList.get(i);
+				sb.append("\n Foto "+(i+1)+": "+url);
+			}
 
 
 			String from = "vocefiscal@gmail.com";
 			String[] to = new String[]{"dedecun@gmail.com","helder@gmail.com","dfaranha@gmail.com"}; 
 			String body = sb.toString();
-			String subject = "[Você Fiscal] - Fotos de teste da versão B (controle manual entre fotos)";
-			List<String> attachments = new ArrayList<String>();
-			attachments.addAll(picturePathList);   
+			String subject = "[Você Fiscal] - Fotos de teste ";
 
-			SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this, to, from, subject, body, attachments, progressBarLayout, progressLayout);
+			SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this, to, from, subject, body, null, progressBarLayout, progressLayout);
 			sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 		}else
@@ -340,6 +370,33 @@ public class ConferirImagensActivity extends Activity  implements OnSentMailList
 		envio.setTitulo("Falhou");
 		envio.setPergunta(msg);
 		envio.show();				
+	}
+
+	@Override
+	public void finishedSalvarFotoS3ComResultado(Object result) 
+	{
+		S3TaskResult resultado = (S3TaskResult) result;
+		
+		pictureURLList.add(resultado.getUrlDaFoto().toString());
+		
+		Integer idFoto = resultado.getIdFoto();
+		idFoto++;
+		if(idFoto<picturePathList.size())
+		{
+			SalvarFotoS3AsyncTask salvarFotoS3AsyncTask = new SalvarFotoS3AsyncTask(this, getApplicationContext(), picturePathList.get(idFoto), idFoto);
+			salvarFotoS3AsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		}else
+		{
+			enviarPorEmail();
+		}		
+	}
+
+	@Override
+	public void finishedSalvarFotoS3ComError(int errorCode, String error) 
+	{
+		progressLayout.setVisibility(View.INVISIBLE);
+		progressBarLayout.setVisibility(View.INVISIBLE);
+		Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();		
 	}
 
 }
