@@ -2,6 +2,9 @@ package org.vocefiscal.activities;
 
 import org.vocefiscal.R;
 import org.vocefiscal.adapters.SectionsPagerAdapter;
+import org.vocefiscal.bitmaps.ImageFetcher;
+import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
+import org.vocefiscal.utils.ImageHandler;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -10,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -30,21 +34,55 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+    
+    private ImageFetcher conferirFragmentImageFetcher;
+    
+    private int fotoWidth = -1;
+
+	private int fotoHeight = -1;
+
+	private static final float FOTO_SIZE_REF_WIDTH = 720;
+
+	private static final float FOTO_SIZE_REF_HEIGHT = 218;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        
+        /*
+		 * Customização de tamanhos para as diferentes telas dos dispositivos Android
+		 */
+		Display display = getWindowManager().getDefaultDisplay();			
+		int width = display.getWidth();
+		int height = display.getHeight();
+		float dw = width/720.0f;
+		float dh = height/1184.0f;
+		float deltaDisplay = Math.max(dw, dh);
+
+		fotoWidth = (int) (FOTO_SIZE_REF_WIDTH*deltaDisplay);	
+		fotoHeight = (int) (FOTO_SIZE_REF_HEIGHT*deltaDisplay);
 
         // Set up the action bar.
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         
+        /* 
+		 * ImageFetcher e Cache 
+		 */
+		ImageCacheParams cacheParams = new ImageCacheParams(this, ImageHandler.IMAGE_CACHE_DIR);
+		cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
+
+		//The ImageFetcher takes care of loading images into our ImageView children asynchronously
+		conferirFragmentImageFetcher = new ImageFetcher(ImageFetcher.CARREGAR_DO_DISCO, getApplicationContext(), fotoWidth, fotoHeight);
+		conferirFragmentImageFetcher.setLoadingImage(R.drawable.loading_image);
+		conferirFragmentImageFetcher.addImageCache(cacheParams);
+        
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),conferirFragmentImageFetcher);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -124,4 +162,44 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
     {
     	//do nothing
     }
+    
+    /* (non-Javadoc)
+	 * @see android.app.Activity#onResume()
+	 */
+	@Override
+	protected void onResume() 
+	{		
+		super.onResume();
+
+		if(conferirFragmentImageFetcher!=null)
+			conferirFragmentImageFetcher.setExitTasksEarly(false);
+	}
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onPause()
+	 */
+	@Override
+	protected void onPause() 
+	{		
+		super.onPause();
+
+		if(conferirFragmentImageFetcher!=null)
+		{
+			conferirFragmentImageFetcher.setPauseWork(false);
+			conferirFragmentImageFetcher.setExitTasksEarly(true);
+			conferirFragmentImageFetcher.flushCache();
+		}      
+	}
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onDestroy()
+	 */
+	@Override
+	protected void onDestroy() 
+	{		
+		super.onDestroy();
+
+		if(conferirFragmentImageFetcher!=null)
+			conferirFragmentImageFetcher.closeCache();
+	}
 }

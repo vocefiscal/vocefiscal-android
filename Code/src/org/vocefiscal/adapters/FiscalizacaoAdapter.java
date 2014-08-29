@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import org.vocefiscal.R;
 import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.bitmaps.RecyclingImageView;
+import org.vocefiscal.models.Fiscalizacao;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -21,19 +23,19 @@ import android.widget.TextView;
  * @author andre
  *
  */
-public class FotoAdapter extends BaseAdapter 
+public class FiscalizacaoAdapter extends BaseAdapter 
 {
-	private ArrayList<String> resultItemList;
+
+	private ArrayList<Fiscalizacao> resultItemList;
 
 	private boolean onLoading = false;
 	private boolean onError = false;
 	private Context mContext;	
-	private String error = "Erro carregando fotos";
+	private String error = "Erro carregando fiscalizações";
 
 	private ImageFetcher mImageFetcher;
 
-
-	public FotoAdapter(Context mContext, ImageFetcher mImageFetcher) 
+	public FiscalizacaoAdapter(Context mContext, ImageFetcher mImageFetcher) 
 	{
 		super();
 		this.mContext = mContext;
@@ -77,7 +79,7 @@ public class FotoAdapter extends BaseAdapter
 	 * @see android.widget.Adapter#getItem(int)
 	 */
 	@Override
-	public String getItem(int position) 
+	public Fiscalizacao getItem(int position) 
 	{
 		if(!onError && !onLoading && resultItemList!=null && !resultItemList.isEmpty())
 		{
@@ -104,7 +106,7 @@ public class FotoAdapter extends BaseAdapter
 	@Override
 	public  View getView(int position, View convertView, ViewGroup parent) 
 	{
-		String item = getItem(position);
+		Fiscalizacao item = getItem(position);
 		ViewHolder holder=null;
 
 		if(convertView==null)
@@ -127,7 +129,7 @@ public class FotoAdapter extends BaseAdapter
 					else
 						if(getItemViewType(position) == 3)
 						{
-							convertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_foto, parent, false);
+							convertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_fiscalizacao, parent, false);
 
 							holder = new ViewHolder();						
 
@@ -152,7 +154,7 @@ public class FotoAdapter extends BaseAdapter
 			if(getItemViewType(position)==2)
 			{
 
-				fillViewInfo("Não há fotos disponíveis", convertView);
+				fillViewInfo("Não há fiscalizações disponíveis", convertView);
 			}
 			else
 				if(getItemViewType(position)==1)
@@ -168,7 +170,7 @@ public class FotoAdapter extends BaseAdapter
 		return convertView;
 	}
 
-	private void fillViewItem(String item, RecyclingImageView foto, ProgressBar progress_bar_foto) 
+	private void fillViewItem(Fiscalizacao item, RecyclingImageView foto, ProgressBar progress_bar_foto) 
 	{
 		//Preparando elementos para receber as informacoes
 		if(item!=null)
@@ -190,13 +192,19 @@ public class FotoAdapter extends BaseAdapter
 	private void fillViewInfoLoanding(View convertView) 
 	{
 		TextView textView = (TextView)convertView.findViewById(R.id.loading);
-		textView.setText("Buscando fotos...");
+		textView.setText("Buscando fiscalizações...");
 	}
 
 	public class ViewHolder
 	{
 		RecyclingImageView foto;
 		ProgressBar progress_bar_foto;
+		
+		ProgressBar upload_progress;
+		TextView municipio_estado;
+		ImageView status_envio;
+		TextView porcentagem_envio;
+		TextView zona__local_secao_eleitoral;
 	}
 
 	public boolean isOnLoading() 
@@ -219,12 +227,12 @@ public class FotoAdapter extends BaseAdapter
 		this.onError = onError;
 	}
 
-	public ArrayList<String> getResultItemList() 
+	public ArrayList<Fiscalizacao> getResultItemList() 
 	{
 		return resultItemList;
 	}
 
-	public void setResultItemList(ArrayList<String> resultItemList) 
+	public void setResultItemList(ArrayList<Fiscalizacao> resultItemList) 
 	{
 		this.resultItemList = resultItemList;
 	}
@@ -238,5 +246,4 @@ public class FotoAdapter extends BaseAdapter
 	{
 		this.error = error;
 	}
-
 }

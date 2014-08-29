@@ -3,6 +3,7 @@
  */
 package org.vocefiscal.adapters;
 
+import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.fragments.ConferirFragment;
 import org.vocefiscal.fragments.FiscalizarFragment;
 
@@ -21,9 +22,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 public class SectionsPagerAdapter extends FragmentPagerAdapter 
 {
 
-    public SectionsPagerAdapter(FragmentManager fm) 
+	private ImageFetcher conferirImageFetcher;
+	
+    public SectionsPagerAdapter(FragmentManager fm,ImageFetcher conferirImageFetcher) 
     {
         super(fm);
+        this.conferirImageFetcher = conferirImageFetcher;
     }
 
     @Override
@@ -36,7 +40,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter
     		fragment = new FiscalizarFragment();
     	}else if(position==1)
     	{
-    		fragment = new ConferirFragment();
+    		fragment = new ConferirFragment(conferirImageFetcher);
     	}
     	
         return fragment;
