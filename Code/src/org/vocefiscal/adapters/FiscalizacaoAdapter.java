@@ -48,6 +48,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 		return 4;
 	}
 
+	@Override
 	public int getItemViewType(int position) 
 	{
 		if (onLoading)

@@ -206,7 +206,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
     private static final ThreadFactory  sThreadFactory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
-        public Thread newThread(Runnable r) {
+        @Override
+		public Thread newThread(Runnable r) {
             return new Thread(r, "AsyncTask #" + mCount.getAndIncrement());
         }
     };
@@ -251,9 +252,11 @@ public abstract class AsyncTask<Params, Progress, Result> {
         final ArrayDeque<Runnable> mTasks = new ArrayDeque<Runnable>();
         Runnable mActive;
 
-        public synchronized void execute(final Runnable r) {
+        @Override
+		public synchronized void execute(final Runnable r) {
             mTasks.offer(new Runnable() {
-                public void run() {
+                @Override
+				public void run() {
                     try {
                         r.run();
                     } finally {
@@ -307,7 +310,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      */
     public AsyncTask() {
         mWorker = new WorkerRunnable<Params, Result>() {
-            public Result call() throws Exception {
+            @Override
+			public Result call() throws Exception {
                 mTaskInvoked.set(true);
 
                 Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);

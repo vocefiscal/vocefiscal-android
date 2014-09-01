@@ -66,7 +66,7 @@ public class EditarFotoActivity extends Activity
 			Bundle bundle = intent.getExtras();
 			if(bundle!=null)
 			{
-				picturePath = bundle.getString(CameraActivity.PICTURE_PREVIEW_PATH, null);
+				picturePath = bundle.getString(CameraActivity.PICTURE_PREVIEW_PATH);
 			}
 		}
 		
