@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="azul_vocefiscal">#001f69</color>
+    <color name="azul_vocefiscal_escuro">#00184e</color>
+    <color name="azul_vocefiscal_claro">#00309d</color>
+    <color name="vermelho_linha_foto">#9d0923</color>
+    <color name="transparent">#00000000</color>
+    <color name="branco">#ffffff</color>
+    <color name="branco_vocefiscal">#f3f3f3</color>
+    <color name="amarelo_envio">#ffa200</color>
+</resources>
