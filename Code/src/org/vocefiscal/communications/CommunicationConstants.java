@@ -25,6 +25,8 @@ public interface CommunicationConstants
 
 	public final String SERVICE_BASE = "http://192.168.0.22:3000"; //tests
 
+	public final String EMAIL_USER = "<EMAIL>";  
+	public final String EMAIL_PASSWORD = "<SENHA>";
 
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//  É muito importante lembrar de não deixar as credenciais
@@ -39,6 +41,6 @@ public interface CommunicationConstants
 
 	public static final String ACCESS_KEY_ID = "<ACCESS KEY>";
 	public static final String SECRET_KEY = "<SECRET KEY>";
-
 	public static final String PICTURE_BUCKET = "<BUCKET NAME>";
+	
 }
