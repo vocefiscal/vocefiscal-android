@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:background="#f3f3f3"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/up_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/selector_up_logo"
+            android:onClick="voltar" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/up_logo"
+            android:text="@string/title_activity_sobre"
+            android:textColor="@color/azul_vocefiscal"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:fontFamily="unisansheavy.otf" />
+    </RelativeLayout>
+
+    <ScrollView
+     android:layout_width="fill_parent"
+     android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:id="@+id/diagramaSobre"
+                android:layout_width="match_parent"
+                android:layout_height="171dp"
+                android:src="@drawable/diagrama_sobre" />
+
+            <TextView
+                android:id="@+id/tituloSobre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="unisansheavy.otf"
+                android:paddingBottom="15dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="10dp"
+                android:text="@string/title_texto_sobre"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/azul_vocefiscal"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textoSobre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:text="@string/text_sobre"
+                android:textColor="#000000"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

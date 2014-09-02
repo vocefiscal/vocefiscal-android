@@ -6,6 +6,7 @@ import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
 import org.vocefiscal.utils.ImageHandler;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
@@ -138,6 +139,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         if (id == R.id.sobre) 
         {
         	//TODO página "sobre"
+        	Intent intent = new Intent(HomeActivity.this,SobreActivity.class);
+        	startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);

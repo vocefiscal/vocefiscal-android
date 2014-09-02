@@ -46,38 +46,41 @@
         android:largeHeap="true"
         android:theme="@style/Theme.Vocefical" >
         <activity
-            android:name="org.vocefiscal.activities.HomeActivity"
+            android:name=".activities.HomeActivity"
             android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
-
             <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN" />
 
-
-            <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="org.vocefiscal.activities.CameraActivity"
+            android:name=".activities.CameraActivity"
             android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name="org.vocefiscal.activities.EditarFotoActivity"
+            android:name=".activities.EditarFotoActivity"
             android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name="org.vocefiscal.activities.ConferirImagensActivity"
+            android:name=".activities.ConferirImagensActivity"
             android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".activities.SobreActivity"
+            android:label="@string/title_activity_sobre" 
+            android:theme="@android:style/Theme.NoTitleBar">
         </activity>
     </application>
 
