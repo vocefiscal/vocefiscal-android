@@ -23,8 +23,8 @@ import android.widget.LinearLayout;
  */
 public class SendEmailAsyncTask extends AsyncTask <Void, Void, Boolean>
 {
-	private static final String EMAIL_USER = "vocefiscal@gmail.com";  
-	private static final String EMAIL_PASSWORD = "vocefiscal01";
+	private static final String EMAIL_USER = "<EMAIL>";  
+	private static final String EMAIL_PASSWORD = "<SENHA>";
 	public static final int SEM_CONEXAO_COM_A_INTERNET = 0;    
 	private OnSentMailListener listener; 	
 	private GMailSender m;	
