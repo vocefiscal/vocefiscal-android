@@ -139,6 +139,21 @@ public class FiscalizacaoAdapter extends BaseAdapter
 
 							ProgressBar progress_bar_foto = (ProgressBar) convertView.findViewById(R.id.progress_bar_foto);
 							holder.progress_bar_foto = progress_bar_foto;
+							
+							ProgressBar upload_progress = (ProgressBar) convertView.findViewById(R.id.upload_progress);
+							holder.upload_progress = upload_progress;
+							
+							TextView municipio_estado = (TextView) convertView.findViewById(R.id.municipio_estado);
+							holder.municipio_estado = municipio_estado;
+							
+							ImageView status_envio = (ImageView) convertView.findViewById(R.id.status_envio);
+							holder.status_envio = status_envio;
+							
+							TextView porcentagem_envio = (TextView) convertView.findViewById(R.id.porcentagem_envio);
+							holder.porcentagem_envio = porcentagem_envio;
+							
+							TextView zona__local_secao_eleitoral = (TextView) convertView.findViewById(R.id.zona__local_secao_eleitoral);
+							holder.zona__local_secao_eleitoral = zona__local_secao_eleitoral;														
 
 							convertView.setTag(holder);
 						}
@@ -149,7 +164,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 
 		if(getItemViewType(position)==3)
 		{
-			fillViewItem(item, holder.foto,holder.progress_bar_foto);
+			fillViewItem(item, holder.foto,holder.progress_bar_foto,holder.upload_progress,holder.municipio_estado,holder.status_envio,holder.porcentagem_envio,holder.zona__local_secao_eleitoral);
 		}
 		else
 			if(getItemViewType(position)==2)
@@ -171,14 +186,15 @@ public class FiscalizacaoAdapter extends BaseAdapter
 		return convertView;
 	}
 
-	private void fillViewItem(Fiscalizacao item, RecyclingImageView foto, ProgressBar progress_bar_foto) 
+	private void fillViewItem(Fiscalizacao fiscalizacao, RecyclingImageView foto, ProgressBar progress_bar_foto, ProgressBar upload_progress, TextView municipio_estado, ImageView status_envio, TextView porcentagem_envio, TextView zona__local_secao_eleitoral) 
 	{
+		
 		//Preparando elementos para receber as informacoes
-		if(item!=null)
+		if(fiscalizacao!=null)
 		{
-			if(mImageFetcher!=null && item!=null)
+			if(mImageFetcher!=null && fiscalizacao!=null)
 			{
-				mImageFetcher.loadImage(item, foto,progress_bar_foto);
+				mImageFetcher.loadImage(fiscalizacao, foto,progress_bar_foto);
 			}		
 		}
 	}
@@ -199,8 +215,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 	public class ViewHolder
 	{
 		RecyclingImageView foto;
-		ProgressBar progress_bar_foto;
-		
+		ProgressBar progress_bar_foto;	
 		ProgressBar upload_progress;
 		TextView municipio_estado;
 		ImageView status_envio;

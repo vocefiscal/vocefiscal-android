@@ -57,8 +57,7 @@ public class RestClient
 		this.context = context;
 		params = new ArrayList<NameValuePair>();
 		headers = new ArrayList<NameValuePair>();
-//		secret="hjbawefwbnked23892873kjajmqw9yKJSNBFVUWEFJ387278939";
-//		secret=secret+"j_lwpodwepodjwueifhiewnfverfv5484wefwejkfubiwf782532455w2fen$#jbeuvywe";
+//		secret="";
 //		
 //		if(userId!=null)
 //		{

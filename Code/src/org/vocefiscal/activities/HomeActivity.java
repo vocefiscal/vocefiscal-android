@@ -138,7 +138,6 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         int id = item.getItemId();
         if (id == R.id.sobre) 
         {
-        	//TODO página "sobre"
         	Intent intent = new Intent(HomeActivity.this,SobreActivity.class);
         	startActivity(intent);
             return true;
