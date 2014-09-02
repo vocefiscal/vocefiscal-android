@@ -17,8 +17,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_EMPTY)
 public class Fiscalizacao implements Serializable
 {
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = 2048054520603455140L;
+
 	private String municipio;
 	
 	private String estado;

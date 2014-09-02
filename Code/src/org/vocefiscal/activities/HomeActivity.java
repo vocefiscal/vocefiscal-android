@@ -78,7 +78,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 
 		//The ImageFetcher takes care of loading images into our ImageView children asynchronously
 		conferirFragmentImageFetcher = new ImageFetcher(ImageFetcher.CARREGAR_DO_DISCO, getApplicationContext(), fotoWidth, fotoHeight);
-		conferirFragmentImageFetcher.setLoadingImage(R.drawable.loading_image);
+		conferirFragmentImageFetcher.setLoadingImage(R.drawable.capa_conferir);
 		conferirFragmentImageFetcher.addImageCache(cacheParams);
         
         // Create the adapter that will return a fragment for each of the three

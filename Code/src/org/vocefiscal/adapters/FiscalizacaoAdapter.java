@@ -9,8 +9,10 @@ import org.vocefiscal.R;
 import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.bitmaps.RecyclingImageView;
 import org.vocefiscal.models.Fiscalizacao;
+import org.vocefiscal.models.enums.StatusEnvioEnum;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -144,12 +146,15 @@ public class FiscalizacaoAdapter extends BaseAdapter
 							holder.upload_progress = upload_progress;
 							
 							TextView municipio_estado = (TextView) convertView.findViewById(R.id.municipio_estado);
+							Typeface unisansheavy = Typeface.createFromAsset(mContext.getAssets(),"fonts/unisansheavy.otf");
+							municipio_estado.setTypeface(unisansheavy);
 							holder.municipio_estado = municipio_estado;
 							
 							ImageView status_envio = (ImageView) convertView.findViewById(R.id.status_envio);
 							holder.status_envio = status_envio;
 							
 							TextView porcentagem_envio = (TextView) convertView.findViewById(R.id.porcentagem_envio);
+							porcentagem_envio.setTypeface(unisansheavy);
 							holder.porcentagem_envio = porcentagem_envio;
 							
 							TextView zona__local_secao_eleitoral = (TextView) convertView.findViewById(R.id.zona__local_secao_eleitoral);
@@ -187,15 +192,75 @@ public class FiscalizacaoAdapter extends BaseAdapter
 	}
 
 	private void fillViewItem(Fiscalizacao fiscalizacao, RecyclingImageView foto, ProgressBar progress_bar_foto, ProgressBar upload_progress, TextView municipio_estado, ImageView status_envio, TextView porcentagem_envio, TextView zona__local_secao_eleitoral) 
-	{
-		
+	{	
 		//Preparando elementos para receber as informacoes
 		if(fiscalizacao!=null)
-		{
-			if(mImageFetcher!=null && fiscalizacao!=null)
+		{			
+			//foto de capa
+			if(mImageFetcher!=null && fiscalizacao.getPicturePathList()!=null&&fiscalizacao.getPicturePathList().size()>0)
 			{
-				mImageFetcher.loadImage(fiscalizacao, foto,progress_bar_foto);
-			}		
+				mImageFetcher.loadImage(fiscalizacao.getPicturePathList().get(0), foto,progress_bar_foto);
+			}else
+			{
+				foto.setImageResource(R.drawable.capa_conferir);
+			}
+			
+			//municipio,estado
+			if(fiscalizacao.getMunicipio()!=null&&fiscalizacao.getEstado()!=null)
+				municipio_estado.setText(fiscalizacao.getMunicipio()+","+fiscalizacao.getEstado());
+			else
+				municipio_estado.setText("");
+			
+			//zona eleitoral | local de votação | Seção eleitoral
+			if(fiscalizacao.getZonaEleitoral()!=null&&fiscalizacao.getLocalDaVotacao()!=null&&fiscalizacao.getSecaoEleitoral()!=null)
+				zona__local_secao_eleitoral.setText("Zona Eleitoral: "+fiscalizacao.getZonaEleitoral()+" | Local de Votação: "+fiscalizacao.getLocalDaVotacao()+" | Seção Eleitoral: "+fiscalizacao.getSecaoEleitoral());
+			else
+				zona__local_secao_eleitoral.setText("");
+				
+			if(fiscalizacao.getStatusDoEnvio()!=null)
+			{
+				if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()))
+				{
+					status_envio.setImageResource(StatusEnvioEnum.getImageResource(fiscalizacao.getStatusDoEnvio()));
+					
+					int numeroTotalDeFotos = 0;
+					int numeroDeFotosEnviadas = 0;
+					int porcentagemEnviado = 0;
+					
+					if(fiscalizacao.getPicturePathList()!=null)
+						numeroTotalDeFotos = fiscalizacao.getPicturePathList().size();
+					
+					if(fiscalizacao.getPictureURLList()!=null)
+						numeroDeFotosEnviadas = fiscalizacao.getPictureURLList().size();
+					
+					if(numeroTotalDeFotos>0)
+						porcentagemEnviado = (int) ((numeroDeFotosEnviadas / (numeroTotalDeFotos*1.0f)) * 100);										
+					
+					porcentagem_envio.setText(porcentagemEnviado+"%");
+					upload_progress.setProgress(porcentagemEnviado);
+					
+					porcentagem_envio.setVisibility(View.VISIBLE);
+					upload_progress.setVisibility(View.VISIBLE);
+				}else
+				{
+					status_envio.setImageResource(StatusEnvioEnum.getImageResource(fiscalizacao.getStatusDoEnvio()));
+					porcentagem_envio.setVisibility(View.GONE);
+					upload_progress.setVisibility(View.INVISIBLE);
+				}
+			}else
+			{
+				status_envio.setImageResource(StatusEnvioEnum.getImageResource(0));
+				porcentagem_envio.setVisibility(View.GONE);
+				upload_progress.setVisibility(View.INVISIBLE);
+			}
+		}else
+		{
+			foto.setImageResource(R.drawable.capa_conferir);
+			municipio_estado.setText("");
+			zona__local_secao_eleitoral.setText("");
+			status_envio.setImageResource(StatusEnvioEnum.getImageResource(0));
+			porcentagem_envio.setVisibility(View.GONE);
+			upload_progress.setVisibility(View.INVISIBLE);
 		}
 	}
 
