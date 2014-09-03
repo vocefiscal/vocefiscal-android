@@ -1,18 +1,22 @@
 package org.vocefiscal.activities;
 
+import java.util.logging.Logger;
+
 import org.vocefiscal.R;
 import org.vocefiscal.R.id;
 import org.vocefiscal.R.layout;
 import org.vocefiscal.R.menu;
 
 import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-public class FiscalizacaoConcluidaActivity extends ActionBarActivity 
+public class FiscalizacaoConcluidaActivity extends Activity 
 {
 
 	public static final String TAB_TO_SELECT = "tab_to_select";
@@ -25,12 +29,12 @@ public class FiscalizacaoConcluidaActivity extends ActionBarActivity
 		setContentView(R.layout.activity_fiscalizacao_concluida);
 	}
 
-	@Override
+	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.fiscalizacao_concluida, menu);
 		return true;
-	}
+	}*/
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -46,7 +50,7 @@ public class FiscalizacaoConcluidaActivity extends ActionBarActivity
 
 
 	/**
-	 * Chamada quando o botão Fiscalização é clicado
+	 * Chamada quando o botão Fiscalizar é clicado
 	 * @param view
 	 */
 	public void fiscalizar(View view) 
@@ -56,8 +60,9 @@ public class FiscalizacaoConcluidaActivity extends ActionBarActivity
 		Bundle bundle = new Bundle();
 		bundle.putInt(TAB_TO_SELECT, FISCALIZAR);
 		intent.putExtras(bundle);
+		startActivity(intent);
 		
-    	startActivity(intent);
+		finish();
 
 	}
 
@@ -65,13 +70,16 @@ public class FiscalizacaoConcluidaActivity extends ActionBarActivity
 	 * Chamada quando o botão Conferir é clicado
 	 * @param view
 	 */
-	public void conferir(View view) {
+	public void conferir(View view) 
+	{
 		
 		Intent intent = new Intent(FiscalizacaoConcluidaActivity.this,HomeActivity.class);
 		Bundle bundle = new Bundle();
 		bundle.putInt(TAB_TO_SELECT, CONFERIR);
 		intent.putExtras(bundle);
     	startActivity(intent);
+    	
+    	finish();
 
 	}
 

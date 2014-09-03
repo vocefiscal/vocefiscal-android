@@ -58,7 +58,7 @@
                     android:id="@+id/fiscalizarView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
+                    android:layout_alignTop="@+id/conferirView"
                     android:layout_marginRight="53dp"
                     android:layout_toLeftOf="@+id/view1"
                     android:onClick="fiscalizar"
@@ -69,8 +69,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_alignTop="@+id/fiscalizarView"
-                    android:layout_marginRight="58dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="59dp"
                     android:onClick="conferir"
                     android:src="@drawable/tab_conferir" />
 

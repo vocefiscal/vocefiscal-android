@@ -9,6 +9,7 @@ import org.vocefiscal.utils.ImageHandler;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -47,6 +48,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 	private static final float FOTO_SIZE_REF_HEIGHT = 218;
 	
 	private VoceFiscalDatabase voceFiscalDatabase;
+	
+	private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) 
@@ -55,6 +58,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         setContentView(R.layout.activity_home);
         
         voceFiscalDatabase = new VoceFiscalDatabase(this);
+        
+        handler = new Handler();
         
         /*
 		 * Customização de tamanhos para as diferentes telas dos dispositivos Android
@@ -142,7 +147,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         int id = item.getItemId();
         if (id == R.id.sobre) 
         {
-        	Intent intent = new Intent(HomeActivity.this,SobreActivity.class);
+        	Intent intent = new Intent(HomeActivity.this,FiscalizacaoConcluidaActivity.class);
         	startActivity(intent);
             return true;
         }
@@ -222,10 +227,17 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 			Bundle bundle = intent.getExtras();
 			if(bundle!=null)
 			{
-				Integer tabToSelect = bundle.getInt(FiscalizacaoConcluidaActivity.TAB_TO_SELECT,FiscalizacaoConcluidaActivity.FISCALIZAR);
-				mViewPager.setCurrentItem(tabToSelect);
+				final int tabToSelect = bundle.getInt(FiscalizacaoConcluidaActivity.TAB_TO_SELECT);
+				handler.postDelayed(new Runnable() 
+				{
+					
+					@Override
+					public void run() 
+					{
+						mViewPager.setCurrentItem(tabToSelect,true);
+					}
+				}, 500);
 			}
-			
 		}
 	}
 }
