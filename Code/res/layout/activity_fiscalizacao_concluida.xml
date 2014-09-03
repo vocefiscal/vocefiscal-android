@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     android:orientation="vertical"
     tools:context="org.vocefiscal.activities.FiscalizacaoConcluidaActivity" >
 
@@ -33,7 +34,7 @@
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1.91" >
+        android:layout_weight="0.00" >
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -73,7 +74,6 @@
                     android:layout_marginRight="59dp"
                     android:onClick="conferir"
                     android:src="@drawable/tab_conferir" />
-
             </RelativeLayout>
 
             <RelativeLayout
@@ -83,21 +83,21 @@
                 android:orientation="vertical" >
 
                 <TextView
-                    android:id="@+id/textView1"
+                    android:id="@+id/textoObrigado"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#DEEEFF"
+                    android:fontFamily="unisansheavy.otf"
                     android:gravity="center"
                     android:paddingTop="10dp"
                     android:text="@string/obrigado_finalizacao_concluida"
-                    android:fontFamily="unisansheavy.otf"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@color/azul_vocefiscal_claro"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <ImageView
-                    android:id="@+id/imageView1"
+                    android:id="@+id/imagemTrofeu"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
@@ -112,12 +112,13 @@
                 android:orientation="vertical" >
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/textoSecao"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="#FFFFFF"
+                    android:fontFamily="unisansheavy.otf"
                     android:gravity="center"
                     android:paddingTop="10dp"
-                    android:fontFamily="unisansheavy.otf"
                     android:text="VOCÊ FISCALIZOU A SEÇÃO"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@color/azul_vocefiscal_escuro"
@@ -125,12 +126,13 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/textView3"
+                    android:id="@+id/textoZonaEleitoral"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="#FFFFFF"
+                    android:fontFamily="unisansheavy.otf"
                     android:gravity="center"
                     android:paddingTop="10dp"
-                    android:fontFamily="unisansheavy.otf"
                     android:text="NA ZONA ELEITORAL"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/azul_vocefiscal_escuro"
@@ -138,17 +140,84 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/textoMunicipio"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:gravity="center"
-                android:paddingTop="10dp"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
                 android:fontFamily="unisansheavy.otf"
+                android:gravity="center"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
                 android:text="NO MUNICÍPIO DE"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/azul_vocefiscal_escuro"
                 android:textStyle="bold" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="20dp" >
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginRight="36dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/btn_twitter" />
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginRight="14dp"
+                    android:layout_toLeftOf="@+id/imageView3"
+                    android:layout_weight="1"
+                    android:src="@drawable/btn_facebook" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_weight="5.79"
+                android:background="#1242b6" >
+
+                <ImageView
+                    android:id="@+id/imagemProxima"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:onClick="proximaSecao"
+                    android:src="@drawable/btn_proxima" />
+
+            </RelativeLayout>
+            
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_weight="5.79"
+                android:background="#4168c5">
+
+                <ImageView
+                    android:id="@+id/imagemMapa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:onClick="mapaSecoes"
+                    android:src="@drawable/btn_map" />
+
+            </RelativeLayout>
         </LinearLayout>
+
     </ScrollView>
+
+   
 
 </LinearLayout>
