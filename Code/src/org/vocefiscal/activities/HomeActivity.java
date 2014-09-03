@@ -147,6 +147,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         int id = item.getItemId();
         if (id == R.id.sobre) 
         {
+        	//Intent intent = new Intent(HomeActivity.this,SobreActivity.class);
         	Intent intent = new Intent(HomeActivity.this,FiscalizacaoConcluidaActivity.class);
         	startActivity(intent);
             return true;
@@ -229,8 +230,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 			{
 				final int tabToSelect = bundle.getInt(FiscalizacaoConcluidaActivity.TAB_TO_SELECT);
 				handler.postDelayed(new Runnable() 
-				{
-					
+				{			
 					@Override
 					public void run() 
 					{
