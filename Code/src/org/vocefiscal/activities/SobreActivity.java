@@ -32,7 +32,6 @@ public class SobreActivity extends Activity
 	@Override
 	protected void onDestroy() 
 	{
-		// TODO Auto-generated method stub
 		super.onDestroy();
 	}
 
@@ -42,7 +41,6 @@ public class SobreActivity extends Activity
 	@Override
 	protected void onPause() 
 	{
-		// TODO Auto-generated method stub
 		super.onPause();
 	}
 
@@ -52,7 +50,6 @@ public class SobreActivity extends Activity
 	@Override
 	protected void onResume() 
 	{
-		// TODO Auto-generated method stub
 		super.onResume();
 	}
 	
@@ -60,10 +57,8 @@ public class SobreActivity extends Activity
 	 * Chamada quando o botão de voltar da activity Sobre é clicado
 	 * @param view
 	 */
-	public void voltar(View view) {
+	public void voltar(View view) 
+	{
 	    finish();
 	}
-	
-	
-
 }

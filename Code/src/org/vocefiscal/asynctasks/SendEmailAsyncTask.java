@@ -8,6 +8,7 @@ import java.util.List;
 import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 
+import org.vocefiscal.communications.CommunicationConstants;
 import org.vocefiscal.email.GMailSender;
 
 import android.content.Context;
@@ -22,9 +23,7 @@ import android.widget.LinearLayout;
  *
  */
 public class SendEmailAsyncTask extends AsyncTask <Void, Void, Boolean>
-{
-	private static final String EMAIL_USER = "vocefiscal@gmail.com";  
-	private static final String EMAIL_PASSWORD = "vocefiscal01";
+{	
 	public static final int SEM_CONEXAO_COM_A_INTERNET = 0;    
 	private OnSentMailListener listener; 	
 	private GMailSender m;	
@@ -43,7 +42,7 @@ public class SendEmailAsyncTask extends AsyncTask <Void, Void, Boolean>
 		this.progressLayout = progressBarLayout;		
 		this.context = context;
 		
-		m = new GMailSender(EMAIL_USER, EMAIL_PASSWORD);	       
+		m = new GMailSender(CommunicationConstants.EMAIL_USER, CommunicationConstants.EMAIL_PASSWORD);	       
         m.setTo(toArr); 
         m.setFrom(from); 
         m.setSubject(subject); 

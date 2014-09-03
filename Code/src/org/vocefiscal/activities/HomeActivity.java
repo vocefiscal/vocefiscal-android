@@ -2,8 +2,9 @@ package org.vocefiscal.activities;
 
 import org.vocefiscal.R;
 import org.vocefiscal.adapters.SectionsPagerAdapter;
-import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
+import org.vocefiscal.bitmaps.ImageFetcher;
+import org.vocefiscal.database.VoceFiscalDatabase;
 import org.vocefiscal.utils.ImageHandler;
 
 import android.content.Intent;
@@ -44,12 +45,16 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 	private static final float FOTO_SIZE_REF_WIDTH = 720;
 
 	private static final float FOTO_SIZE_REF_HEIGHT = 218;
+	
+	private VoceFiscalDatabase voceFiscalDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        
+        voceFiscalDatabase = new VoceFiscalDatabase(this);
         
         /*
 		 * Customização de tamanhos para as diferentes telas dos dispositivos Android
@@ -77,7 +82,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 
 		//The ImageFetcher takes care of loading images into our ImageView children asynchronously
 		conferirFragmentImageFetcher = new ImageFetcher(ImageFetcher.CARREGAR_DO_DISCO, getApplicationContext(), fotoWidth, fotoHeight);
-		conferirFragmentImageFetcher.setLoadingImage(R.drawable.loading_image);
+		conferirFragmentImageFetcher.setLoadingImage(R.drawable.capa_conferir);
 		conferirFragmentImageFetcher.addImageCache(cacheParams);
         
         // Create the adapter that will return a fragment for each of the three
@@ -137,7 +142,6 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         int id = item.getItemId();
         if (id == R.id.sobre) 
         {
-        	//TODO página "sobre"
         	Intent intent = new Intent(HomeActivity.this,SobreActivity.class);
         	startActivity(intent);
             return true;
@@ -203,6 +207,9 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 
 		if(conferirFragmentImageFetcher!=null)
 			conferirFragmentImageFetcher.closeCache();
+		
+		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
+			voceFiscalDatabase.close();
 	}
 	
     @Override

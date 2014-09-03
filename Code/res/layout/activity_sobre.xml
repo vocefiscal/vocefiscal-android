@@ -16,24 +16,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:src="@drawable/selector_up_logo"
-            android:onClick="voltar" />
+            android:onClick="voltar"
+            android:src="@drawable/selector_up_logo" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/up_logo"
+            android:fontFamily="unisansheavy.otf"
             android:text="@string/title_activity_sobre"
             android:textColor="@color/azul_vocefiscal"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:fontFamily="unisansheavy.otf" />
+            android:textStyle="bold" />
     </RelativeLayout>
 
     <ScrollView
-     android:layout_width="fill_parent"
-     android:layout_height="fill_parent">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -70,7 +70,6 @@
                 android:text="@string/text_sobre"
                 android:textColor="#000000"
                 android:textSize="16sp" />
-
         </LinearLayout>
     </ScrollView>
 

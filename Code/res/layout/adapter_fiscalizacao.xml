@@ -34,15 +34,17 @@
         android:layout_marginTop="-7dp"
         android:max="100"
         android:progress="50"
-        android:progressDrawable="@drawable/progress_horizontal_upload_vocefical" />
+        android:progressDrawable="@drawable/progress_horizontal_upload_vocefical"
+        android:visibility="invisible" />
 
     <RelativeLayout
         android:id="@+id/painel_info_1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/upload_progress"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp" >
+        android:layout_marginTop="-10dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp" >
 
         <TextView
             android:id="@+id/municipio_estado"
@@ -51,6 +53,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:text="CAMPINAS,SP"
+            android:textColor="@color/azul_vocefiscal"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -60,19 +63,21 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_pausar" />
+            android:padding="10dp"
+            android:src="@drawable/ic_enviado" />
 
         <TextView
             android:id="@+id/porcentagem_envio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginRight="2dp"
+            android:layout_marginRight="-8dp"
             android:layout_toLeftOf="@+id/status_envio"
             android:text="50%"
             android:textColor="@color/amarelo_envio"
             android:textSize="10sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -80,9 +85,10 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/painel_info_1"
-        android:layout_marginTop="5dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp" >
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="-5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp" >
 
         <TextView
             android:id="@+id/zona__local_secao_eleitoral"
@@ -91,7 +97,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:text="Zona Eleitoral: 0066 | Local de Votação: 1317 | Seção Eleitoral: 0319"
-            android:textSize="9sp" />
+            android:textSize="10sp" />
     </RelativeLayout>
 
 </RelativeLayout>

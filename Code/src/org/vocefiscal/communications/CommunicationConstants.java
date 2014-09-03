@@ -23,9 +23,10 @@ public interface CommunicationConstants
 
 	public final Integer WAIT_RETRY = 1000;
 
-	//public final String SERVICE_BASE = "http://192.168.0.22:3000"; //enable this for tests
-	public final String SERVICE_BASE = "http://mobwise.noip.me:3000"; //enable this for tests
+	public final String SERVICE_BASE = "http://192.168.0.22:3000"; //tests
 
+	public final String EMAIL_USER = "<EMAIL>";  
+	public final String EMAIL_PASSWORD = "<SENHA>";
 
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//  É muito importante lembrar de não deixar as credenciais
@@ -38,8 +39,8 @@ public interface CommunicationConstants
 	// * http://aws.amazon.com/articles/Mobile/4617974389850313
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	public static final String ACCESS_KEY_ID = "AKIAIBKH5UANW3BWZAKQ";
-	public static final String SECRET_KEY = "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";
-
-	public static final String PICTURE_BUCKET = "vocefiscal";
+	public static final String ACCESS_KEY_ID = "<ACCESS KEY>";
+	public static final String SECRET_KEY = "<SECRET KEY>";
+	public static final String PICTURE_BUCKET = "<BUCKET NAME>";
+	
 }
