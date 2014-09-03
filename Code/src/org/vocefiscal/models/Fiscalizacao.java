@@ -29,7 +29,7 @@ public class Fiscalizacao implements Serializable
 	
 	private String secaoEleitoral;
 	
-	private Integer podeEnviar3G;
+	private Integer podeEnviarRedeDados;
 	
 	private Integer statusDoEnvio;
 
@@ -110,20 +110,6 @@ public class Fiscalizacao implements Serializable
 	}
 
 	/**
-	 * @return the podeEnviar3G
-	 */
-	public Integer getPodeEnviar3G() {
-		return podeEnviar3G;
-	}
-
-	/**
-	 * @param podeEnviar3G the podeEnviar3G to set
-	 */
-	public void setPodeEnviar3G(Integer podeEnviar3G) {
-		this.podeEnviar3G = podeEnviar3G;
-	}
-
-	/**
 	 * @return the statusDoEnvio
 	 */
 	public Integer getStatusDoEnvio() {
@@ -177,5 +163,19 @@ public class Fiscalizacao implements Serializable
 	 */
 	public void setPictureURLList(ArrayList<String> pictureURLList) {
 		this.pictureURLList = pictureURLList;
+	}
+
+	/**
+	 * @return the podeEnviarRedeDados
+	 */
+	public Integer getPodeEnviarRedeDados() {
+		return podeEnviarRedeDados;
+	}
+
+	/**
+	 * @param podeEnviarRedeDados the podeEnviarRedeDados to set
+	 */
+	public void setPodeEnviarRedeDados(Integer podeEnviarRedeDados) {
+		this.podeEnviarRedeDados = podeEnviarRedeDados;
 	}
 }

@@ -84,7 +84,7 @@ public class ConferirFragment extends Fragment
 		fiscalizacao1.setZonaEleitoral("0066");
 		fiscalizacao1.setLocalDaVotacao("1317");
 		fiscalizacao1.setSecaoEleitoral("0319");
-		fiscalizacao1.setPodeEnviar3G(0);
+		fiscalizacao1.setPodeEnviarRedeDados(0);
 		fiscalizacao1.setStatusDoEnvio(StatusEnvioEnum.ENVIADO.ordinal());
 		fiscalizacao1.setPicture30PCPathList(new ArrayList<String>());
 		fiscalizacao1.setPicturePathList(new ArrayList<String>());
@@ -98,7 +98,7 @@ public class ConferirFragment extends Fragment
 		fiscalizacao2.setZonaEleitoral("0086");
 		fiscalizacao2.setLocalDaVotacao("1318");
 		fiscalizacao2.setSecaoEleitoral("0316");
-		fiscalizacao2.setPodeEnviar3G(1);
+		fiscalizacao2.setPodeEnviarRedeDados(1);
 		fiscalizacao2.setStatusDoEnvio(StatusEnvioEnum.ENVIAR.ordinal());
 		fiscalizacao2.setPicture30PCPathList(new ArrayList<String>());
 		fiscalizacao2.setPicturePathList(new ArrayList<String>());
@@ -112,7 +112,7 @@ public class ConferirFragment extends Fragment
 		fiscalizacao3.setZonaEleitoral("0043");
 		fiscalizacao3.setLocalDaVotacao("1654");
 		fiscalizacao3.setSecaoEleitoral("0976");
-		fiscalizacao3.setPodeEnviar3G(1);
+		fiscalizacao3.setPodeEnviarRedeDados(1);
 		fiscalizacao3.setStatusDoEnvio(StatusEnvioEnum.ENVIANDO.ordinal());		
 		ArrayList<String> listaPicturePathList = new ArrayList<String>();
 		listaPicturePathList.add("");
