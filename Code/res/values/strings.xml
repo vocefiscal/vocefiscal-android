@@ -11,5 +11,8 @@
     <string name="title_activity_teste">TesteActivity</string>
     <string name="title_texto_sobre">O PROJETO</string>
     <string name="title_activity_sobre">SOBRE</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_fiscalizacao_concluida">FISCALIZAÇÃO CONCLUÍDA</string>
+    <string name="obrigado_finalizacao_concluida">OBRIGADO POR CONTRIBUIR\n COM A DEMOCRACIA</string>
 
 </resources>

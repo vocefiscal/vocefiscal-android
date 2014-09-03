@@ -20,8 +20,7 @@ import android.view.MenuItem;
 
 public class HomeActivity extends ActionBarActivity implements ActionBar.TabListener 
 {
-
-    /**
+	/**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
      * {@link FragmentPagerAdapter} derivative, which will keep every
@@ -29,12 +28,12 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    SectionsPagerAdapter mSectionsPagerAdapter;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    ViewPager mViewPager;
+    private ViewPager mViewPager;
     
     private ImageFetcher conferirFragmentImageFetcher;
     
@@ -204,5 +203,22 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 
 		if(conferirFragmentImageFetcher!=null)
 			conferirFragmentImageFetcher.closeCache();
+	}
+	
+    @Override
+	protected void onNewIntent(Intent intent) 
+    {
+		super.onNewIntent(intent);
+		
+		if(intent!=null)
+		{
+			Bundle bundle = intent.getExtras();
+			if(bundle!=null)
+			{
+				Integer tabToSelect = bundle.getInt(FiscalizacaoConcluidaActivity.TAB_TO_SELECT,FiscalizacaoConcluidaActivity.FISCALIZAR);
+				mViewPager.setCurrentItem(tabToSelect);
+			}
+			
+		}
 	}
 }

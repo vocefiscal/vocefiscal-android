@@ -79,7 +79,12 @@
         </activity>
         <activity
             android:name=".activities.SobreActivity"
-            android:label="@string/title_activity_sobre" 
+            android:label="@string/title_activity_sobre"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".activities.FiscalizacaoConcluidaActivity"
+            android:label="@string/title_activity_fiscalizacao_concluida" 
             android:theme="@android:style/Theme.NoTitleBar">
         </activity>
     </application>

@@ -1,0 +1,154 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="org.vocefiscal.activities.FiscalizacaoConcluidaActivity" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:background="#f3f3f3"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/up_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/selector_up_logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/up_logo"
+            android:fontFamily="unisansheavy.otf"
+            android:text="@string/title_activity_fiscalizacao_concluida"
+            android:textColor="@color/azul_vocefiscal"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.91" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/azul_vocefiscal"
+                android:orientation="horizontal" >
+
+                <View
+                    android:id="@+id/view1"
+                    android:layout_width="1dp"
+                    android:layout_height="25dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:background="#FFFFFF" />
+
+                <ImageView
+                    android:id="@+id/fiscalizarView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="53dp"
+                    android:layout_toLeftOf="@+id/view1"
+                    android:onClick="fiscalizar"
+                    android:src="@drawable/tab_fiscalizacao" />
+
+                <ImageView
+                    android:id="@+id/conferirView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/fiscalizarView"
+                    android:layout_marginRight="58dp"
+                    android:onClick="conferir"
+                    android:src="@drawable/tab_conferir" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="220dp"
+                android:background="#DEEEFF"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#DEEEFF"
+                    android:gravity="center"
+                    android:paddingTop="10dp"
+                    android:text="@string/obrigado_finalizacao_concluida"
+                    android:fontFamily="unisansheavy.otf"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/azul_vocefiscal_claro"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/imageView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:paddingBottom="10dp"
+                    android:src="@drawable/ic_badge" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingTop="10dp"
+                    android:fontFamily="unisansheavy.otf"
+                    android:text="VOCÊ FISCALIZOU A SEÇÃO"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/azul_vocefiscal_escuro"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingTop="10dp"
+                    android:fontFamily="unisansheavy.otf"
+                    android:text="NA ZONA ELEITORAL"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/azul_vocefiscal_escuro"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:paddingTop="10dp"
+                android:fontFamily="unisansheavy.otf"
+                android:text="NO MUNICÍPIO DE"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/azul_vocefiscal_escuro"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
