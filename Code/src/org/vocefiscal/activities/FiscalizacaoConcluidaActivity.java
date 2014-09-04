@@ -82,5 +82,17 @@ public class FiscalizacaoConcluidaActivity extends Activity
     	finish();
 
 	}
-
+	
+	/**
+	 * Chamada quando o botão proximaSecao é clicado
+	 * @param view
+	 */
+	public void proximaSecao(View view)
+	{
+		Intent intent = new Intent(FiscalizacaoConcluidaActivity.this,CameraActivity.class);
+		startActivity(intent);
+		
+		finish();
+		
+	}
 }
