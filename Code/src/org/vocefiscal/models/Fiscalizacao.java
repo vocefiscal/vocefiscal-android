@@ -19,6 +19,8 @@ public class Fiscalizacao implements Serializable
 {
 	private static final long serialVersionUID = 2048054520603455140L;
 
+	private Long idFiscalizacao;
+	
 	private String municipio;
 	
 	private String estado;
@@ -177,5 +179,19 @@ public class Fiscalizacao implements Serializable
 	 */
 	public void setPodeEnviarRedeDados(Integer podeEnviarRedeDados) {
 		this.podeEnviarRedeDados = podeEnviarRedeDados;
+	}
+
+	/**
+	 * @return the idFiscalizacao
+	 */
+	public Long getIdFiscalizacao() {
+		return idFiscalizacao;
+	}
+
+	/**
+	 * @param idFiscalizacao the idFiscalizacao to set
+	 */
+	public void setIdFiscalizacao(Long idFiscalizacao) {
+		this.idFiscalizacao = idFiscalizacao;
 	}
 }
