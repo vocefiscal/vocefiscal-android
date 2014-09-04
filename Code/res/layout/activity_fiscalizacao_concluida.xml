@@ -106,65 +106,100 @@
                     android:src="@drawable/ic_badge" />
             </RelativeLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <RelativeLayout
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:layout_marginTop="12dp"
+                android:gravity="center_horizontal" >
 
                 <TextView
                     android:id="@+id/textoSecao"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#FFFFFF"
-                    android:fontFamily="unisansheavy.otf"
-                    android:gravity="center"
-                    android:paddingTop="10dp"
                     android:text="VOCÊ FISCALIZOU A SEÇÃO"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@color/azul_vocefiscal_escuro"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/textoZonaEleitoral"
-                    android:layout_width="match_parent"
+                    android:id="@+id/secaoEleitoral"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#FFFFFF"
-                    android:fontFamily="unisansheavy.otf"
-                    android:gravity="center"
-                    android:paddingTop="10dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toRightOf="@+id/textoSecao"
+                    android:text="1245"
+                    android:textColor="#EBB423"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="10dp" >
+
+                <TextView
+                    android:id="@+id/textoZonaEleitoral"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="NA ZONA ELEITORAL"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/azul_vocefiscal_escuro"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/zonaEleitoral"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toRightOf="@+id/textoZonaEleitoral"
+                    android:text="1245"
+                    android:textColor="#EBB423"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="10dp" >
+
+                <TextView
+                    android:id="@+id/textoMunicipio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="NO MUNICÍPIO DE"
+                    android:textSize="18sp"
                     android:textColor="@color/azul_vocefiscal_escuro"
                     android:textStyle="bold" />
-            </LinearLayout>
 
-            <TextView
-                android:id="@+id/textoMunicipio"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#FFFFFF"
-                android:fontFamily="unisansheavy.otf"
-                android:gravity="center"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp"
-                android:text="NO MUNICÍPIO DE"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/azul_vocefiscal_escuro"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/municipio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_toRightOf="@+id/textoMunicipio"
+                    android:text="1245"
+                    android:textColor="#EBB423"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="20dp" >
+                android:paddingBottom="20dp"
+                android:paddingTop="20dp" >
 
                 <ImageView
                     android:id="@+id/imageView3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginRight="36dp"
+                    android:layout_alignTop="@+id/imageView2"
+                    android:layout_marginRight="33dp"
                     android:layout_weight="1"
                     android:src="@drawable/btn_twitter" />
 
@@ -172,8 +207,8 @@
                     android:id="@+id/imageView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginRight="14dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="15dp"
                     android:layout_toLeftOf="@+id/imageView3"
                     android:layout_weight="1"
                     android:src="@drawable/btn_facebook" />
