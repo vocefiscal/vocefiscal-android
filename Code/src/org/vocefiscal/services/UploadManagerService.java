@@ -59,7 +59,7 @@ public class UploadManagerService extends Service   implements OnSalvarFotoS3Pos
 				
 				if(fiscalizacao!=null)
 				{
-					if(fiscalizacao.getStatusDoEnvio()!=null&&fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIAR.ordinal()))
+					if(fiscalizacao.getStatusDoEnvio()!=null&&!fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO.ordinal()))
 					{
 						if(isOnWiFi || (fiscalizacao.getPodeEnviarRedeDados()!=null&&fiscalizacao.getPodeEnviarRedeDados().equals(1)))
 						{														
@@ -86,12 +86,16 @@ public class UploadManagerService extends Service   implements OnSalvarFotoS3Pos
 									//fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO.ordinal());
 									if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 										voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO.ordinal());
+									
+									//TODO - serviço para a API VF. Criar status "transferido" para não correr risco de retransmitir e tratar falhas
 								}
 							}else
 							{
 								//fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO.ordinal());
 								if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 									voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO.ordinal());
+								
+								//TODO - serviço para a API VF. Criar status "transferido" para não correr risco de retransmitir e tratar falhas
 							}
 						}
 					}
@@ -194,6 +198,8 @@ public class UploadManagerService extends Service   implements OnSalvarFotoS3Pos
 							//fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO.ordinal());
 							if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 								voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO.ordinal());
+							
+							//TODO - serviço para a API VF. Criar status "transferido" para não correr risco de retransmitir e tratar falhas
 						}
 					}else
 					{

@@ -207,20 +207,20 @@ public class FiscalizacaoAdapter extends BaseAdapter
 				zona__local_secao_eleitoral.setText("Zona Eleitoral: "+fiscalizacao.getZonaEleitoral()+" | Local de Votação: "+fiscalizacao.getLocalDaVotacao()+" | Seção Eleitoral: "+fiscalizacao.getSecaoEleitoral());
 			else
 				zona__local_secao_eleitoral.setText("");
+			
+			//foto de capa
+			if(mImageFetcher!=null && fiscalizacao.getPicturePathList()!=null&&fiscalizacao.getPicturePathList().size()>0)
+			{
+				mImageFetcher.loadImage(fiscalizacao.getPicturePathList().get(0), foto,progress_bar_foto);
+			}else
+			{
+				foto.setImageResource(R.drawable.capa_conferir);
+			}
 				
 			if(fiscalizacao.getStatusDoEnvio()!=null)
 			{
 				if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()))
-				{
-					//foto de capa
-					if(mImageFetcher!=null && fiscalizacao.getPicturePathList()!=null&&fiscalizacao.getPicturePathList().size()>0)
-					{
-						mImageFetcher.loadImage(fiscalizacao.getPicturePathList().get(0), foto,progress_bar_foto);
-					}else
-					{
-						foto.setImageResource(R.drawable.capa_conferir);
-					}
-					
+				{				
 					status_envio.setImageResource(StatusEnvioEnum.getImageResource(fiscalizacao.getStatusDoEnvio()));
 					
 					int numeroTotalDeFotos = 0;
@@ -245,41 +245,16 @@ public class FiscalizacaoAdapter extends BaseAdapter
 				{
 					status_envio.setImageResource(StatusEnvioEnum.getImageResource(fiscalizacao.getStatusDoEnvio()));
 					porcentagem_envio.setVisibility(View.GONE);
-					upload_progress.setVisibility(View.INVISIBLE);
-					
-					if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO.ordinal()))
-					{
-						//foto de capa
-						if(mImageFetcher!=null && fiscalizacao.getPictureURLList()!=null&&fiscalizacao.getPictureURLList().size()>0)
-						{
-							mImageFetcher.loadImage(fiscalizacao.getPictureURLList().get(0), foto,progress_bar_foto);
-						}else
-						{
-							foto.setImageResource(R.drawable.capa_conferir);
-						}
-						
-					}else if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIAR.ordinal()))
-					{
-						//foto de capa
-						if(mImageFetcher!=null && fiscalizacao.getPicturePathList()!=null&&fiscalizacao.getPicturePathList().size()>0)
-						{
-							mImageFetcher.loadImage(fiscalizacao.getPicturePathList().get(0), foto,progress_bar_foto);
-						}else
-						{
-							foto.setImageResource(R.drawable.capa_conferir);
-						}
-					}									
+					upload_progress.setVisibility(View.INVISIBLE);									
 				}
 			}else
 			{
-				foto.setImageResource(R.drawable.capa_conferir);
 				status_envio.setImageResource(StatusEnvioEnum.getImageResource(0));
 				porcentagem_envio.setVisibility(View.GONE);
 				upload_progress.setVisibility(View.INVISIBLE);
 			}
 		}else
 		{
-			foto.setImageResource(R.drawable.capa_conferir);
 			municipio_estado.setText("");
 			zona__local_secao_eleitoral.setText("");
 			status_envio.setImageResource(StatusEnvioEnum.getImageResource(0));
