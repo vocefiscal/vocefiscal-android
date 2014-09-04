@@ -101,6 +101,8 @@ public class CameraActivity extends Activity
 
 	public static final String PICTURE_PATH_LIST = "picture_path_list";
 
+	public static final String PICTURE_30PC_PATH_LIST = "picture_30pc_path_list";
+
 	private ImageFetcher imageFetcherFoto30PC;
 
 	private RecyclingImageView trinta_por_cento;
@@ -247,6 +249,7 @@ public class CameraActivity extends Activity
 
 				Bundle bundle = new Bundle();
 				bundle.putStringArrayList(PICTURE_PATH_LIST, picturePathList);
+				bundle.putStringArrayList(PICTURE_30PC_PATH_LIST, picture30PCPathList);
 
 				intent.putExtras(bundle);
 

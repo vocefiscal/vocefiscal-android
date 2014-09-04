@@ -74,9 +74,7 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 	@Override
 	protected S3TaskResult doInBackground(Object... params) 
 	{
-		S3TaskResult result = new S3TaskResult();
-		
-		result.setIncomingPath(selectedPath);
+		S3TaskResult result = null;		
 
 		boolean ret = CommunicationUtils.verifyConnectivity(context);
 
@@ -142,8 +140,7 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 					override.setContentType("image/jpeg");
 					
 					// Gera a presigned URL
-					GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(
-							CommunicationConstants.PICTURE_BUCKET, pictureName);
+					GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(CommunicationConstants.PICTURE_BUCKET, pictureName);
 					urlRequest.setResponseHeaders(override);
 					urlDaFoto = s3Client.generatePresignedUrl(urlRequest);
 					
@@ -152,15 +149,20 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 					String part1 = parts[0]; // 004
 
 					URL urlFinal = new URL(part1);
-					result.setUrlDaFoto(urlFinal);
 					
-				} catch (Exception exception) {
-					result.setErrorMessage(exception.getMessage());
+					result = new S3TaskResult();
+					result.setIncomingPath(selectedPath);					
+					result.setUrlDaFoto(urlFinal);
+					result.setIdFoto(idFoto);
+					
+				} catch (Exception exception) 
+				{
+					errorCode = -1;
+					errorMsg = "Erro ao fazer o upload da imagem";
 				}
 				
 			}catch (Exception ex) 
-			{  
-				ex.printStackTrace();
+			{  				
 				errorCode = -1;
 				errorMsg = "Sua conexão está ruim";
 			}				
@@ -170,7 +172,6 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 			errorMsg = "Sem conexão com a Internet";
 		}
 		
-		result.setIdFoto(idFoto);
 		return result;
 	}	
 

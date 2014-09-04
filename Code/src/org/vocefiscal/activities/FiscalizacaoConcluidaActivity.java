@@ -13,12 +13,31 @@ public class FiscalizacaoConcluidaActivity extends Activity
 	public static final String TAB_TO_SELECT = "tab_to_select";
 	public static final int FISCALIZAR = 0;
 	public static final int CONFERIR = 1;
+	
+	private String secao;
+	private String zonaEleitoral;
+	private String municipio;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_fiscalizacao_concluida);
+		
+		/*
+		 * Captando a missão
+		 */
+		Intent intent = this.getIntent();
+		if(intent!=null)
+		{
+			Bundle bundle = intent.getExtras();
+			if(bundle!=null)
+			{
+				secao = bundle.getString(InformacoesFiscalizacaoActivity.SECAO);
+				zonaEleitoral = bundle.getString(InformacoesFiscalizacaoActivity.ZONA);
+				municipio = bundle.getString(InformacoesFiscalizacaoActivity.MUNICIPIO);
+			}
+		}
 	}
 
 	/**
