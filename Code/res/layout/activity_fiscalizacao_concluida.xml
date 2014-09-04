@@ -194,14 +194,13 @@
                     android:layout_centerVertical="true"
                     android:onClick="proximaSecao"
                     android:src="@drawable/btn_proxima" />
-
             </RelativeLayout>
-            
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_weight="5.79"
-                android:background="#4168c5">
+                android:background="#4168c5" >
 
                 <ImageView
                     android:id="@+id/imagemMapa"
@@ -212,12 +211,8 @@
                     android:layout_centerVertical="true"
                     android:onClick="mapaSecoes"
                     android:src="@drawable/btn_map" />
-
             </RelativeLayout>
         </LinearLayout>
-
     </ScrollView>
-
-   
 
 </LinearLayout>

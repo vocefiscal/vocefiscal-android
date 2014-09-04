@@ -8,4 +8,6 @@
     <color name="branco">#ffffff</color>
     <color name="branco_vocefiscal">#f3f3f3</color>
     <color name="amarelo_envio">#ffa200</color>
+    <color name="preto">#000000</color>
+    <color name="preto_claro">#88403b32</color>
 </resources>

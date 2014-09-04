@@ -1,10 +1,14 @@
 package org.vocefiscal.activities;
 
+import java.util.ArrayList;
+
 import org.vocefiscal.R;
 import org.vocefiscal.adapters.SectionsPagerAdapter;
 import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
 import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.database.VoceFiscalDatabase;
+import org.vocefiscal.models.Fiscalizacao;
+import org.vocefiscal.services.UploadManagerService;
 import org.vocefiscal.utils.ImageHandler;
 
 import android.content.Intent;
@@ -50,6 +54,10 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 	private VoceFiscalDatabase voceFiscalDatabase;
 	
 	private Handler handler;
+	
+	private ArrayList<Fiscalizacao> listaDeFiscalizacoes;
+	
+	private Runnable refreshTelaConferir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) 
@@ -89,10 +97,16 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 		conferirFragmentImageFetcher = new ImageFetcher(ImageFetcher.CARREGAR_DO_DISCO, getApplicationContext(), fotoWidth, fotoHeight);
 		conferirFragmentImageFetcher.setLoadingImage(R.drawable.capa_conferir);
 		conferirFragmentImageFetcher.addImageCache(cacheParams);
+		
+		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
+			listaDeFiscalizacoes = voceFiscalDatabase.getFiscalizacoes();
+		
+		if(listaDeFiscalizacoes==null)
+			listaDeFiscalizacoes = new ArrayList<Fiscalizacao>();
         
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),conferirFragmentImageFetcher);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),conferirFragmentImageFetcher,listaDeFiscalizacoes);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -130,6 +144,34 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
        	
             actionBar.addTab(tab);
         }
+        
+        refreshTelaConferir = new Runnable() 
+        {
+			
+			@Override
+			public void run() 
+			{
+				ArrayList<Fiscalizacao> novaListaFiscalizacao = null;
+				
+				if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
+					novaListaFiscalizacao = voceFiscalDatabase.getFiscalizacoes();
+				
+				if(novaListaFiscalizacao==null)
+					novaListaFiscalizacao = new ArrayList<Fiscalizacao>();
+				
+				if(!novaListaFiscalizacao.equals(listaDeFiscalizacoes))
+				{
+					listaDeFiscalizacoes = novaListaFiscalizacao;
+					mSectionsPagerAdapter.updateListaDeFiscalizacoes(listaDeFiscalizacoes);
+				}
+				
+				handler.postDelayed(refreshTelaConferir, 5000);
+				
+			}
+		};
+		
+		Intent intent = new Intent(getApplicationContext(), UploadManagerService.class);
+		startService(intent);
     }
 
     @Override
@@ -147,7 +189,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         int id = item.getItemId();
         if (id == R.id.sobre) 
         {
-        	Intent intent = new Intent(HomeActivity.this,FiscalizacaoConcluidaActivity.class);
+        	Intent intent = new Intent(HomeActivity.this,SobreActivity.class);
+        	//Intent intent = new Intent(HomeActivity.this,FiscalizacaoConcluidaActivity.class);
         	startActivity(intent);
             return true;
         }
@@ -184,6 +227,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 
 		if(conferirFragmentImageFetcher!=null)
 			conferirFragmentImageFetcher.setExitTasksEarly(false);
+		
+		handler.post(refreshTelaConferir);
 	}
 
 	/* (non-Javadoc)
@@ -193,6 +238,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 	protected void onPause() 
 	{		
 		super.onPause();
+		
+		handler.removeCallbacks(refreshTelaConferir);
 
 		if(conferirFragmentImageFetcher!=null)
 		{
@@ -215,6 +262,11 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 		
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 			voceFiscalDatabase.close();
+		
+		handler.removeCallbacks(refreshTelaConferir);
+		
+		Intent intent = new Intent(getApplicationContext(), UploadManagerService.class);
+		stopService(intent);
 	}
 	
     @Override
@@ -229,8 +281,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 			{
 				final int tabToSelect = bundle.getInt(FiscalizacaoConcluidaActivity.TAB_TO_SELECT);
 				handler.postDelayed(new Runnable() 
-				{
-					
+				{			
 					@Override
 					public void run() 
 					{

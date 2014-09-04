@@ -42,19 +42,21 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 	//URL da foto no banco de dados AWS S3
 	private URL urlDaFoto;
 	
-	//idAlbum
-	private Integer idFoto;
+	private Integer posicaoFoto;
+	
+	 private Long idFiscalizacao;
 	
 	//essa é a variável contendo o cliente AWS S3
 	private AmazonS3Client s3Client;
 
-	public SalvarFotoS3AsyncTask(OnSalvarFotoS3PostExecuteListener<Object> listener,Context context, String selectedPath, Integer idFoto) 
+	public SalvarFotoS3AsyncTask(OnSalvarFotoS3PostExecuteListener<Object> listener,Context context, String selectedPath, Long idFiscalizacao, Integer posicaoFoto) 
 	{
 		super();
 		this.listener = listener;
 		this.context = context;
 		this.selectedPath = selectedPath;
-		this.idFoto = idFoto;
+		this.posicaoFoto = posicaoFoto;
+		this.idFiscalizacao = idFiscalizacao;
 		try
 		{
 			s3Client = new AmazonS3Client(new BasicAWSCredentials(CommunicationConstants.ACCESS_KEY_ID,	CommunicationConstants.SECRET_KEY));
@@ -74,9 +76,7 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 	@Override
 	protected S3TaskResult doInBackground(Object... params) 
 	{
-		S3TaskResult result = new S3TaskResult();
-		
-		result.setIncomingPath(selectedPath);
+		S3TaskResult result = null;		
 
 		boolean ret = CommunicationUtils.verifyConnectivity(context);
 
@@ -142,8 +142,7 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 					override.setContentType("image/jpeg");
 					
 					// Gera a presigned URL
-					GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(
-							CommunicationConstants.PICTURE_BUCKET, pictureName);
+					GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(CommunicationConstants.PICTURE_BUCKET, pictureName);
 					urlRequest.setResponseHeaders(override);
 					urlDaFoto = s3Client.generatePresignedUrl(urlRequest);
 					
@@ -152,15 +151,20 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 					String part1 = parts[0]; // 004
 
 					URL urlFinal = new URL(part1);
-					result.setUrlDaFoto(urlFinal);
 					
-				} catch (Exception exception) {
-					result.setErrorMessage(exception.getMessage());
+					result = new S3TaskResult();					
+					result.setUrlDaFoto(urlFinal);
+					result.setPosicaoFoto(posicaoFoto);
+					result.setIdFiscalizacao(idFiscalizacao);
+					
+				} catch (Exception exception) 
+				{
+					errorCode = -1;
+					errorMsg = "Erro ao fazer o upload da imagem";
 				}
 				
 			}catch (Exception ex) 
-			{  
-				ex.printStackTrace();
+			{  				
 				errorCode = -1;
 				errorMsg = "Sua conexão está ruim";
 			}				
@@ -170,7 +174,6 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 			errorMsg = "Sem conexão com a Internet";
 		}
 		
-		result.setIdFoto(idFoto);
 		return result;
 	}	
 
@@ -183,14 +186,14 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 		}			
 		else
 		{			
-			listener.finishedSalvarFotoS3ComError(errorCode,errorMsg);			
+			listener.finishedSalvarFotoS3ComError(errorCode,errorMsg,idFiscalizacao);			
 		}
 	}
 
 	public interface OnSalvarFotoS3PostExecuteListener<K>
 	{
 		public void finishedSalvarFotoS3ComResultado(Object result);
-		public void finishedSalvarFotoS3ComError(int errorCode, String error);
+		public void finishedSalvarFotoS3ComError(int errorCode, String error,Long idFiscalizacao);
 	}
 
 }

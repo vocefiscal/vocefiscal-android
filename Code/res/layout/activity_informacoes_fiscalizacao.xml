@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffffff" >
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentTop="true"
+        android:background="#f3f3f3" >
+
+        <ImageView
+            android:id="@+id/up_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/selector_up_logo" />
+
+        <TextView
+            android:id="@+id/dados_secao"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/up_logo"
+            android:text="DADOS DA SEÇÃO"
+            android:textColor="@color/azul_vocefiscal"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_capa"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/header" >
+
+        <org.vocefiscal.bitmaps.RecyclingImageView
+            android:id="@+id/capa"
+            android:layout_width="fill_parent"
+            android:layout_height="109dp"
+            android:src="@drawable/capa_conferir"
+            android:scaleType="centerCrop" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar_capa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout_capa"
+        android:orientation="vertical"
+        android:padding="20dp" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1" >
+
+            <EditText
+                android:id="@+id/municipio_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight="0.275"
+                android:background="@drawable/bg_input"
+                android:hint="Município"
+                android:inputType="textCapSentences"
+                android:maxLength="60"
+                android:paddingLeft="10dp"
+                android:textColor="@color/preto"
+                android:textColorHint="@color/preto"
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/estado_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="0.725"
+                android:background="@drawable/bg_input"
+                android:hint="Estado"
+                android:inputType="textCapCharacters"
+                android:maxLength="2"
+                android:paddingLeft="10dp"
+                android:textColor="@color/preto"
+                android:textColorHint="@color/preto"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/zona_eleitoral_et"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/bg_input"
+            android:hint="Zona eleitoral"
+            android:inputType="number"
+            android:maxLength="4"
+            android:paddingLeft="10dp"
+            android:textColor="@color/preto"
+            android:textColorHint="@color/preto"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/local_votacao_et"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/bg_input"
+            android:hint="Local da votação"
+            android:inputType="number"
+            android:maxLength="4"
+            android:paddingLeft="10dp"
+            android:textColor="@color/preto"
+            android:textColorHint="@color/preto"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/secao_eleitoral_et"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/bg_input"
+            android:hint="Seção eleitoral"
+            android:inputType="number"
+            android:maxLength="4"
+            android:paddingLeft="10dp"
+            android:textColor="@color/preto"
+            android:textColorHint="@color/preto"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/btn_enviar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/selector_btn_enviar" />
+
+</RelativeLayout>

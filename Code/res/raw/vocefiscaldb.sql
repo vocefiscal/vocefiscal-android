@@ -14,7 +14,9 @@ CREATE TABLE fiscalizacao
 	
 	podeenviarrededados INTEGER,
 	
-	statusdoenvio INTEGER
+	statusdoenvio INTEGER,
+	
+	data INTEGER
 );
 
 CREATE TABLE picturepath

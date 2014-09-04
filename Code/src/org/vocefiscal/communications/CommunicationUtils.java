@@ -160,4 +160,21 @@ public class CommunicationUtils
 			return false;
 		}
 	}
+	
+	public static boolean isWifi(Context ctx)
+	{
+		ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo info = cm.getActiveNetworkInfo();
+		if(info==null)
+			return false;
+
+		int netType = info.getType();
+		if (netType == ConnectivityManager.TYPE_WIFI) 
+		{
+			return info.isConnected();
+		}else 
+		{
+			return false;
+		}
+	}
 }
