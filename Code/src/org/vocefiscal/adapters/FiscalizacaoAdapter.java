@@ -8,13 +8,17 @@ import java.util.ArrayList;
 import org.vocefiscal.R;
 import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.bitmaps.RecyclingImageView;
+import org.vocefiscal.database.VoceFiscalDatabase;
 import org.vocefiscal.models.Fiscalizacao;
 import org.vocefiscal.models.enums.StatusEnvioEnum;
+import org.vocefiscal.services.UploadManagerService;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -36,12 +40,15 @@ public class FiscalizacaoAdapter extends BaseAdapter
 	private String error = "Erro carregando fiscalizações";
 
 	private ImageFetcher mImageFetcher;
+	
+	private VoceFiscalDatabase voceFiscalDatabase;
 
-	public FiscalizacaoAdapter(Context mContext, ImageFetcher mImageFetcher) 
+	public FiscalizacaoAdapter(Context mContext, ImageFetcher mImageFetcher,VoceFiscalDatabase voceFiscalDatabase) 
 	{
 		super();
 		this.mContext = mContext;
 		this.mImageFetcher = mImageFetcher;
+		this.voceFiscalDatabase = voceFiscalDatabase;
 	}
 
 	@Override
@@ -109,7 +116,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 	@Override
 	public  View getView(int position, View convertView, ViewGroup parent) 
 	{
-		Fiscalizacao item = getItem(position);
+		final Fiscalizacao fiscalizacao = getItem(position);
 		ViewHolder holder=null;
 
 		if(convertView==null)
@@ -141,24 +148,84 @@ public class FiscalizacaoAdapter extends BaseAdapter
 
 							ProgressBar progress_bar_foto = (ProgressBar) convertView.findViewById(R.id.progress_bar_foto);
 							holder.progress_bar_foto = progress_bar_foto;
-							
-							ProgressBar upload_progress = (ProgressBar) convertView.findViewById(R.id.upload_progress);
+
+							final ProgressBar upload_progress = (ProgressBar) convertView.findViewById(R.id.upload_progress);
 							holder.upload_progress = upload_progress;
-							
+
 							TextView municipio_estado = (TextView) convertView.findViewById(R.id.municipio_estado);
 							Typeface unisansheavy = Typeface.createFromAsset(mContext.getAssets(),"fonts/unisansheavy.otf");
 							municipio_estado.setTypeface(unisansheavy);
-							holder.municipio_estado = municipio_estado;
-							
-							ImageView status_envio = (ImageView) convertView.findViewById(R.id.status_envio);
-							holder.status_envio = status_envio;
-							
-							TextView porcentagem_envio = (TextView) convertView.findViewById(R.id.porcentagem_envio);
+							holder.municipio_estado = municipio_estado;														
+
+							final TextView porcentagem_envio = (TextView) convertView.findViewById(R.id.porcentagem_envio);
 							porcentagem_envio.setTypeface(unisansheavy);
 							holder.porcentagem_envio = porcentagem_envio;
-							
+
 							TextView zona__local_secao_eleitoral = (TextView) convertView.findViewById(R.id.zona__local_secao_eleitoral);
-							holder.zona__local_secao_eleitoral = zona__local_secao_eleitoral;														
+							holder.zona__local_secao_eleitoral = zona__local_secao_eleitoral;		
+
+							final ImageView status_envio = (ImageView) convertView.findViewById(R.id.status_envio);
+							status_envio.setOnClickListener(new OnClickListener() 
+							{								
+								@Override
+								public void onClick(View v) 
+								{									
+									if(fiscalizacao.getStatusDoEnvio()!=null)
+									{
+										if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()))
+										{
+											fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIAR.ordinal());
+
+											if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
+												voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIAR.ordinal());
+
+											status_envio.setImageResource(StatusEnvioEnum.getImageResource(fiscalizacao.getStatusDoEnvio()));
+											porcentagem_envio.setVisibility(View.GONE);
+											upload_progress.setVisibility(View.INVISIBLE);		
+
+										}else if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIAR.ordinal()))										
+										{										
+											fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIANDO.ordinal());
+
+											if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
+												voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIANDO.ordinal());
+											
+											//TODO Verificar Dados x Wi-Fi e perguntar novamente 
+
+											Intent intent = new Intent(mContext, UploadManagerService.class);
+											mContext.startService(intent);
+
+											status_envio.setImageResource(StatusEnvioEnum.getImageResource(fiscalizacao.getStatusDoEnvio()));
+
+											int numeroTotalDeFotos = 0;
+											int numeroDeFotosEnviadas = 0;
+											int porcentagemEnviado = 0;
+
+											if(fiscalizacao.getPicturePathList()!=null)
+												numeroTotalDeFotos = fiscalizacao.getPicturePathList().size();
+
+											if(fiscalizacao.getPictureURLList()!=null)
+												numeroDeFotosEnviadas = fiscalizacao.getPictureURLList().size();
+
+											if(numeroTotalDeFotos>0)
+												porcentagemEnviado = (int) ((numeroDeFotosEnviadas / (numeroTotalDeFotos*1.0f)) * 100);										
+
+											porcentagem_envio.setText(porcentagemEnviado+"%");
+											upload_progress.setProgress(porcentagemEnviado);
+
+											porcentagem_envio.setVisibility(View.VISIBLE);
+											upload_progress.setVisibility(View.VISIBLE);
+										}
+									}else
+									{
+										status_envio.setImageResource(StatusEnvioEnum.getImageResource(0));
+										porcentagem_envio.setVisibility(View.GONE);
+										upload_progress.setVisibility(View.INVISIBLE);
+									}
+
+								}
+							});
+							holder.status_envio = status_envio;
 
 							convertView.setTag(holder);
 						}
@@ -169,7 +236,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 
 		if(getItemViewType(position)==3)
 		{
-			fillViewItem(item, holder.foto,holder.progress_bar_foto,holder.upload_progress,holder.municipio_estado,holder.status_envio,holder.porcentagem_envio,holder.zona__local_secao_eleitoral);
+			fillViewItem(fiscalizacao, holder.foto,holder.progress_bar_foto,holder.upload_progress,holder.municipio_estado,holder.status_envio,holder.porcentagem_envio,holder.zona__local_secao_eleitoral);
 		}
 		else
 			if(getItemViewType(position)==2)
@@ -201,13 +268,13 @@ public class FiscalizacaoAdapter extends BaseAdapter
 				municipio_estado.setText(fiscalizacao.getMunicipio()+","+fiscalizacao.getEstado());
 			else
 				municipio_estado.setText("");
-			
+
 			//zona eleitoral | local de votação | Seção eleitoral
 			if(fiscalizacao.getZonaEleitoral()!=null&&fiscalizacao.getLocalDaVotacao()!=null&&fiscalizacao.getSecaoEleitoral()!=null)
 				zona__local_secao_eleitoral.setText("Zona Eleitoral: "+fiscalizacao.getZonaEleitoral()+" | Local de Votação: "+fiscalizacao.getLocalDaVotacao()+" | Seção Eleitoral: "+fiscalizacao.getSecaoEleitoral());
 			else
 				zona__local_secao_eleitoral.setText("");
-			
+
 			//foto de capa
 			if(mImageFetcher!=null && fiscalizacao.getPicturePathList()!=null&&fiscalizacao.getPicturePathList().size()>0)
 			{
@@ -216,29 +283,29 @@ public class FiscalizacaoAdapter extends BaseAdapter
 			{
 				foto.setImageResource(R.drawable.capa_conferir);
 			}
-				
+
 			if(fiscalizacao.getStatusDoEnvio()!=null)
 			{
 				if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()))
 				{				
 					status_envio.setImageResource(StatusEnvioEnum.getImageResource(fiscalizacao.getStatusDoEnvio()));
-					
+
 					int numeroTotalDeFotos = 0;
 					int numeroDeFotosEnviadas = 0;
 					int porcentagemEnviado = 0;
-					
+
 					if(fiscalizacao.getPicturePathList()!=null)
 						numeroTotalDeFotos = fiscalizacao.getPicturePathList().size();
-					
+
 					if(fiscalizacao.getPictureURLList()!=null)
 						numeroDeFotosEnviadas = fiscalizacao.getPictureURLList().size();
-					
+
 					if(numeroTotalDeFotos>0)
 						porcentagemEnviado = (int) ((numeroDeFotosEnviadas / (numeroTotalDeFotos*1.0f)) * 100);										
-					
+
 					porcentagem_envio.setText(porcentagemEnviado+"%");
 					upload_progress.setProgress(porcentagemEnviado);
-					
+
 					porcentagem_envio.setVisibility(View.VISIBLE);
 					upload_progress.setVisibility(View.VISIBLE);
 				}else

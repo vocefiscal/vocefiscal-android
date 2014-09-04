@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.vocefiscal.R;
 import org.vocefiscal.adapters.FiscalizacaoAdapter;
 import org.vocefiscal.bitmaps.ImageFetcher;
+import org.vocefiscal.database.VoceFiscalDatabase;
 import org.vocefiscal.models.Fiscalizacao;
 
 import android.os.Bundle;
@@ -28,12 +29,14 @@ public class ConferirFragment extends Fragment
 	private ArrayList<Fiscalizacao> listaDeFiscalizacoes;
 	private ImageFetcher imageFetcher;
 	private FiscalizacaoAdapter fiscalizacaoAdapter;
+	private VoceFiscalDatabase voceFiscalDatabase;
 
-	public ConferirFragment(ImageFetcher imageFetcher,ArrayList<Fiscalizacao> listaDeFiscalizacoes) 
+	public ConferirFragment(ImageFetcher imageFetcher,ArrayList<Fiscalizacao> listaDeFiscalizacoes,VoceFiscalDatabase voceFiscalDatabase) 
 	{
 		super();
 		this.imageFetcher = imageFetcher;
 		this.listaDeFiscalizacoes = listaDeFiscalizacoes;
+		this.voceFiscalDatabase = voceFiscalDatabase;
 	}
 
 	/* (non-Javadoc)
@@ -44,7 +47,7 @@ public class ConferirFragment extends Fragment
 	{
 		View rootView = inflater.inflate(R.layout.fragment_conferir, container, false);
 		
-		fiscalizacaoAdapter = new FiscalizacaoAdapter(getActivity(), imageFetcher);
+		fiscalizacaoAdapter = new FiscalizacaoAdapter(getActivity(), imageFetcher,voceFiscalDatabase);
 
 		ListView listView = (ListView) rootView.findViewById(R.id.listview) ;
 		listView.setAdapter(fiscalizacaoAdapter);

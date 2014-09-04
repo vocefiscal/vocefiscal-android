@@ -59,7 +59,7 @@ public class UploadManagerService extends Service   implements OnSalvarFotoS3Pos
 				
 				if(fiscalizacao!=null)
 				{
-					if(fiscalizacao.getStatusDoEnvio()!=null&&!fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO.ordinal()))
+					if(fiscalizacao.getStatusDoEnvio()!=null&&fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()))
 					{
 						if(isOnWiFi || (fiscalizacao.getPodeEnviarRedeDados()!=null&&fiscalizacao.getPodeEnviarRedeDados().equals(1)))
 						{														
@@ -112,30 +112,7 @@ public class UploadManagerService extends Service   implements OnSalvarFotoS3Pos
 	@Override
 	public void onDestroy() 
 	{
-		super.onDestroy();
-		
-		ArrayList<Fiscalizacao> listaDeFiscalizacoes = null;
-
-		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-			listaDeFiscalizacoes = voceFiscalDatabase.getFiscalizacoes();
-		
-		if(listaDeFiscalizacoes!=null&&listaDeFiscalizacoes.size()>0)
-		{
-			for(int i=0;i<listaDeFiscalizacoes.size();i++)
-			{
-				Fiscalizacao fiscalizacao = listaDeFiscalizacoes.get(i);
-				
-				if(fiscalizacao!=null)
-				{
-					if(fiscalizacao.getStatusDoEnvio()!=null&&fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()))
-					{
-						if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-							voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIAR.ordinal());
-					}
-				}
-			}
-		}
-		
+		super.onDestroy();		
 	}
 	
 	/* (non-Javaoc)
