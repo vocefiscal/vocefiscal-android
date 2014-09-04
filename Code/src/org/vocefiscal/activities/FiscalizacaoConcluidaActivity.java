@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class FiscalizacaoConcluidaActivity extends Activity 
 {
@@ -38,6 +40,16 @@ public class FiscalizacaoConcluidaActivity extends Activity
 				municipio = bundle.getString(InformacoesFiscalizacaoActivity.MUNICIPIO);
 			}
 		}
+		
+		TextView secao = (TextView)findViewById(R.id.secaoEleitoral);
+		secao.setText(this.secao);
+		
+		TextView zona = (TextView)findViewById(R.id.zonaEleitoral);
+		zona.setText(this.zonaEleitoral);
+		
+		TextView municipio = (TextView)findViewById(R.id.municipio);
+		municipio.setText(this.municipio);
+		
 	}
 
 	/**
