@@ -8,6 +8,7 @@ import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
 import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.database.VoceFiscalDatabase;
 import org.vocefiscal.models.Fiscalizacao;
+import org.vocefiscal.services.UploadManagerService;
 import org.vocefiscal.utils.ImageHandler;
 
 import android.content.Intent;
@@ -55,6 +56,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 	private Handler handler;
 	
 	private ArrayList<Fiscalizacao> listaDeFiscalizacoes;
+	
+	private Runnable refreshTelaConferir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) 
@@ -141,6 +144,34 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
        	
             actionBar.addTab(tab);
         }
+        
+        refreshTelaConferir = new Runnable() 
+        {
+			
+			@Override
+			public void run() 
+			{
+				ArrayList<Fiscalizacao> novaListaFiscalizacao = null;
+				
+				if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
+					novaListaFiscalizacao = voceFiscalDatabase.getFiscalizacoes();
+				
+				if(novaListaFiscalizacao==null)
+					novaListaFiscalizacao = new ArrayList<Fiscalizacao>();
+				
+				if(!novaListaFiscalizacao.equals(listaDeFiscalizacoes))
+				{
+					listaDeFiscalizacoes = novaListaFiscalizacao;
+					mSectionsPagerAdapter.updateListaDeFiscalizacoes(listaDeFiscalizacoes);
+				}
+				
+				handler.postDelayed(refreshTelaConferir, 5000);
+				
+			}
+		};
+		
+		Intent intent = new Intent(getApplicationContext(), UploadManagerService.class);
+		startService(intent);
     }
 
     @Override
@@ -197,21 +228,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 		if(conferirFragmentImageFetcher!=null)
 			conferirFragmentImageFetcher.setExitTasksEarly(false);
 		
-		ArrayList<Fiscalizacao> novaListaFiscalizacao = null;
-		
-		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-			novaListaFiscalizacao = voceFiscalDatabase.getFiscalizacoes();
-		
-		if(novaListaFiscalizacao==null)
-			novaListaFiscalizacao = new ArrayList<Fiscalizacao>();
-		
-		if(!novaListaFiscalizacao.equals(listaDeFiscalizacoes))
-		{
-			listaDeFiscalizacoes = novaListaFiscalizacao;
-			mSectionsPagerAdapter.updateListaDeFiscalizacoes(listaDeFiscalizacoes);
-		}
-		
-		
+		handler.post(refreshTelaConferir);
 	}
 
 	/* (non-Javadoc)
@@ -221,6 +238,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 	protected void onPause() 
 	{		
 		super.onPause();
+		
+		handler.removeCallbacks(refreshTelaConferir);
 
 		if(conferirFragmentImageFetcher!=null)
 		{
@@ -243,6 +262,11 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 		
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 			voceFiscalDatabase.close();
+		
+		handler.removeCallbacks(refreshTelaConferir);
+		
+		Intent intent = new Intent(getApplicationContext(), UploadManagerService.class);
+		stopService(intent);
 	}
 	
     @Override

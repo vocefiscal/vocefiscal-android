@@ -42,19 +42,21 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 	//URL da foto no banco de dados AWS S3
 	private URL urlDaFoto;
 	
-	//idAlbum
-	private Integer idFoto;
+	private Integer posicaoFoto;
+	
+	 private Long idFiscalizacao;
 	
 	//essa é a variável contendo o cliente AWS S3
 	private AmazonS3Client s3Client;
 
-	public SalvarFotoS3AsyncTask(OnSalvarFotoS3PostExecuteListener<Object> listener,Context context, String selectedPath, Integer idFoto) 
+	public SalvarFotoS3AsyncTask(OnSalvarFotoS3PostExecuteListener<Object> listener,Context context, String selectedPath, Long idFiscalizacao, Integer posicaoFoto) 
 	{
 		super();
 		this.listener = listener;
 		this.context = context;
 		this.selectedPath = selectedPath;
-		this.idFoto = idFoto;
+		this.posicaoFoto = posicaoFoto;
+		this.idFiscalizacao = idFiscalizacao;
 		try
 		{
 			s3Client = new AmazonS3Client(new BasicAWSCredentials(CommunicationConstants.ACCESS_KEY_ID,	CommunicationConstants.SECRET_KEY));
@@ -150,10 +152,10 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 
 					URL urlFinal = new URL(part1);
 					
-					result = new S3TaskResult();
-					result.setIncomingPath(selectedPath);					
+					result = new S3TaskResult();					
 					result.setUrlDaFoto(urlFinal);
-					result.setIdFoto(idFoto);
+					result.setPosicaoFoto(posicaoFoto);
+					result.setIdFiscalizacao(idFiscalizacao);
 					
 				} catch (Exception exception) 
 				{
@@ -184,14 +186,14 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 		}			
 		else
 		{			
-			listener.finishedSalvarFotoS3ComError(errorCode,errorMsg);			
+			listener.finishedSalvarFotoS3ComError(errorCode,errorMsg,idFiscalizacao);			
 		}
 	}
 
 	public interface OnSalvarFotoS3PostExecuteListener<K>
 	{
 		public void finishedSalvarFotoS3ComResultado(Object result);
-		public void finishedSalvarFotoS3ComError(int errorCode, String error);
+		public void finishedSalvarFotoS3ComError(int errorCode, String error,Long idFiscalizacao);
 	}
 
 }

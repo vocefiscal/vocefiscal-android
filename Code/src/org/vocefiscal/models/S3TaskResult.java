@@ -2,40 +2,12 @@ package org.vocefiscal.models;
 
 import java.net.URL;
 
-import android.net.Uri;
-
 
 public class S3TaskResult 
 {	
-	String errorMessage = null;
-	Uri uri = null;
-	URL urlDaFoto = null;
-	Integer idFoto = null;
-	String incomingPath = null;
-	/**
-	 * @return the errorMessage
-	 */
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-	/**
-	 * @param errorMessage the errorMessage to set
-	 */
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
-	/**
-	 * @return the uri
-	 */
-	public Uri getUri() {
-		return uri;
-	}
-	/**
-	 * @param uri the uri to set
-	 */
-	public void setUri(Uri uri) {
-		this.uri = uri;
-	}
+	private URL urlDaFoto = null;
+	private Integer posicaoFoto = null;
+	private Long idFiscalizacao = null;
 	/**
 	 * @return the urlDaFoto
 	 */
@@ -49,27 +21,28 @@ public class S3TaskResult
 		this.urlDaFoto = urlDaFoto;
 	}
 	/**
-	 * @return the incomingPath
+	 * @return the posicaoFoto
 	 */
-	public String getIncomingPath() {
-		return incomingPath;
+	public Integer getPosicaoFoto() {
+		return posicaoFoto;
 	}
 	/**
-	 * @param incomingPath the incomingPath to set
+	 * @param posicaoFoto the posicaoFoto to set
 	 */
-	public void setIncomingPath(String incomingPath) {
-		this.incomingPath = incomingPath;
+	public void setPosicaoFoto(Integer posicaoFoto) {
+		this.posicaoFoto = posicaoFoto;
 	}
 	/**
-	 * @return the idFoto
+	 * @return the idFiscalizacao
 	 */
-	public Integer getIdFoto() {
-		return idFoto;
+	public Long getIdFiscalizacao() {
+		return idFiscalizacao;
 	}
 	/**
-	 * @param idFoto the idFoto to set
+	 * @param idFiscalizacao the idFiscalizacao to set
 	 */
-	public void setIdFoto(Integer idFoto) {
-		this.idFoto = idFoto;
+	public void setIdFiscalizacao(Long idFiscalizacao) {
+		this.idFiscalizacao = idFiscalizacao;
 	}
+
 }

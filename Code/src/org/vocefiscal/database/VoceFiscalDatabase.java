@@ -74,6 +74,12 @@ public class VoceFiscalDatabase
 		return mDatabaseOpenHelper.addFiscalizacao(fiscalizacao);
 	}
 	
+	public boolean updateStatusEnvio(Long idFiscalizacao, int statusEnvio) 
+	{
+		return mDatabaseOpenHelper.updateStatusEnvio(idFiscalizacao,statusEnvio); 
+		
+	}
+	
 	public ArrayList<Fiscalizacao> getFiscalizacoes()
 	{
 		ArrayList<Fiscalizacao> fiscalizacoes = null;
@@ -300,13 +306,12 @@ public class VoceFiscalDatabase
 		
 		return picturePathList;
 	}
-
-	//	
-	//	public boolean updateRideStatus(Long id, String status)
-	//	{
-	//		return mDatabaseOpenHelper.updateRideStatus(id, status);
-	//		
-	//	}	
+	
+	public long addPictureURL(Long idFiscalizacao, String string) 
+	{
+		return mDatabaseOpenHelper.addPictureURL(idFiscalizacao, string);
+		
+	}
 
 	public void close()
 	{
@@ -365,7 +370,7 @@ public class VoceFiscalDatabase
 			mHelperContext = context;
 
 			getWritableDatabase();					
-		}				
+		}						
 
 		public long addFiscalizacao(Fiscalizacao fiscalizacao) 
 		{
@@ -481,6 +486,27 @@ public class VoceFiscalDatabase
 
 			return id;
 
+		}
+		
+		public boolean updateStatusEnvio(Long idFiscalizacao, int statusEnvio) 
+		{
+			boolean resposta = false;
+			
+			if(idFiscalizacao!=null)
+			{
+				String whereClause = FISCALIZACAO_IDFISCALIZACAO + " = ?";
+				String[] whereClauseArgs = new String[] {String.valueOf(idFiscalizacao)};
+				
+				ContentValues initialValues = new ContentValues();
+				initialValues.put(FISCALIZACAO_STATUSDOENVIO, statusEnvio);
+				
+				if(mDatabase!=null)
+				{
+					resposta =  mDatabase.update(TABELA_FISCALIZACAO,initialValues, whereClause, whereClauseArgs)>0;				
+				}
+			}
+			
+			return resposta;
 		}
 
 		//		public boolean updateRideStatus(Long id, String status) 
