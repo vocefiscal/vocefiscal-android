@@ -2,6 +2,9 @@ package org.vocefiscal.activities;
 
 import org.vocefiscal.R;
 
+import com.facebook.*;
+import com.facebook.model.*;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,6 +28,38 @@ public class FiscalizacaoConcluidaActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_fiscalizacao_concluida);
+		
+		//Start Facebook Login
+		Session.openActiveSession(this, true, new Session.StatusCallback() 
+		{
+			
+			@Override
+			//callback when session changes state
+			public void call(Session session, SessionState state, Exception exception) 
+			{
+				if(session.isOpened())
+				{
+					//make request to the /me API
+					Request.executeMeRequestAsync(session, new Request.GraphUserCallback()
+					{
+						//callback after Graph API response with user object
+						@Override
+						public void onCompleted(GraphUser user, Response response) 
+						{
+							if(user!= null)
+							{
+								TextView welcome = (TextView) findViewById(R.id.welcome);
+								welcome.setText("Olá" + user.getName() + "!");
+								
+							}
+							
+						}
+					});
+				}
+				
+			}
+		});
+	
 		
 		/*
 		 * Captando a missão
@@ -94,6 +129,11 @@ public class FiscalizacaoConcluidaActivity extends Activity
 		startActivity(intent);
 		
 		finish();
+		
+	}
+	
+	public void compartilharFacebook(View view)
+	{
 		
 	}
 }

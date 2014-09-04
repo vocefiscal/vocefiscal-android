@@ -14,5 +14,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_fiscalizacao_concluida">FISCALIZAÇÃO CONCLUÍDA</string>
     <string name="obrigado_finalizacao_concluida">OBRIGADO POR CONTRIBUIR\n COM A DEMOCRACIA</string>
+    <string name="app_id">692054314213948</string>
 
 </resources>

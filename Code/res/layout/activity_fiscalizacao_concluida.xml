@@ -204,14 +204,15 @@
                     android:src="@drawable/btn_twitter" />
 
                 <ImageView
-                    android:id="@+id/imageView2"
+                    android:id="@+id/welcome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="15dp"
                     android:layout_toLeftOf="@+id/imageView3"
                     android:layout_weight="1"
-                    android:src="@drawable/btn_facebook" />
+                    android:src="@drawable/btn_facebook"
+                    android:onClick="compartilharFacebook" />
             </RelativeLayout>
 
             <RelativeLayout
