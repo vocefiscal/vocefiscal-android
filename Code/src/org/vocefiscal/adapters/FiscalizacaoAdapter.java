@@ -198,7 +198,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 								{									
 									if(fiscalizacao.getStatusDoEnvio()!=null)
 									{
-										if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()))
+										if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()) || fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_S3.ordinal()))
 										{
 											fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.PAUSADO.ordinal());
 
@@ -234,7 +234,10 @@ public class FiscalizacaoAdapter extends BaseAdapter
 												numeroDeFotosEnviadas = fiscalizacao.getPictureURLList().size();
 
 											if(numeroTotalDeFotos>0)
-												porcentagemEnviado = (int) ((numeroDeFotosEnviadas / (numeroTotalDeFotos*1.0f)) * 100);										
+												porcentagemEnviado = (int) ((numeroDeFotosEnviadas / (numeroTotalDeFotos*1.0f)) * 100);		
+											
+											if(porcentagemEnviado==100)
+												porcentagemEnviado = 99;
 
 											porcentagem_envio.setText(porcentagemEnviado+"%");
 											upload_progress.setProgress(porcentagemEnviado);
@@ -323,7 +326,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 
 			if(fiscalizacao.getStatusDoEnvio()!=null)
 			{
-				if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()))
+				if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()) || fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_S3.ordinal()))
 				{				
 					status_envio.setImageResource(StatusEnvioEnum.getImageResource(fiscalizacao.getStatusDoEnvio()));
 
@@ -338,7 +341,10 @@ public class FiscalizacaoAdapter extends BaseAdapter
 						numeroDeFotosEnviadas = fiscalizacao.getPictureURLList().size();
 
 					if(numeroTotalDeFotos>0)
-						porcentagemEnviado = (int) ((numeroDeFotosEnviadas / (numeroTotalDeFotos*1.0f)) * 100);										
+						porcentagemEnviado = (int) ((numeroDeFotosEnviadas / (numeroTotalDeFotos*1.0f)) * 100);	
+					
+					if(porcentagemEnviado==100)
+						porcentagemEnviado = 99;
 
 					porcentagem_envio.setText(porcentagemEnviado+"%");
 					upload_progress.setProgress(porcentagemEnviado);

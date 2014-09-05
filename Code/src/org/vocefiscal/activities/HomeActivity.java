@@ -168,7 +168,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 					}
 				}								
 				
-				handler.postDelayed(refreshTelaConferir, 5000);
+				handler.postDelayed(refreshTelaConferir, 1000);
 				
 			}
 		};
