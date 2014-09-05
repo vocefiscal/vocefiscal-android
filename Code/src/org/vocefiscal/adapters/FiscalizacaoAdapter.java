@@ -206,7 +206,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 												voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.PAUSADO.ordinal());
 
 											status_envio.setImageResource(StatusEnvioEnum.getImageResource(fiscalizacao.getStatusDoEnvio()));
-											porcentagem_envio.setVisibility(View.GONE);
+											porcentagem_envio.setVisibility(View.INVISIBLE);
 											upload_progress.setVisibility(View.INVISIBLE);		
 
 										}else if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.PAUSADO.ordinal()))										
@@ -248,7 +248,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 									}else
 									{
 										status_envio.setImageResource(StatusEnvioEnum.getImageResource(0));
-										porcentagem_envio.setVisibility(View.GONE);
+										porcentagem_envio.setVisibility(View.INVISIBLE);
 										upload_progress.setVisibility(View.INVISIBLE);
 									}
 
@@ -354,13 +354,13 @@ public class FiscalizacaoAdapter extends BaseAdapter
 				}else
 				{
 					status_envio.setImageResource(StatusEnvioEnum.getImageResource(fiscalizacao.getStatusDoEnvio()));
-					porcentagem_envio.setVisibility(View.GONE);
+					porcentagem_envio.setVisibility(View.INVISIBLE);
 					upload_progress.setVisibility(View.INVISIBLE);									
 				}
 			}else
 			{
 				status_envio.setImageResource(StatusEnvioEnum.getImageResource(0));
-				porcentagem_envio.setVisibility(View.GONE);
+				porcentagem_envio.setVisibility(View.INVISIBLE);
 				upload_progress.setVisibility(View.INVISIBLE);
 			}
 		}else
@@ -368,7 +368,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 			municipio_estado.setText("");
 			zona__local_secao_eleitoral.setText("");
 			status_envio.setImageResource(StatusEnvioEnum.getImageResource(0));
-			porcentagem_envio.setVisibility(View.GONE);
+			porcentagem_envio.setVisibility(View.INVISIBLE);
 			upload_progress.setVisibility(View.INVISIBLE);
 		}
 	}

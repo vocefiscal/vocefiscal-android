@@ -3,7 +3,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#FFFFFF"
-    android:visibility="gone"
     android:orientation="vertical"
     android:padding="10dp" >
 
@@ -12,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Error ao buscar fotos..."
-        android:textColor="#aeaeae"
+        android:textColor="@color/azul_vocefiscal"
         android:textSize="20sp"
         android:textStyle="bold" />
 

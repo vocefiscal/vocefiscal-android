@@ -95,4 +95,14 @@ public class FiscalizacaoConcluidaActivity extends Activity
 		finish();
 		
 	}
+	
+	/**
+	 * Chamada quando o botão mapa é clicado
+	 * @param view
+	 */
+	public void mapaSecoes(View view)
+	{
+		//TODO
+		
+	}
 }

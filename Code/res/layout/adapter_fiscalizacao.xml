@@ -13,7 +13,7 @@
         <org.vocefiscal.bitmaps.RecyclingImageView
             android:id="@+id/foto"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="109dp"
             android:layout_alignParentTop="true"
             android:scaleType="centerCrop"
             android:src="@drawable/capa_conferir" />

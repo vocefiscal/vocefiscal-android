@@ -172,9 +172,6 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 				
 			}
 		};
-		
-		Intent intent = new Intent(getApplicationContext(), UploadManagerService.class);
-		startService(intent);
     }
 
     @Override
@@ -227,6 +224,9 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 	protected void onResume() 
 	{		
 		super.onResume();
+		
+		Intent intent = new Intent(getApplicationContext(), UploadManagerService.class);
+		startService(intent);
 
 		if(conferirFragmentImageFetcher!=null)
 			conferirFragmentImageFetcher.setExitTasksEarly(false);
