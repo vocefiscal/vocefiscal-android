@@ -106,7 +106,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),conferirFragmentImageFetcher,listaDeFiscalizacoes);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),conferirFragmentImageFetcher,listaDeFiscalizacoes,voceFiscalDatabase);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);

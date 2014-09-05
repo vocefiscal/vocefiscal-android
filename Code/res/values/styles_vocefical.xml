@@ -34,7 +34,7 @@
     </style>
     
     <style name="MyActionButtonOverflow" parent="@style/Widget.AppCompat.Light.ActionButton.Overflow">
-        <item name="android:src">@drawable/selector_overflow</item>
+        <item name="android:src">@drawable/overflow</item>
     </style>
 
     <style name="ActionBar.Solid.Vocefical" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">

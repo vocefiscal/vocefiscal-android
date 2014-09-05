@@ -6,6 +6,7 @@ package org.vocefiscal.adapters;
 import java.util.ArrayList;
 
 import org.vocefiscal.bitmaps.ImageFetcher;
+import org.vocefiscal.database.VoceFiscalDatabase;
 import org.vocefiscal.fragments.ConferirFragment;
 import org.vocefiscal.fragments.FiscalizarFragment;
 import org.vocefiscal.models.Fiscalizacao;
@@ -33,11 +34,14 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter
 	
 	private ConferirFragment conferirFragment;
 	
-    public SectionsPagerAdapter(FragmentManager fm,ImageFetcher conferirImageFetcher,ArrayList<Fiscalizacao> listaDeFiscalizacoes) 
+	private VoceFiscalDatabase voceFiscalDatabase;
+	
+    public SectionsPagerAdapter(FragmentManager fm,ImageFetcher conferirImageFetcher,ArrayList<Fiscalizacao> listaDeFiscalizacoes,VoceFiscalDatabase voceFiscalDatabase) 
     {
         super(fm);
         this.conferirImageFetcher = conferirImageFetcher;
         this.listaDeFiscalizacoes = listaDeFiscalizacoes;
+        this.voceFiscalDatabase = voceFiscalDatabase;
     }
 
     @Override
@@ -50,7 +54,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter
     		return fiscalizarFragment;
     	}else if(position==1)
     	{
-    		conferirFragment = new ConferirFragment(conferirImageFetcher,listaDeFiscalizacoes);
+    		conferirFragment = new ConferirFragment(conferirImageFetcher,listaDeFiscalizacoes,voceFiscalDatabase);
     		return conferirFragment;
     	}else
     	{

@@ -227,7 +227,7 @@ public class InformacoesFiscalizacaoActivity extends Activity
 									fiscalizacao.setSecaoEleitoral(secao_eleitoral);
 									fiscalizacao.setPicturePathList(picturePathList);
 									fiscalizacao.setPicture30PCPathList(picture30PCPathList);
-									fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIAR.ordinal());
+									fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIANDO.ordinal());
 									fiscalizacao.setData(System.currentTimeMillis());
 									
 									if(envio!=null&&!envio.isShowing())
