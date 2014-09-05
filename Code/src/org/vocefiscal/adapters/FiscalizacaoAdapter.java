@@ -3,7 +3,9 @@
  */
 package org.vocefiscal.adapters;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.vocefiscal.R;
 import org.vocefiscal.bitmaps.ImageFetcher;
@@ -162,7 +164,10 @@ public class FiscalizacaoAdapter extends BaseAdapter
 							holder.porcentagem_envio = porcentagem_envio;
 
 							TextView zona__local_secao_eleitoral = (TextView) convertView.findViewById(R.id.zona__local_secao_eleitoral);
-							holder.zona__local_secao_eleitoral = zona__local_secao_eleitoral;		
+							holder.zona__local_secao_eleitoral = zona__local_secao_eleitoral;	
+							
+							TextView data = (TextView) convertView.findViewById(R.id.data);
+							holder.data = data;
 
 							final ImageView status_envio = (ImageView) convertView.findViewById(R.id.status_envio);
 							status_envio.setOnClickListener(new OnClickListener() 
@@ -174,16 +179,16 @@ public class FiscalizacaoAdapter extends BaseAdapter
 									{
 										if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()))
 										{
-											fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIAR.ordinal());
+											fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.PAUSADO.ordinal());
 
 											if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-												voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIAR.ordinal());
+												voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.PAUSADO.ordinal());
 
 											status_envio.setImageResource(StatusEnvioEnum.getImageResource(fiscalizacao.getStatusDoEnvio()));
 											porcentagem_envio.setVisibility(View.GONE);
 											upload_progress.setVisibility(View.INVISIBLE);		
 
-										}else if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIAR.ordinal()))										
+										}else if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.PAUSADO.ordinal()))										
 										{										
 											fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIANDO.ordinal());
 
@@ -236,7 +241,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 
 		if(getItemViewType(position)==3)
 		{
-			fillViewItem(fiscalizacao, holder.foto,holder.progress_bar_foto,holder.upload_progress,holder.municipio_estado,holder.status_envio,holder.porcentagem_envio,holder.zona__local_secao_eleitoral);
+			fillViewItem(fiscalizacao, holder.foto,holder.progress_bar_foto,holder.upload_progress,holder.municipio_estado,holder.status_envio,holder.porcentagem_envio,holder.zona__local_secao_eleitoral,holder.data);
 		}
 		else
 			if(getItemViewType(position)==2)
@@ -258,7 +263,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 		return convertView;
 	}
 
-	private void fillViewItem(Fiscalizacao fiscalizacao, RecyclingImageView foto, ProgressBar progress_bar_foto, ProgressBar upload_progress, TextView municipio_estado, ImageView status_envio, TextView porcentagem_envio, TextView zona__local_secao_eleitoral) 
+	private void fillViewItem(Fiscalizacao fiscalizacao, RecyclingImageView foto, ProgressBar progress_bar_foto, ProgressBar upload_progress, TextView municipio_estado, ImageView status_envio, TextView porcentagem_envio, TextView zona__local_secao_eleitoral, TextView data) 
 	{	
 		//Preparando elementos para receber as informacoes
 		if(fiscalizacao!=null)
@@ -274,6 +279,17 @@ public class FiscalizacaoAdapter extends BaseAdapter
 				zona__local_secao_eleitoral.setText("Zona Eleitoral: "+fiscalizacao.getZonaEleitoral()+" | Local de Votação: "+fiscalizacao.getLocalDaVotacao()+" | Seção Eleitoral: "+fiscalizacao.getSecaoEleitoral());
 			else
 				zona__local_secao_eleitoral.setText("");
+			
+			if(fiscalizacao.getData()!=null)
+			{
+				Long dataMillis = fiscalizacao.getData();
+				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/aaaa 'às' HH:mm:ss z");
+				String dataHumano = sdf.format(new Date(dataMillis));
+				data.setText(dataHumano);
+			}else
+			{
+				data.setText("");
+			}
 
 			//foto de capa
 			if(mImageFetcher!=null && fiscalizacao.getPicturePathList()!=null&&fiscalizacao.getPicturePathList().size()>0)
@@ -352,6 +368,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 		ImageView status_envio;
 		TextView porcentagem_envio;
 		TextView zona__local_secao_eleitoral;
+		TextView data;
 	}
 
 	public boolean isOnLoading() 

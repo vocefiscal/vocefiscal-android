@@ -1,6 +1,7 @@
 package org.vocefiscal.activities;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.vocefiscal.R;
 import org.vocefiscal.adapters.SectionsPagerAdapter;
@@ -101,8 +102,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 			listaDeFiscalizacoes = voceFiscalDatabase.getFiscalizacoes();
 		
-		if(listaDeFiscalizacoes==null)
-			listaDeFiscalizacoes = new ArrayList<Fiscalizacao>();
+		if(listaDeFiscalizacoes!=null)
+			Collections.reverse(listaDeFiscalizacoes);
         
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -155,15 +156,17 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 				
 				if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 					novaListaFiscalizacao = voceFiscalDatabase.getFiscalizacoes();
-				
-				if(novaListaFiscalizacao==null)
-					novaListaFiscalizacao = new ArrayList<Fiscalizacao>();
-				
-				if(!novaListaFiscalizacao.equals(listaDeFiscalizacoes))
+						
+				if(novaListaFiscalizacao!=null)
 				{
-					listaDeFiscalizacoes = novaListaFiscalizacao;
-					mSectionsPagerAdapter.updateListaDeFiscalizacoes(listaDeFiscalizacoes);
-				}
+					Collections.reverse(novaListaFiscalizacao);
+					
+					if(listaDeFiscalizacoes==null || novaListaFiscalizacao.equals(listaDeFiscalizacoes))
+					{
+						listaDeFiscalizacoes = novaListaFiscalizacao;
+						mSectionsPagerAdapter.updateListaDeFiscalizacoes(listaDeFiscalizacoes);
+					}
+				}								
 				
 				handler.postDelayed(refreshTelaConferir, 5000);
 				

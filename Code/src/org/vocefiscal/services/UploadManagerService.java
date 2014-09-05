@@ -75,28 +75,31 @@ public class UploadManagerService extends Service   implements OnSalvarFotoS3Pos
 								
 								if(quantidadeDeFotosUploaded<picturePathList.size())
 								{
-									SalvarFotoS3AsyncTask salvarFotoS3AsyncTask = new SalvarFotoS3AsyncTask(this, getApplicationContext(), picturePathList.get(quantidadeDeFotosUploaded), fiscalizacao.getIdFiscalizacao(), quantidadeDeFotosUploaded);
-									salvarFotoS3AsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-									
-									//fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIANDO.ordinal());
 									if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 										voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIANDO.ordinal());
+									
+									SalvarFotoS3AsyncTask salvarFotoS3AsyncTask = new SalvarFotoS3AsyncTask(this, getApplicationContext(), picturePathList.get(quantidadeDeFotosUploaded), fiscalizacao.getIdFiscalizacao(), quantidadeDeFotosUploaded);
+									salvarFotoS3AsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);																		
 								}else
-								{
-									//fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO.ordinal());
+								{									
 									if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-										voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO.ordinal());
+										voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO_S3.ordinal());
 									
 									//TODO - serviço para a API VF. Criar status "transferido" para não correr risco de retransmitir e tratar falhas
 								}
 							}else
-							{
-								//fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO.ordinal());
+							{								
 								if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-									voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO.ordinal());
+									voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO_S3.ordinal());
 								
 								//TODO - serviço para a API VF. Criar status "transferido" para não correr risco de retransmitir e tratar falhas
 							}
+						}else
+						{
+							Toast.makeText(getApplicationContext(), "Pausando o upload por falta de Wi-Fi", Toast.LENGTH_SHORT).show();
+							
+							if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
+								voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.PAUSADO.ordinal());
 						}
 					}
 				}
@@ -171,20 +174,18 @@ public class UploadManagerService extends Service   implements OnSalvarFotoS3Pos
 							SalvarFotoS3AsyncTask salvarFotoS3AsyncTask = new SalvarFotoS3AsyncTask(this, getApplicationContext(), picturePathList.get(posicaoFoto), idFiscalizacao, posicaoFoto);
 							salvarFotoS3AsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 						}else
-						{
-							//fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO.ordinal());
+						{					
 							if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-								voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO.ordinal());
+								voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO_S3.ordinal());
 							
-							//TODO - serviço para a API VF. Criar status "transferido" para não correr risco de retransmitir e tratar falhas
+							//TODO - serviço para a API VF e no resultado colocar ENVIADO_VF
 						}
 					}else
 					{
-						Toast.makeText(getApplicationContext(), "Pausando um upload por queda de Wi-Fi", Toast.LENGTH_SHORT).show();
-						
-						//fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIAR.ordinal());
+						Toast.makeText(getApplicationContext(), "Pausando o upload por queda de Wi-Fi", Toast.LENGTH_SHORT).show();
+												
 						if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-							voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIAR.ordinal());
+							voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.PAUSADO.ordinal());
 					}
 				}
 			}
@@ -194,10 +195,10 @@ public class UploadManagerService extends Service   implements OnSalvarFotoS3Pos
 	@Override
 	public void finishedSalvarFotoS3ComError(int errorCode, String error,Long idFiscalizacao) 
 	{
-		Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+		Toast.makeText(getApplicationContext(), error+" Pausando o upload.", Toast.LENGTH_SHORT).show();
 		
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-			voceFiscalDatabase.updateStatusEnvio(idFiscalizacao,StatusEnvioEnum.ENVIAR.ordinal());
+			voceFiscalDatabase.updateStatusEnvio(idFiscalizacao,StatusEnvioEnum.PAUSADO.ordinal());
 		
 	}
 	
