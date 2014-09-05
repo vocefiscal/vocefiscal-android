@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.vocefiscal.R;
+import org.vocefiscal.activities.CameraActivity;
+import org.vocefiscal.activities.ConferirImagensActivity;
 import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.bitmaps.RecyclingImageView;
 import org.vocefiscal.database.VoceFiscalDatabase;
@@ -18,6 +20,7 @@ import org.vocefiscal.services.UploadManagerService;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -147,6 +150,24 @@ public class FiscalizacaoAdapter extends BaseAdapter
 
 							RecyclingImageView foto = (RecyclingImageView) convertView.findViewById(R.id.foto);
 							holder.foto = foto;
+							foto.setOnClickListener(new OnClickListener() 
+							{
+								
+								@Override
+								public void onClick(View v) 
+								{									
+									Intent intent = new Intent(mContext, ConferirImagensActivity.class);
+
+									Bundle bundle = new Bundle();
+									bundle.putStringArrayList(CameraActivity.PICTURE_PATH_LIST, fiscalizacao.getPicturePathList());
+									bundle.putBoolean(ConferirImagensActivity.MODO_HISTORICO, true);
+
+									intent.putExtras(bundle);
+
+									mContext.startActivity(intent);
+									
+								}
+							});
 
 							ProgressBar progress_bar_foto = (ProgressBar) convertView.findViewById(R.id.progress_bar_foto);
 							holder.progress_bar_foto = progress_bar_foto;
@@ -283,7 +304,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 			if(fiscalizacao.getData()!=null)
 			{
 				Long dataMillis = fiscalizacao.getData();
-				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/aaaa 'às' HH:mm:ss z");
+				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy 'às' HH:mm:ss z");
 				String dataHumano = sdf.format(new Date(dataMillis));
 				data.setText(dataHumano);
 			}else
