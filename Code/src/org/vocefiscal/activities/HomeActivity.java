@@ -161,7 +161,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 				{
 					Collections.reverse(novaListaFiscalizacao);
 					
-					if(listaDeFiscalizacoes==null || novaListaFiscalizacao.equals(listaDeFiscalizacoes))
+					if(listaDeFiscalizacoes==null || !novaListaFiscalizacao.equals(listaDeFiscalizacoes))
 					{
 						listaDeFiscalizacoes = novaListaFiscalizacao;
 						mSectionsPagerAdapter.updateListaDeFiscalizacoes(listaDeFiscalizacoes);
@@ -230,7 +230,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 
 		if(conferirFragmentImageFetcher!=null)
 			conferirFragmentImageFetcher.setExitTasksEarly(false);
-		
+				
 		handler.post(refreshTelaConferir);
 	}
 
@@ -290,7 +290,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 					{
 						mViewPager.setCurrentItem(tabToSelect,true);
 					}
-				}, 500);
+				}, 500);				
 			}
 		}
 	}

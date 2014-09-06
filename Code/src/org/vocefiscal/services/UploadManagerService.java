@@ -96,7 +96,7 @@ public class UploadManagerService extends Service   implements OnSalvarFotoS3Pos
 							}
 						}else
 						{
-							Toast.makeText(getApplicationContext(), "Pausando o upload por falta de Wi-Fi", Toast.LENGTH_SHORT).show();
+							//Pausando o upload por falta de Wi-Fi
 							
 							if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 								voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.PAUSADO.ordinal());
@@ -195,6 +195,8 @@ public class UploadManagerService extends Service   implements OnSalvarFotoS3Pos
 	@Override
 	public void finishedSalvarFotoS3ComError(int errorCode, String error,Long idFiscalizacao) 
 	{
+		
+		//TODO implementar backoff
 		Toast.makeText(getApplicationContext(), error+" Pausando o upload.", Toast.LENGTH_SHORT).show();
 		
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
