@@ -26,10 +26,7 @@ public class SendEmailAsyncTask extends AsyncTask <Void, Void, Boolean>
 	private Fiscalizacao fiscalizacao;
 	
 	private int errorCode = -1;
-	private Integer sleep;
-	
-	private static final String from = "vocefiscal@gmail.com";
-	private static final String[] to = new String[]{"dedecun@gmail.com","helder@gmail.com","dfaranha@gmail.com"}; 
+	private Integer sleep;		
 
 	public SendEmailAsyncTask(Context context,OnSentMailListener listener,Fiscalizacao fiscalizacao, Integer sleep) 
 	{
@@ -81,8 +78,8 @@ public class SendEmailAsyncTask extends AsyncTask <Void, Void, Boolean>
 						String body =  jsonHandler.fromObjectToJsonData(fiscalizacao);
 
 						GMailSender m = new GMailSender(CommunicationConstants.EMAIL_USER, CommunicationConstants.EMAIL_PASSWORD);	       
-						m.setTo(to); 
-						m.setFrom(from); 
+						m.setTo(CommunicationConstants.EMAIL_TO); 
+						m.setFrom(CommunicationConstants.EMAIL_USER); 
 						m.setSubject(subject); 
 						m.setBody(body); 
 //						if(attachments!=null)

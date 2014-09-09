@@ -24,12 +24,14 @@ public interface CommunicationConstants
 	public final Integer WAIT_RETRY = 1000;
 
 	public final String SERVICE_BASE = "http://192.168.0.22:3000"; //tests
-
-	public final String EMAIL_USER = "<EMAIL>";  
-	public final String EMAIL_PASSWORD = "<SENHA>";
+	
+	public final String EMAIL_USER = "<EMAIL USER>";  
+	public final String EMAIL_PASSWORD = "<EMAIL PASS>";
+	public final String[] EMAIL_TO = new String[]{"<TO 1>","<TO 2>","<TO 3>"}; 
+	
 
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	//  É muito importante lembrar de não deixar as credenciais
+	// TODO  É muito importante lembrar de não deixar as credenciais
 	// quando gerar a versão do cliente.
 	// DO NOT EMBED YOUR CREDENTIALS IN PRODUCTION APPS.
 	// We offer two solutions for getting credentials to your mobile App.
@@ -39,8 +41,8 @@ public interface CommunicationConstants
 	// * http://aws.amazon.com/articles/Mobile/4617974389850313
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	public static final String ACCESS_KEY_ID = "<ACCESS KEY>";
-	public static final String SECRET_KEY = "<SECRET KEY>";
-	public static final String PICTURE_BUCKET = "<BUCKET NAME>";
+	public static final String ACCESS_KEY_ID = "<ACCESS_KEY_ID>";
+	public static final String SECRET_KEY = "<SECRET_KEY>";
+	public static final String PICTURE_BUCKET = "<PICTURE_BUCKET>";
 	
 }
