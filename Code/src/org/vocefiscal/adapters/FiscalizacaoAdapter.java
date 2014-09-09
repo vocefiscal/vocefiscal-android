@@ -388,6 +388,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 			voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIANDO.ordinal());											
 
+		//TODO ao invés de reiniciar o serviço, seria melhor iniciar somente este, ou ter um status PRONTO PARA ENVIO
 		Intent intent = new Intent(mContext, UploadManagerService.class);
 		mContext.startService(intent);
 

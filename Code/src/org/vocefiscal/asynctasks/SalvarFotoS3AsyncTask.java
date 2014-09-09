@@ -13,7 +13,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-import android.util.Log;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Region;
@@ -37,7 +36,7 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 	private int errorCode=-1;
 
 	//imagem para ser enviada ao servidor de fotos s3
-	private String selectedPath;
+	private String picturePath;
 
 	//URL da foto no banco de dados AWS S3
 	private URL urlDaFoto;
@@ -45,25 +44,18 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 	private Integer posicaoFoto;
 
 	private Long idFiscalizacao;
+	
+	private Integer sleep;
 
-	//essa é a variável contendo o cliente AWS S3
-	private AmazonS3Client s3Client;
-
-	public SalvarFotoS3AsyncTask(OnSalvarFotoS3PostExecuteListener<Object> listener,Context context, String selectedPath, Long idFiscalizacao, Integer posicaoFoto) 
+	public SalvarFotoS3AsyncTask(OnSalvarFotoS3PostExecuteListener<Object> listener,Context context, String selectedPath, Long idFiscalizacao, Integer posicaoFoto, Integer sleep) 
 	{
 		super();
 		this.listener = listener;
 		this.context = context;
-		this.selectedPath = selectedPath;
+		this.picturePath = selectedPath;
 		this.posicaoFoto = posicaoFoto;
 		this.idFiscalizacao = idFiscalizacao;
-		try
-		{
-			s3Client = new AmazonS3Client(new BasicAWSCredentials(CommunicationConstants.ACCESS_KEY_ID,	CommunicationConstants.SECRET_KEY));
-		}catch(Exception e)
-		{
-			Log.i("S3 Client", e.getMessage());
-		}
+		this.sleep = sleep;
 	}
 
 
@@ -85,6 +77,8 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 
 			try
 			{
+				AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(CommunicationConstants.ACCESS_KEY_ID,	CommunicationConstants.SECRET_KEY));
+				
 				s3Client.setRegion(Region.getRegion(Regions.US_WEST_2));
 
 				ContentResolver resolver = context.getContentResolver();
@@ -92,7 +86,7 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 
 				String size = null;
 
-				Cursor cursor = resolver.query(Uri.parse(selectedPath),fileSizeColumn, null, null, null);
+				Cursor cursor = resolver.query(Uri.parse(picturePath),fileSizeColumn, null, null, null);
 				if(cursor!=null)
 				{
 					cursor.moveToFirst();
@@ -113,7 +107,7 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 				}	                     
 
 				ObjectMetadata metadata = new ObjectMetadata();
-				metadata.setContentType(resolver.getType(Uri.parse(selectedPath)));
+				metadata.setContentType(resolver.getType(Uri.parse(picturePath)));
 				if(size != null)
 				{
 					metadata.setContentLength(Long.parseLong(size));
@@ -122,7 +116,7 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 				// Put the image data into S3.				
 				try 
 				{			
-					File selectedFile = new File(selectedPath);
+					File selectedFile = new File(picturePath);
 					String pictureName;
 
 					//define o nome da foto para ser guardada no banco
@@ -130,32 +124,54 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 
 					//define a região/endpoint
 					s3Client.setEndpoint("s3.amazonaws.com");
+					
+					if(!isCancelled())
+					{
+						if(sleep>0)
+						{
+							try 
+							{
+								Thread.sleep(sleep);
+							} catch (InterruptedException e) 
+							{
+							}
+						}
+						
+						//envia a foto para o S3
+						Uri selectedImageUri = Uri.fromFile(selectedFile);
+						PutObjectRequest por = new PutObjectRequest(CommunicationConstants.PICTURE_BUCKET, pictureName, resolver.openInputStream(selectedImageUri),metadata)
+						.withCannedAcl(CannedAccessControlList.PublicRead);
+						s3Client.putObject(por);
 
-					//envia a foto para o S3
-					Uri selectedImageUri = Uri.fromFile(selectedFile);
-					PutObjectRequest por = new PutObjectRequest(CommunicationConstants.PICTURE_BUCKET, pictureName, resolver.openInputStream(selectedImageUri),metadata)
-					.withCannedAcl(CannedAccessControlList.PublicRead);
-					s3Client.putObject(por);
+						//força que a procura seja por imagens/jpeg
+						ResponseHeaderOverrides override = new ResponseHeaderOverrides();
+						override.setContentType("image/jpeg");
+						
+						if(!isCancelled())
+						{
+							// Gera a presigned URL
+							GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(CommunicationConstants.PICTURE_BUCKET, pictureName);
+							urlRequest.setResponseHeaders(override);
+							urlDaFoto = s3Client.generatePresignedUrl(urlRequest);
 
-					//força que a procura seja por imagens/jpeg
-					ResponseHeaderOverrides override = new ResponseHeaderOverrides();
-					override.setContentType("image/jpeg");
+							String string = urlDaFoto.toString();
+							String[] parts = string.split("\\?");
+							String part1 = parts[0]; // 004
 
-					// Gera a presigned URL
-					GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(CommunicationConstants.PICTURE_BUCKET, pictureName);
-					urlRequest.setResponseHeaders(override);
-					urlDaFoto = s3Client.generatePresignedUrl(urlRequest);
+							URL urlFinal = new URL(part1);
 
-					String string = urlDaFoto.toString();
-					String[] parts = string.split("\\?");
-					String part1 = parts[0]; // 004
-
-					URL urlFinal = new URL(part1);
-
-					result = new S3TaskResult();					
-					result.setUrlDaFoto(urlFinal);
-					result.setPosicaoFoto(posicaoFoto);
-					result.setIdFiscalizacao(idFiscalizacao);
+							result = new S3TaskResult();					
+							result.setUrlDaFoto(urlFinal);
+							result.setPosicaoFoto(posicaoFoto);
+							result.setIdFiscalizacao(idFiscalizacao);
+						}else
+						{
+							errorCode = CommunicationConstants.CANCELED;					
+						}							
+					}else
+					{
+						errorCode = CommunicationConstants.CANCELED;					
+					}					
 
 				} catch (Exception exception) 
 				{
@@ -184,16 +200,16 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 		{			
 			listener.finishedSalvarFotoS3ComResultado(result);
 		}			
-		else
+		else  if(errorCode!=CommunicationConstants.CANCELED)
 		{			
-			listener.finishedSalvarFotoS3ComError(errorCode,errorMsg,idFiscalizacao);			
+			listener.finishedSalvarFotoS3ComError(errorCode,errorMsg,idFiscalizacao,posicaoFoto);			
 		}
 	}
 
 	public interface OnSalvarFotoS3PostExecuteListener<K>
 	{
 		public void finishedSalvarFotoS3ComResultado(Object result);
-		public void finishedSalvarFotoS3ComError(int errorCode, String error,Long idFiscalizacao);
+		public void finishedSalvarFotoS3ComError(int errorCode, String error,Long idFiscalizacao,Integer posicaoFoto);
 	}
 
 }
