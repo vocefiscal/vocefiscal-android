@@ -71,7 +71,7 @@
                 android:layout_weight="0.275"
                 android:background="@drawable/bg_input"
                 android:hint="Município"
-                android:inputType="textCapSentences"
+                android:inputType="textCapWords"
                 android:maxLength="60"
                 android:paddingLeft="10dp"
                 android:textColor="@color/preto"

@@ -21,6 +21,8 @@ import android.view.View.OnClickListener;
 import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 /**
  * @author andre
@@ -45,6 +47,8 @@ public class ConferirImagensActivity extends Activity//  implements OnSentMailLi
 
 	private static final float FOTO_SIZE_REF_HEIGHT = 1280;
 
+	public static final String MODO_HISTORICO = "modo_historico";
+
 	private Handler handler;
 
 //	private LinearLayout progressBarLayout;
@@ -52,6 +56,8 @@ public class ConferirImagensActivity extends Activity//  implements OnSentMailLi
 //	private LinearLayout progressLayout;
 //
 //	private CustomDialogClass envio;
+	
+	private boolean isModoHistorico = false;
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -86,6 +92,7 @@ public class ConferirImagensActivity extends Activity//  implements OnSentMailLi
 			{
 				picturePathList = bundle.getStringArrayList(CameraActivity.PICTURE_PATH_LIST);
 				picture30PCPathList = bundle.getStringArrayList(CameraActivity.PICTURE_30PC_PATH_LIST);
+				isModoHistorico = bundle.getBoolean(MODO_HISTORICO,false);
 			}
 		}
 		
@@ -107,6 +114,14 @@ public class ConferirImagensActivity extends Activity//  implements OnSentMailLi
 		 */
 
 		handler = new Handler();
+		
+		TextView titulo = (TextView)findViewById(R.id.titulo);
+		if(isModoHistorico)
+			titulo.setText("Confira as imagens desta fiscalização");
+		
+		RelativeLayout botoes = (RelativeLayout) findViewById(R.id.botoes);
+		if(isModoHistorico)
+			botoes.setVisibility(View.GONE);
 
 		FotoAdapter fotoAdapter = new FotoAdapter(getApplicationContext(), imageFetcher);
 
@@ -142,7 +157,10 @@ public class ConferirImagensActivity extends Activity//  implements OnSentMailLi
 			@Override
 			public void onClick(View v) 
 			{
-				voltarParaCamera();
+				if(!isModoHistorico)
+					voltarParaCamera();
+				else
+					finish();
 			}
 		});
 

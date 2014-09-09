@@ -171,4 +171,14 @@ public class FiscalizacaoConcluidaActivity extends FragmentActivity
 
 
 
+	
+	/**
+	 * Chamada quando o botão mapa é clicado
+	 * @param view
+	 */
+	public void mapaSecoes(View view)
+	{
+		//TODO
+		
+	}
 }

@@ -13,7 +13,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-import android.util.Log;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Region;
@@ -35,35 +34,28 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 	private String errorMsg="";
 
 	private int errorCode=-1;
-	
+
 	//imagem para ser enviada ao servidor de fotos s3
-	private String selectedPath;
-		
+	private String picturePath;
+
 	//URL da foto no banco de dados AWS S3
 	private URL urlDaFoto;
-	
-	private Integer posicaoFoto;
-	
-	 private Long idFiscalizacao;
-	
-	//essa é a variável contendo o cliente AWS S3
-	private AmazonS3Client s3Client;
 
-	public SalvarFotoS3AsyncTask(OnSalvarFotoS3PostExecuteListener<Object> listener,Context context, String selectedPath, Long idFiscalizacao, Integer posicaoFoto) 
+	private Integer posicaoFoto;
+
+	private Long idFiscalizacao;
+	
+	private Integer sleep;
+
+	public SalvarFotoS3AsyncTask(OnSalvarFotoS3PostExecuteListener<Object> listener,Context context, String selectedPath, Long idFiscalizacao, Integer posicaoFoto, Integer sleep) 
 	{
 		super();
 		this.listener = listener;
 		this.context = context;
-		this.selectedPath = selectedPath;
+		this.picturePath = selectedPath;
 		this.posicaoFoto = posicaoFoto;
 		this.idFiscalizacao = idFiscalizacao;
-		try
-		{
-			s3Client = new AmazonS3Client(new BasicAWSCredentials(CommunicationConstants.ACCESS_KEY_ID,	CommunicationConstants.SECRET_KEY));
-		}catch(Exception e)
-		{
-			Log.i("S3 Client", e.getMessage());
-		}
+		this.sleep = sleep;
 	}
 
 
@@ -85,95 +77,119 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 
 			try
 			{
-				s3Client.setRegion(Region.getRegion(Regions.US_WEST_2));
+				AmazonS3Client s3Client = new AmazonS3Client(new BasicAWSCredentials(CommunicationConstants.ACCESS_KEY_ID,	CommunicationConstants.SECRET_KEY));
 				
+				s3Client.setRegion(Region.getRegion(Regions.US_WEST_2));
+
 				ContentResolver resolver = context.getContentResolver();
-	            String fileSizeColumn[] = {OpenableColumns.SIZE}; 
-	            
-	            String size = null;
-	            
-	            Cursor cursor = resolver.query(Uri.parse(selectedPath),fileSizeColumn, null, null, null);
-	            if(cursor!=null)
-	            {
-	            	cursor.moveToFirst();
-	            	int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
-	            	// If the size is unknown, the value stored is null.  But since an int can't be
-	            	// null in java, the behavior is implementation-specific, which is just a fancy
-	            	// term for "unpredictable".  So as a rule, check if it's null before assigning
-	            	// to an int.  This will happen often:  The storage API allows for remote
-	            	// files, whose size might not be locally known.
-	            	
-	            	if (!cursor.isNull(sizeIndex)) 
-	            	{
-	            		// Technically the column stores an int, but cursor.getString will do the
-	            		// conversion automatically.
-	            		size = cursor.getString(sizeIndex);
-	            	} 
-	            	cursor.close();
-	            }	                     
+				String fileSizeColumn[] = {OpenableColumns.SIZE}; 
+
+				String size = null;
+
+				Cursor cursor = resolver.query(Uri.parse(picturePath),fileSizeColumn, null, null, null);
+				if(cursor!=null)
+				{
+					cursor.moveToFirst();
+					int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
+					// If the size is unknown, the value stored is null.  But since an int can't be
+					// null in java, the behavior is implementation-specific, which is just a fancy
+					// term for "unpredictable".  So as a rule, check if it's null before assigning
+					// to an int.  This will happen often:  The storage API allows for remote
+					// files, whose size might not be locally known.
+
+					if (!cursor.isNull(sizeIndex)) 
+					{
+						// Technically the column stores an int, but cursor.getString will do the
+						// conversion automatically.
+						size = cursor.getString(sizeIndex);
+					} 
+					cursor.close();
+				}	                     
 
 				ObjectMetadata metadata = new ObjectMetadata();
-				metadata.setContentType(resolver.getType(Uri.parse(selectedPath)));
+				metadata.setContentType(resolver.getType(Uri.parse(picturePath)));
 				if(size != null)
 				{
-				    metadata.setContentLength(Long.parseLong(size));
+					metadata.setContentLength(Long.parseLong(size));
 				}
-				
+
 				// Put the image data into S3.				
 				try 
 				{			
-					File selectedFile = new File(selectedPath);
+					File selectedFile = new File(picturePath);
 					String pictureName;
 
 					//define o nome da foto para ser guardada no banco
 					pictureName = ImageHandler.nomeDaMidia(selectedFile) + ".jpg";
-											
+
 					//define a região/endpoint
 					s3Client.setEndpoint("s3.amazonaws.com");
 					
-					//envia a foto para o S3
-					Uri selectedImageUri = Uri.fromFile(selectedFile);
-					PutObjectRequest por = new PutObjectRequest(CommunicationConstants.PICTURE_BUCKET, pictureName, resolver.openInputStream(selectedImageUri),metadata)
-					 .withCannedAcl(CannedAccessControlList.PublicRead);
-					s3Client.putObject(por);
-					
-					//força que a procura seja por imagens/jpeg
-					ResponseHeaderOverrides override = new ResponseHeaderOverrides();
-					override.setContentType("image/jpeg");
-					
-					// Gera a presigned URL
-					GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(CommunicationConstants.PICTURE_BUCKET, pictureName);
-					urlRequest.setResponseHeaders(override);
-					urlDaFoto = s3Client.generatePresignedUrl(urlRequest);
-					
-					String string = urlDaFoto.toString();
-					String[] parts = string.split("\\?");
-					String part1 = parts[0]; // 004
+					if(!isCancelled())
+					{
+						if(sleep>0)
+						{
+							try 
+							{
+								Thread.sleep(sleep);
+							} catch (InterruptedException e) 
+							{
+							}
+						}
+						
+						//envia a foto para o S3
+						Uri selectedImageUri = Uri.fromFile(selectedFile);
+						PutObjectRequest por = new PutObjectRequest(CommunicationConstants.PICTURE_BUCKET, pictureName, resolver.openInputStream(selectedImageUri),metadata)
+						.withCannedAcl(CannedAccessControlList.PublicRead);
+						s3Client.putObject(por);
 
-					URL urlFinal = new URL(part1);
-					
-					result = new S3TaskResult();					
-					result.setUrlDaFoto(urlFinal);
-					result.setPosicaoFoto(posicaoFoto);
-					result.setIdFiscalizacao(idFiscalizacao);
-					
+						//força que a procura seja por imagens/jpeg
+						ResponseHeaderOverrides override = new ResponseHeaderOverrides();
+						override.setContentType("image/jpeg");
+						
+						if(!isCancelled())
+						{
+							// Gera a presigned URL
+							GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(CommunicationConstants.PICTURE_BUCKET, pictureName);
+							urlRequest.setResponseHeaders(override);
+							urlDaFoto = s3Client.generatePresignedUrl(urlRequest);
+
+							String string = urlDaFoto.toString();
+							String[] parts = string.split("\\?");
+							String part1 = parts[0]; // 004
+
+							URL urlFinal = new URL(part1);
+
+							result = new S3TaskResult();					
+							result.setUrlDaFoto(urlFinal);
+							result.setPosicaoFoto(posicaoFoto);
+							result.setIdFiscalizacao(idFiscalizacao);
+						}else
+						{
+							errorCode = CommunicationConstants.CANCELED;					
+						}							
+					}else
+					{
+						errorCode = CommunicationConstants.CANCELED;					
+					}					
+
 				} catch (Exception exception) 
 				{
 					errorCode = -1;
-					errorMsg = "Erro ao fazer o upload da imagem";
+					errorMsg = "Erro ao fazer o upload da imagem.";
 				}
-				
+
 			}catch (Exception ex) 
 			{  				
 				errorCode = -1;
-				errorMsg = "Sua conexão está ruim";
+				errorMsg = "Sua conexão está ruim.";
 			}				
 		}else
 		{
 			errorCode = CommunicationConstants.SEM_INTERNET;
-			errorMsg = "Sem conexão com a Internet";
+			errorMsg = "Sem conexão com a Internet.";
 		}
-		
+
 		return result;
 	}	
 
@@ -184,16 +200,16 @@ public class SalvarFotoS3AsyncTask extends AsyncTask<Object,Object,Object>
 		{			
 			listener.finishedSalvarFotoS3ComResultado(result);
 		}			
-		else
+		else  if(errorCode!=CommunicationConstants.CANCELED)
 		{			
-			listener.finishedSalvarFotoS3ComError(errorCode,errorMsg,idFiscalizacao);			
+			listener.finishedSalvarFotoS3ComError(errorCode,errorMsg,idFiscalizacao,posicaoFoto);			
 		}
 	}
 
 	public interface OnSalvarFotoS3PostExecuteListener<K>
 	{
 		public void finishedSalvarFotoS3ComResultado(Object result);
-		public void finishedSalvarFotoS3ComError(int errorCode, String error,Long idFiscalizacao);
+		public void finishedSalvarFotoS3ComError(int errorCode, String error,Long idFiscalizacao,Integer posicaoFoto);
 	}
 
 }

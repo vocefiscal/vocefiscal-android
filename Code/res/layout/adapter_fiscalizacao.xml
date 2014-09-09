@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:paddingBottom="10dp" >
 
     <RelativeLayout
         android:id="@+id/capa"
@@ -12,7 +13,7 @@
         <org.vocefiscal.bitmaps.RecyclingImageView
             android:id="@+id/foto"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="109dp"
             android:layout_alignParentTop="true"
             android:scaleType="centerCrop"
             android:src="@drawable/capa_conferir" />
@@ -85,17 +86,24 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/painel_info_1"
-        android:layout_marginBottom="10dp"
         android:layout_marginTop="-5dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp" >
+
+        <TextView
+            android:id="@+id/data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/zona__local_secao_eleitoral"
+            android:text="04/09/2014 às 17:35:34 GMT-3"
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/zona__local_secao_eleitoral"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
             android:text="Zona Eleitoral: 0066 | Local de Votação: 1317 | Seção Eleitoral: 0319"
             android:textSize="10sp" />
     </RelativeLayout>

@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:text="Buscando fotos..."
-        android:textColor="#aeaeae"
+        android:textColor="@color/azul_vocefiscal"
         android:textSize="20sp"
         android:textStyle="bold" />
 

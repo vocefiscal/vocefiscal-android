@@ -86,6 +86,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter
 	public void updateListaDeFiscalizacoes(ArrayList<Fiscalizacao> listaDeFiscalizacoes) 
 	{
 		 this.listaDeFiscalizacoes = listaDeFiscalizacoes;
-		 conferirFragment.updateListaDeFiscalizacoes(listaDeFiscalizacoes); 		
+		 if(conferirFragment!=null)
+			 conferirFragment.updateListaDeFiscalizacoes(listaDeFiscalizacoes); 		
 	}
 }

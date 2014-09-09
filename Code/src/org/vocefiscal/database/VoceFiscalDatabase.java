@@ -80,6 +80,11 @@ public class VoceFiscalDatabase
 		
 	}
 	
+	public boolean updatePodeEnviarRedeDeDados(Long idFiscalizacao, int i) 
+	{
+		return mDatabaseOpenHelper.updatePodeEnviarRedeDeDados(idFiscalizacao, i) ;	
+	}
+	
 	public ArrayList<Fiscalizacao> getFiscalizacoes()
 	{
 		ArrayList<Fiscalizacao> fiscalizacoes = null;
@@ -509,28 +514,26 @@ public class VoceFiscalDatabase
 			return resposta;
 		}
 
-		//		public boolean updateRideStatus(Long id, String status) 
-		//		{
-		//			boolean resposta = false;
-		//
-		//			if(id!=null&&status!=null)
-		//			{
-		//				String whereClause = RIDE_IDRIDE + " = ?";
-		//				String[] whereClauseArgs = new String[] {String.valueOf(id)};
-		//
-		//				ContentValues initialValues = new ContentValues();
-		//
-		//				initialValues.put(RIDE_STATUS,status);
-		//
-		//				if(mDatabase!=null)
-		//				{
-		//					resposta =  mDatabase.update(TABELA_RIDE,initialValues, whereClause, whereClauseArgs)>0;											
-		//				}					
-		//			}			
-		//			return resposta;
-		//		}
-		//
-		//		
+		public boolean updatePodeEnviarRedeDeDados(Long idFiscalizacao, int podeEnviarRedeDeDados) 
+		{
+			boolean resposta = false;
+
+			if(idFiscalizacao!=null)
+			{
+				String whereClause = FISCALIZACAO_IDFISCALIZACAO + " = ?";
+				String[] whereClauseArgs = new String[] {String.valueOf(idFiscalizacao)};
+
+				ContentValues initialValues = new ContentValues();
+				initialValues.put(FISCALIZACAO_PODEENVIARREDEDADOS, podeEnviarRedeDeDados);
+
+				if(mDatabase!=null)
+				{
+					resposta =  mDatabase.update(TABELA_FISCALIZACAO,initialValues, whereClause, whereClauseArgs)>0;				
+				}
+			}
+
+			return resposta;
+		}	
 
 		@Override
 		public void onCreate(SQLiteDatabase db) 
