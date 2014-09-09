@@ -136,8 +136,8 @@
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:layout_marginTop="10dp" >
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal" >
 
                 <TextView
                     android:id="@+id/textoZonaEleitoral"
@@ -163,16 +163,16 @@
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:layout_marginTop="10dp" >
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal" >
 
                 <TextView
                     android:id="@+id/textoMunicipio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="NO MUNICÍPIO DE"
-                    android:textSize="18sp"
                     android:textColor="@color/azul_vocefiscal_escuro"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -193,26 +193,36 @@
                 android:paddingBottom="20dp"
                 android:paddingTop="20dp" >
 
-                <ImageView
-                    android:id="@+id/imageView3"
+                <com.facebook.widget.LoginButton
+                    android:id="@+id/postStatusUpdateButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignTop="@+id/imageView2"
-                    android:layout_marginRight="33dp"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="24dp"
+                    android:layout_toLeftOf="@+id/twitterButton"
                     android:layout_weight="1"
-                    android:src="@drawable/btn_twitter" />
+                    android:src="@drawable/btn_facebook" />
+
+                <Button
+                    android:id="@+id/shareButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:gravity="center"
+                    android:text="Share"
+                    android:textStyle="bold"
+                    android:visibility="invisible" />
 
                 <ImageView
-                    android:id="@+id/welcome"
+                    android:id="@+id/twitterButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="15dp"
-                    android:layout_toLeftOf="@+id/imageView3"
+                    android:layout_alignBottom="@+id/postStatusUpdateButton"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/postStatusUpdateButton"
+                    android:layout_marginRight="26dp"
                     android:layout_weight="1"
-                    android:src="@drawable/btn_facebook"
-                    android:onClick="compartilharFacebook" />
+                    android:src="@drawable/btn_twitter" />
             </RelativeLayout>
 
             <RelativeLayout

@@ -44,7 +44,8 @@
                 android:id="@+id/diagramaSobre"
                 android:layout_width="match_parent"
                 android:layout_height="171dp"
-                android:src="@drawable/diagrama_sobre" />
+                android:src="@drawable/diagrama_sobre"
+                android:onClick="expandirFoto" />
 
             <TextView
                 android:id="@+id/tituloSobre"

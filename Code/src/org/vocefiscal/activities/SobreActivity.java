@@ -6,8 +6,10 @@ package org.vocefiscal.activities;
 import org.vocefiscal.R;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
 
 /**
  * @author fredveloso
@@ -60,5 +62,15 @@ public class SobreActivity extends Activity
 	public void voltar(View view) 
 	{
 	    finish();
+	}
+	
+	/**
+	 * Chamado para expandir a foto da tela Sobre
+	 * @param view
+	 */
+	public void expandirFoto (View v)
+	{
+		Intent intent = new Intent(SobreActivity.this,SobreFullScreenActivity.class);
+		startActivity(intent);
 	}
 }

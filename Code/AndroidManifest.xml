@@ -5,7 +5,7 @@
     android:versionName="1.0.4" >
 
     <uses-sdk
-        android:minSdkVersion="10"
+        android:minSdkVersion="11"
         android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -38,7 +38,8 @@
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -47,11 +48,67 @@
         android:largeHeap="true"
         android:theme="@style/Theme.Vocefical" >
         <activity
-            android:name="org.vocefiscal.activities.HomeActivity"
+            android:name=".activities.HomeActivity"
             android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activities.CameraActivity"
+            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name=".activities.EditarFotoActivity"
+            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name=".activities.ConferirImagensActivity"
+            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".activities.SobreActivity"
+            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
+            android:label="@string/title_activity_sobre"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".activities.FiscalizacaoConcluidaActivity"
+            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
+            android:label="@string/title_activity_fiscalizacao_concluida"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".activities.InformacoesFiscalizacaoActivity"
+            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+
+        <service android:name=".services.UploadManagerService" />
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/app_id" />
+
+        <activity android:name="com.facebook.LoginActivity" >
+        </activity>
+        <activity
+            android:name=".activities.SplashScreenActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -59,51 +116,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="org.vocefiscal.activities.CameraActivity"
-            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            android:name="org.vocefiscal.activities.SobreFullScreenActivity"
+            android:label="@string/title_activity_sobre_full_screen"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+             >
         </activity>
-        <activity
-            android:name="org.vocefiscal.activities.EditarFotoActivity"
-            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
-        </activity>
-        <activity
-            android:name="org.vocefiscal.activities.ConferirImagensActivity"
-            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar" >
-        </activity>
-        <activity
-            android:name="org.vocefiscal.activities.SobreActivity"
-            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
-            android:label="@string/title_activity_sobre"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar" >
-        </activity>
-        <activity
-            android:name="org.vocefiscal.activities.FiscalizacaoConcluidaActivity"
-            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
-            android:label="@string/title_activity_fiscalizacao_concluida"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar" >
-        </activity>
-        <activity
-            android:name="org.vocefiscal.activities.InformacoesFiscalizacaoActivity"
-            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar" >
-        </activity>
-
-        <service android:name="org.vocefiscal.services.UploadManagerService" />
-        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/app_id"/>
-        <activity android:name="com.facebook.LoginActivity"></activity>
     </application>
 
 </manifest>
