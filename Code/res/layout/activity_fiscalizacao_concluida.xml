@@ -17,7 +17,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:src="@drawable/selector_up_logo" />
+            android:src="@drawable/selector_up_logo"
+            android:onClick="voltar" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -193,36 +194,28 @@
                 android:paddingBottom="20dp"
                 android:paddingTop="20dp" >
 
-                <com.facebook.widget.LoginButton
-                    android:id="@+id/postStatusUpdateButton"
+                <ImageButton
+                    android:id="@+id/btn_facebook"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="24dp"
-                    android:layout_marginRight="24dp"
-                    android:layout_toLeftOf="@+id/twitterButton"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignTop="@+id/twitterButton"
+                    android:layout_marginLeft="30dp"
                     android:layout_weight="1"
-                    android:src="@drawable/btn_facebook" />
+                    android:background="@null"
+                    android:src="@drawable/selector_facebook_button"  />
 
-                <Button
-                    android:id="@+id/shareButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
-                    android:gravity="center"
-                    android:text="Share"
-                    android:textStyle="bold"
-                    android:visibility="invisible" />
-
-                <ImageView
+                <ImageButton
                     android:id="@+id/twitterButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/postStatusUpdateButton"
                     android:layout_alignParentRight="true"
-                    android:layout_alignTop="@+id/postStatusUpdateButton"
-                    android:layout_marginRight="26dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="30dp"
                     android:layout_weight="1"
+                    android:background="@null"
                     android:src="@drawable/btn_twitter" />
+
             </RelativeLayout>
 
             <RelativeLayout
@@ -259,6 +252,7 @@
                     android:src="@drawable/btn_map" />
             </RelativeLayout>
         </LinearLayout>
+
     </ScrollView>
 
 </LinearLayout>
