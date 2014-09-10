@@ -204,7 +204,6 @@ public class FiscalizacaoAdapter extends BaseAdapter
 										if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()) || fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_S3.ordinal()))
 										{
 											fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.PAUSADO.ordinal());
-
 											if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 												voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.PAUSADO.ordinal());
 
@@ -384,12 +383,16 @@ public class FiscalizacaoAdapter extends BaseAdapter
 	private void reiniciarEnvioFiscalizacao(final Fiscalizacao fiscalizacao,final ProgressBar upload_progress,	final TextView porcentagem_envio, final ImageView status_envio) 
 	{
 		fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIANDO.ordinal());
-
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 			voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIANDO.ordinal());											
 
-		//TODO ao invés de reiniciar o serviço, seria melhor iniciar somente este, ou ter um status PRONTO PARA ENVIO
 		Intent intent = new Intent(mContext, UploadManagerService.class);
+		
+		Bundle bundle = new Bundle();
+		bundle.putLong(UploadManagerService.ID_FISCALIZACAO,fiscalizacao.getIdFiscalizacao());
+		
+		intent.putExtras(bundle);
+		
 		mContext.startService(intent);
 
 		refreshItemParaEnvioInProgress(fiscalizacao, upload_progress,status_envio, porcentagem_envio);

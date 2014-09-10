@@ -19,6 +19,7 @@ import org.vocefiscal.models.enums.StatusEnvioEnum;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
 
 /**
@@ -27,12 +28,14 @@ import android.os.IBinder;
  */
 public class UploadManagerService extends Service implements OnSalvarFotoS3PostExecuteListener<Object>, OnSentMailListener
 {
+	public static final String ID_FISCALIZACAO = "id_fiscalizacao";
+
 	private VoceFiscalDatabase voceFiscalDatabase;	
-	
+
 	private int backoffS3 = 0;
-	
+
 	private int backoffEmail = 0;
-	
+
 	/* (non-Javadoc)
 	 * @see android.app.Service#onCreate()
 	 */
@@ -40,7 +43,7 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 	public void onCreate() 
 	{
 		super.onCreate();
-		
+
 		voceFiscalDatabase = new VoceFiscalDatabase(this);
 	}
 
@@ -50,53 +53,55 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
 	{
+		if(intent!=null)
+		{
+			Bundle bundle = intent.getExtras();
+
+			if(bundle!=null)
+			{
+				Long idFiscalizacao = bundle.getLong(ID_FISCALIZACAO, -1l);
+				if(idFiscalizacao>0l)
+				{
+					Fiscalizacao fiscalizacao = getFiscalizacaoById(idFiscalizacao);
+					if(fiscalizacao!=null)
+					{
+						startUploadingFiscalizacao(fiscalizacao);
+					}			
+				}else
+				{
+					startUploadingAllFiscalizacoes();
+				}
+			}else
+			{
+				startUploadingAllFiscalizacoes();
+			}
+		}else
+		{
+			startUploadingAllFiscalizacoes();
+		}
+
+		return super.onStartCommand(intent, flags, startId);
+	}
+
+	private void startUploadingAllFiscalizacoes() 
+	{
 		ArrayList<Fiscalizacao> listaDeFiscalizacoes = null;
-		
+
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 			listaDeFiscalizacoes = voceFiscalDatabase.getFiscalizacoes();				
-		
+
 		if(listaDeFiscalizacoes!=null&&listaDeFiscalizacoes.size()>0)
 		{
 			for(int i=0;i<listaDeFiscalizacoes.size();i++)
 			{
 				Fiscalizacao fiscalizacao = listaDeFiscalizacoes.get(i);
-				
+
 				if(fiscalizacao!=null)
 				{
 					if(fiscalizacao.getStatusDoEnvio()!=null&&fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()))
 					{
-						boolean isOnWiFi = CommunicationUtils.isWifi(getApplicationContext());
-						
-						if(isOnWiFi || (fiscalizacao.getPodeEnviarRedeDados()!=null&&fiscalizacao.getPodeEnviarRedeDados().equals(1)))
-						{														
-							ArrayList<String> picturePathList = fiscalizacao.getPicturePathList();
-							
-							if(picturePathList!=null&&picturePathList.size()>0)
-							{		
-								int quantidadeDeFotosUploaded = 0;
-								ArrayList<String> pictureURLList = fiscalizacao.getPictureURLList(); 
-								
-								if(pictureURLList!=null)
-									quantidadeDeFotosUploaded = pictureURLList.size();
-								
-								if(quantidadeDeFotosUploaded<picturePathList.size())
-								{									
-									SalvarFotoS3AsyncTask salvarFotoS3AsyncTask = new SalvarFotoS3AsyncTask(this, getApplicationContext(), picturePathList.get(quantidadeDeFotosUploaded), fiscalizacao.getIdFiscalizacao(), quantidadeDeFotosUploaded,0);
-									salvarFotoS3AsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);																		
-								}else
-								{		
-									fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO_S3.ordinal());
-									if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-										voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO_S3.ordinal());
-									
-									// redundância de envio por email. Não tem garantia que vai chegar, apesar de ter backoff
-									SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
-									sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
-									
-									//TODO - serviço para a API VF.
-								}
-							}
-						}
+						startUploadingFiscalizacao(fiscalizacao);
+
 					}else if(fiscalizacao.getStatusDoEnvio()!=null&&fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_S3.ordinal()))
 					{
 						boolean isOnWiFi = CommunicationUtils.isWifi(getApplicationContext());
@@ -106,15 +111,49 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 							// redundância de envio por email. Não tem garantia que vai chegar, apesar de ter backoff
 							SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
 							sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
-							
+
 							//TODO - serviço para a API VF.
 						}
 					}
 				}
 			}
 		}
-		
-		return super.onStartCommand(intent, flags, startId);
+	}
+
+	private void startUploadingFiscalizacao(Fiscalizacao fiscalizacao) 
+	{
+		boolean isOnWiFi = CommunicationUtils.isWifi(getApplicationContext());
+
+		if(isOnWiFi || (fiscalizacao.getPodeEnviarRedeDados()!=null&&fiscalizacao.getPodeEnviarRedeDados().equals(1)))
+		{														
+			ArrayList<String> picturePathList = fiscalizacao.getPicturePathList();
+
+			if(picturePathList!=null&&picturePathList.size()>0)
+			{		
+				int quantidadeDeFotosUploaded = 0;
+				ArrayList<String> pictureURLList = fiscalizacao.getPictureURLList(); 
+
+				if(pictureURLList!=null)
+					quantidadeDeFotosUploaded = pictureURLList.size();
+
+				if(quantidadeDeFotosUploaded<picturePathList.size())
+				{									
+					SalvarFotoS3AsyncTask salvarFotoS3AsyncTask = new SalvarFotoS3AsyncTask(this, getApplicationContext(), picturePathList.get(quantidadeDeFotosUploaded), fiscalizacao.getIdFiscalizacao(), quantidadeDeFotosUploaded,0);
+					salvarFotoS3AsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);																		
+				}else
+				{		
+					fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO_S3.ordinal());
+					if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
+						voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO_S3.ordinal());
+
+					// redundância de envio por email. Não tem garantia que vai chegar, apesar de ter backoff
+					SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
+					sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
+
+					//TODO - serviço para a API VF.
+				}
+			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -125,7 +164,7 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 	{
 		super.onDestroy();		
 	}
-	
+
 	/* (non-Javaoc)
 	 * @see android.app.Service#onBind(android.content.Intent)
 	 */
@@ -143,12 +182,12 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 	{
 		return super.onUnbind(intent);
 	}
-	
+
 	@Override
 	public void finishedSalvarFotoS3ComResultado(Object result) 
 	{
 		backoffS3 = 0;
-		
+
 		S3TaskResult resultado = (S3TaskResult) result;
 
 		Long idFiscalizacao = resultado.getIdFiscalizacao();	
@@ -167,11 +206,11 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 				if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 					voceFiscalDatabase.addPictureURL(idFiscalizacao,resultado.getUrlDaFoto().toString());
 			}				
-			
+
 			if(fiscalizacao.getStatusDoEnvio()!=null&&fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()))
 			{				
 				boolean isOnWiFi = CommunicationUtils.isWifi(getApplicationContext());	
-				
+
 				if(isOnWiFi || (fiscalizacao.getPodeEnviarRedeDados()!=null&&fiscalizacao.getPodeEnviarRedeDados().equals(1)))
 				{
 					ArrayList<String> picturePathList = fiscalizacao.getPicturePathList();
@@ -187,7 +226,7 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 						fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO_S3.ordinal());
 						if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 							voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO_S3.ordinal());
-						
+
 						// redundância de envio por email. Não tem garantia que vai chegar, apesar de ter backoff
 						SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
 						sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
@@ -203,27 +242,30 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 	public void finishedSalvarFotoS3ComError(int errorCode, String error,Long idFiscalizacao,Integer posicaoFoto) 
 	{		
 		Fiscalizacao fiscalizacao = getFiscalizacaoById(idFiscalizacao);
-		
+
 		if(fiscalizacao!=null)
 		{
 			backoffS3++;	
-			
+
 			ArrayList<String> picturePathList = fiscalizacao.getPicturePathList();
-			
+
 			SalvarFotoS3AsyncTask salvarFotoS3AsyncTask = new SalvarFotoS3AsyncTask(this, getApplicationContext(), picturePathList.get(posicaoFoto), idFiscalizacao, posicaoFoto,CommunicationConstants.WAIT_RETRY*backoffS3);
 			salvarFotoS3AsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);						
 		}		
 	}
-	
+
 	private Fiscalizacao getFiscalizacaoById(Long idFiscalizacao) 
 	{
+		
+		//TODO implementar este método em nível de SQL na base
+		
 		Fiscalizacao fiscalizacao = null;
-		
+
 		ArrayList<Fiscalizacao> listaDeFiscalizacoes = null;
-		
+
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 			listaDeFiscalizacoes = voceFiscalDatabase.getFiscalizacoes();
-		
+
 		if(listaDeFiscalizacoes!=null&&listaDeFiscalizacoes.size()>0&&idFiscalizacao!=null)
 		{
 			for(Fiscalizacao fiscalizaoAnalisada : listaDeFiscalizacoes)
@@ -235,7 +277,7 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 				}				
 			}
 		}
-		
+
 		return fiscalizacao;
 	}
 
@@ -249,7 +291,7 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 		{
 
 			Fiscalizacao fiscalizacao = getFiscalizacaoById(idFiscalizacao);
-			
+
 			if(fiscalizacao!=null)
 			{
 				backoffEmail++;
@@ -258,7 +300,7 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 				sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
 			}			
 		}
-		
+
 	}
 
 }
