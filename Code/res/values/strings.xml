@@ -14,5 +14,16 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_fiscalizacao_concluida">FISCALIZAÇÃO CONCLUÍDA</string>
     <string name="obrigado_finalizacao_concluida">OBRIGADO POR CONTRIBUIR\n COM A DEMOCRACIA</string>
+    <string name="app_id">692054314213948</string>
+    <string name="status_update">Updating status for %1$s at %2$s</string>
+    <string name="hello_user">Hello %1$s!</string>
+    <string name="cancelled">cancelled</string>
+    <string name="permission_not_granted">Unable to perform selected action because permissions were not granted.</string>
+    <string name="ok">OK</string>
+    <string name="success">Sucess</string>
+    <string name="successfully_posted_post">Successfully posted \'%1$s\'.\nPost ID: %2$s</string>
+    <string name="error">Erro</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_sobre_full_screen">SobreFullScreenActivity</string>
 
 </resources>

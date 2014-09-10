@@ -1,0 +1,2 @@
+eclipse.preferences.version=1
+org.jboss.ide.eclipse.as.core.singledeployable.deployableList=src/org/vocefiscal/adapters/FiscalizacaoAdapter.java\nsrc/org/vocefiscal/services/UploadManagerService.java\n

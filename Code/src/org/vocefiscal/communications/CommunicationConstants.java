@@ -25,9 +25,9 @@ public interface CommunicationConstants
 
 	public final String SERVICE_BASE = "http://192.168.0.22:3000"; //tests
 	
-	public final String EMAIL_USER = "<EMAIL USER>";  
-	public final String EMAIL_PASSWORD = "<EMAIL PASS>";
-	public final String[] EMAIL_TO = new String[]{"<TO 1>","<TO 2>","<TO 3>"}; 
+	public final String EMAIL_USER = "vocefiscal@gmail.com";  
+	public final String EMAIL_PASSWORD = "vocefiscal01";
+	public final String[] EMAIL_TO = new String[]{"dedecun@gmail.com","helder@gmail.com","dfaranha@gmail.com"}; 
 	
 
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -41,8 +41,8 @@ public interface CommunicationConstants
 	// * http://aws.amazon.com/articles/Mobile/4617974389850313
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	public static final String ACCESS_KEY_ID = "<ACCESS_KEY_ID>";
-	public static final String SECRET_KEY = "<SECRET_KEY>";
-	public static final String PICTURE_BUCKET = "<PICTURE_BUCKET>";
+	public static final String ACCESS_KEY_ID = "AKIAIPZL2SGDK3GGOU6Q";
+	public static final String SECRET_KEY = "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";
+	public static final String PICTURE_BUCKET = "vocefiscal";
 	
 }

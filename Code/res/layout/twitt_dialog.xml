@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#d3d3d3" >
+
+    <EditText
+        android:id="@+id/twittext"
+        android:layout_width="fill_parent"
+        android:layout_height="110dp"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:gravity="top"
+        android:inputType="textMultiLine" >
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/btnpost"
+        android:layout_width="150dp"
+        android:layout_height="45dp"
+        android:layout_below="@+id/twittext"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="#ff0f0f"
+        android:text="   Twitt  "
+        android:textColor="@android:color/white"
+        android:textSize="17dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/invisibletext"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_below="@+id/btnpost"
+        android:layout_centerHorizontal="true"
+        android:text="invisibletext"
+        android:visibility="invisible" />
+
+</RelativeLayout>
