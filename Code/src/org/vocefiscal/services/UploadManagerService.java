@@ -255,28 +255,11 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 	}
 
 	private Fiscalizacao getFiscalizacaoById(Long idFiscalizacao) 
-	{
-		
-		//TODO implementar este método em nível de SQL na base
-		
+	{		
 		Fiscalizacao fiscalizacao = null;
-
-		ArrayList<Fiscalizacao> listaDeFiscalizacoes = null;
-
+		
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-			listaDeFiscalizacoes = voceFiscalDatabase.getFiscalizacoes();
-
-		if(listaDeFiscalizacoes!=null&&listaDeFiscalizacoes.size()>0&&idFiscalizacao!=null)
-		{
-			for(Fiscalizacao fiscalizaoAnalisada : listaDeFiscalizacoes)
-			{
-				if(fiscalizaoAnalisada.getIdFiscalizacao().equals(idFiscalizacao))
-				{
-					fiscalizacao = fiscalizaoAnalisada;
-					break;
-				}				
-			}
-		}
+			fiscalizacao = voceFiscalDatabase.getFiscalizacao(idFiscalizacao);
 
 		return fiscalizacao;
 	}
