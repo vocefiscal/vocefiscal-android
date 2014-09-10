@@ -20,7 +20,6 @@ import org.vocefiscal.models.enums.StatusEnvioEnum;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.widget.Toast;
 
 /**
  * @author andre
@@ -54,9 +53,7 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 		ArrayList<Fiscalizacao> listaDeFiscalizacoes = null;
 		
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-			listaDeFiscalizacoes = voceFiscalDatabase.getFiscalizacoes();
-		
-		boolean isOnWiFi = CommunicationUtils.isWifi(getApplicationContext());
+			listaDeFiscalizacoes = voceFiscalDatabase.getFiscalizacoes();				
 		
 		if(listaDeFiscalizacoes!=null&&listaDeFiscalizacoes.size()>0)
 		{
@@ -68,6 +65,8 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 				{
 					if(fiscalizacao.getStatusDoEnvio()!=null&&fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()))
 					{
+						boolean isOnWiFi = CommunicationUtils.isWifi(getApplicationContext());
+						
 						if(isOnWiFi || (fiscalizacao.getPodeEnviarRedeDados()!=null&&fiscalizacao.getPodeEnviarRedeDados().equals(1)))
 						{														
 							ArrayList<String> picturePathList = fiscalizacao.getPicturePathList();
@@ -81,11 +80,7 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 									quantidadeDeFotosUploaded = pictureURLList.size();
 								
 								if(quantidadeDeFotosUploaded<picturePathList.size())
-								{
-									fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIANDO.ordinal());
-									if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-										voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIANDO.ordinal());
-									
+								{									
 									SalvarFotoS3AsyncTask salvarFotoS3AsyncTask = new SalvarFotoS3AsyncTask(this, getApplicationContext(), picturePathList.get(quantidadeDeFotosUploaded), fiscalizacao.getIdFiscalizacao(), quantidadeDeFotosUploaded,0);
 									salvarFotoS3AsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);																		
 								}else
@@ -98,9 +93,21 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 									SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
 									sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
 									
-									//TODO - serviço para a API VF. Criar status "transferido" para não correr risco de retransmitir e tratar falhas
+									//TODO - serviço para a API VF.
 								}
 							}
+						}
+					}else if(fiscalizacao.getStatusDoEnvio()!=null&&fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_S3.ordinal()))
+					{
+						boolean isOnWiFi = CommunicationUtils.isWifi(getApplicationContext());
+
+						if(isOnWiFi || (fiscalizacao.getPodeEnviarRedeDados()!=null&&fiscalizacao.getPodeEnviarRedeDados().equals(1)))
+						{
+							// redundância de envio por email. Não tem garantia que vai chegar, apesar de ter backoff
+							SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
+							sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
+							
+							//TODO - serviço para a API VF.
 						}
 					}
 				}
@@ -194,8 +201,7 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 
 	@Override
 	public void finishedSalvarFotoS3ComError(int errorCode, String error,Long idFiscalizacao,Integer posicaoFoto) 
-	{
-		
+	{		
 		Fiscalizacao fiscalizacao = getFiscalizacaoById(idFiscalizacao);
 		
 		if(fiscalizacao!=null)
@@ -205,9 +211,7 @@ public class UploadManagerService extends Service implements OnSalvarFotoS3PostE
 			ArrayList<String> picturePathList = fiscalizacao.getPicturePathList();
 			
 			SalvarFotoS3AsyncTask salvarFotoS3AsyncTask = new SalvarFotoS3AsyncTask(this, getApplicationContext(), picturePathList.get(posicaoFoto), idFiscalizacao, posicaoFoto,CommunicationConstants.WAIT_RETRY*backoffS3);
-			salvarFotoS3AsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-			
-			Toast.makeText(getApplicationContext(), "Problemas na sua conexão. Continuamos tentando enviar a fiscalização da seção "+fiscalizacao.getSecaoEleitoral()+".", Toast.LENGTH_SHORT).show();
+			salvarFotoS3AsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);						
 		}		
 	}
 	

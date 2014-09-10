@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.vocefiscal"
-    android:versionCode="4"
-    android:versionName="1.0.4" >
+    android:versionCode="5"
+    android:versionName="1.0.5" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -119,8 +119,7 @@
             android:name="org.vocefiscal.activities.SobreFullScreenActivity"
             android:label="@string/title_activity_sobre_full_screen"
             android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-             >
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
     </application>
 

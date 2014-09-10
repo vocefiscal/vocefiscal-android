@@ -28,15 +28,13 @@ import android.widget.TextView;
  * @author andre
  *
  */
-public class ConferirImagensActivity extends Activity//  implements OnSentMailListener,OnSalvarFotoS3PostExecuteListener<Object>
+public class ConferirImagensActivity extends Activity
 {
 
 	private ArrayList<String> picturePathList;
 	
 	private ArrayList<String> picture30PCPathList;
 	
-	//private ArrayList<String> pictureURLList;
-
 	private ImageFetcher imageFetcher;
 
 	private int fotoWidth = -1;
@@ -50,12 +48,6 @@ public class ConferirImagensActivity extends Activity//  implements OnSentMailLi
 	public static final String MODO_HISTORICO = "modo_historico";
 
 	private Handler handler;
-
-//	private LinearLayout progressBarLayout;
-//
-//	private LinearLayout progressLayout;
-//
-//	private CustomDialogClass envio;
 	
 	private boolean isModoHistorico = false;
 
@@ -201,15 +193,6 @@ public class ConferirImagensActivity extends Activity//  implements OnSentMailLi
 				}, 1000);
 			}
 		});
-
-		/*
-		 * Envio de fotos por email - não estará presente na versão final, apenas em versões intermediarias para testar experiencia e resultados
-		 */
-
-//		progressBarLayout = (LinearLayout) findViewById(R.id.progressbarlayout);
-//		progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
-//		envio = new CustomDialogClass(ConferirImagensActivity.this, "Título", "Msg");
-
 	}	
 
 	/* (non-Javadoc)
@@ -268,163 +251,4 @@ public class ConferirImagensActivity extends Activity//  implements OnSentMailLi
 			}
 		}, 1000);		
 	}
-
-//	protected void enviarFotosParaS3() 
-//	{
-//		if(picturePathList!=null&&picturePathList.size()>0)
-//		{	
-//			if(progressBarLayout!=null)
-//				progressBarLayout.setVisibility(View.VISIBLE);
-//			if(progressLayout!=null)
-//				progressLayout.setVisibility(View.VISIBLE);
-//			
-//			SalvarFotoS3AsyncTask salvarFotoS3AsyncTask = new SalvarFotoS3AsyncTask(this, getApplicationContext(), picturePathList.get(0), 0);
-//			salvarFotoS3AsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//			
-//		}else
-//		{
-//			Toast.makeText(getApplicationContext(), "Não há fotos para enviar para o S3", Toast.LENGTH_LONG).show();
-//		}
-//		
-//	}
-	
-	
-//	private void enviarPorEmail()
-//	{
-//		if(pictureURLList!=null&&pictureURLList.size()>0)
-//		{	          	        
-//			/*
-//			 * Conteúdo
-//			 */
-//			StringBuilder sb = new StringBuilder();
-//			sb.append("Enviadas com o Você Fiscal Android.");
-//			sb.append("\n\n");
-//			sb.append("Debug-infos:");
-//			sb.append("\n OS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")");
-//			sb.append("\n OS API Level: " + android.os.Build.VERSION.SDK);
-//			sb.append("\n Device: " + android.os.Build.DEVICE);
-//			sb.append("\n Model (and Product): " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")");
-//			sb.append("\n\n");
-//			for(int i=0;i<pictureURLList.size();i++)
-//			{
-//				String url = pictureURLList.get(i);
-//				sb.append("\n Foto "+(i+1)+": "+url);
-//			}
-//
-//
-//			String from = "vocefiscal@gmail.com";
-//			String[] to = new String[]{"dedecun@gmail.com","helder@gmail.com","dfaranha@gmail.com"}; 
-//			String body = sb.toString();
-//			String subject = "[Você Fiscal] - Fotos de teste ";
-//
-//			SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this, to, from, subject, body, null, progressBarLayout, progressLayout);
-//			sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//
-//		}else
-//		{
-//			emailFalhou(-1);
-//		}	
-//	}
-//
-//	@Override
-//	public void finishedSendingEmail(Boolean result, int errorCode) 
-//	{
-//		if(result)
-//		{
-//			emailEnviadoCorretamente();
-//		}else
-//		{
-//			emailFalhou(errorCode);
-//		}	
-//
-//	}
-//
-//	public void doNothing(View view)
-//	{
-//		//do nothing
-//	}
-//
-//	private void emailEnviadoCorretamente() 
-//	{
-//		BtnsControl btnsEnvio = new BtnsControl() 
-//		{
-//
-//			@Override
-//			public void positiveBtnClicked() 
-//			{
-//				finish();
-//			}
-//
-//			@Override
-//			public void negativeBtnClicked() 
-//			{
-//				finish();
-//			}
-//		};
-//
-//		envio.setBtnsControl(btnsEnvio, "OK", null);
-//		envio.setTitulo("Sucesso");
-//		envio.setPergunta("Fotos do BU enviadas com sucesso!");
-//		envio.show();
-//		envio.negativeButtonGone();			
-//	}
-//
-//	private void emailFalhou(int errorCode)
-//	{			
-//		String msg = "Não foi possível enviar as fotos.";
-//		if(errorCode == SendEmailAsyncTask.SEM_CONEXAO_COM_A_INTERNET)
-//		{
-//			msg = "Sem conexão com a internet";
-//		}
-//
-//		BtnsControl btnsErrosEnvio = new BtnsControl() 
-//		{
-//
-//			@Override
-//			public void positiveBtnClicked() 
-//			{
-//				enviarPorEmail();
-//			}
-//
-//			@Override
-//			public void negativeBtnClicked() 
-//			{
-//				finish();
-//			}
-//		};
-//
-//
-//		envio.setBtnsControl(btnsErrosEnvio, "Tentar", "Cancelar");
-//		envio.setTitulo("Falhou");
-//		envio.setPergunta(msg);
-//		envio.show();				
-//	}
-//
-//	@Override
-//	public void finishedSalvarFotoS3ComResultado(Object result) 
-//	{
-//		S3TaskResult resultado = (S3TaskResult) result;
-//		
-//		pictureURLList.add(resultado.getUrlDaFoto().toString());
-//		
-//		Integer idFoto = resultado.getIdFoto();
-//		idFoto++;
-//		if(idFoto<picturePathList.size())
-//		{
-//			SalvarFotoS3AsyncTask salvarFotoS3AsyncTask = new SalvarFotoS3AsyncTask(this, getApplicationContext(), picturePathList.get(idFoto), idFoto);
-//			salvarFotoS3AsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//		}else
-//		{
-//			enviarPorEmail();
-//		}		
-//	}
-//
-//	@Override
-//	public void finishedSalvarFotoS3ComError(int errorCode, String error) 
-//	{
-//		progressLayout.setVisibility(View.INVISIBLE);
-//		progressBarLayout.setVisibility(View.INVISIBLE);
-//		Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();		
-//	}
-
 }
