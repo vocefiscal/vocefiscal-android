@@ -1,4 +1,4 @@
-package org.vocefiscal.utils;
+package org.vocefiscal.bitmaps;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;

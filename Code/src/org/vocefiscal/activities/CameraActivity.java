@@ -15,9 +15,9 @@ import java.util.List;
 import org.vocefiscal.R;
 import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
 import org.vocefiscal.bitmaps.ImageFetcher;
+import org.vocefiscal.bitmaps.ImageHandler;
 import org.vocefiscal.bitmaps.RecyclingImageView;
 import org.vocefiscal.models.enums.FlashModeEnum;
-import org.vocefiscal.utils.ImageHandler;
 import org.vocefiscal.views.CameraPreview;
 
 import android.annotation.SuppressLint;

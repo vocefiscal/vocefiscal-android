@@ -7,10 +7,10 @@ import org.vocefiscal.R;
 import org.vocefiscal.adapters.SectionsPagerAdapter;
 import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
 import org.vocefiscal.bitmaps.ImageFetcher;
+import org.vocefiscal.bitmaps.ImageHandler;
 import org.vocefiscal.database.VoceFiscalDatabase;
 import org.vocefiscal.models.Fiscalizacao;
 import org.vocefiscal.services.UploadManagerService;
-import org.vocefiscal.utils.ImageHandler;
 
 import android.content.Intent;
 import android.os.Bundle;
