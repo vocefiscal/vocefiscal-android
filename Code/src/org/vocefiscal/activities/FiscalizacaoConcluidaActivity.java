@@ -1,17 +1,35 @@
 package org.vocefiscal.activities;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.vocefiscal.R;
-import org.vocefiscal.activities.MainFragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.*;
+import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class FiscalizacaoConcluidaActivity extends FragmentActivity 
+import com.facebook.FacebookRequestError;
+import com.facebook.HttpMethod;
+import com.facebook.LoggingBehavior;
+import com.facebook.Request;
+import com.facebook.RequestAsyncTask;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.Settings;
+
+public class FiscalizacaoConcluidaActivity extends Activity 
 {
 	// Replace your KEY here and Run ,
 	public final String consumer_key = "trWwomp0b09ER2A8H1cQg";
@@ -23,55 +41,35 @@ public class FiscalizacaoConcluidaActivity extends FragmentActivity
 	public static final String SECAO = "secao";
 	public static final String ZONA = "zona";
 	public static final String MUNICIPIO = "municipio";
-	
+
 	//Variável de permissão do Facebook
 	public static final String TAB_TO_SELECT = "tab_to_select";
 	public static final int FISCALIZAR = 0;
 	public static final int CONFERIR = 1;
+
 	private String secao;
 	private String zonaEleitoral;
 	private String municipio;
-	private MainFragment mainFragment;
 
-    // Instance of Facebook Class
-    String FILENAME = "AndroidSSO_data";
+	public static final String USER = "user";
+
+	//Facebook Login
+	private Session.StatusCallback statusCallback;
+	private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
+	private ImageButton facebookLogin;	
+	private static final String TAG = "FiscalizacaoConcluidaActivity";
 
 
-//	private Session.StatusCallback callback = new Session.StatusCallback() {
-//		@Override
-//		public void call(Session session, SessionState state, Exception exception) {
-//			onSessionStateChange(session, state, exception);
-//		}
-//	};
-
-//	private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
-//		@Override
-//		public void onError(FacebookDialog.PendingCall pendingCall, Exception error, Bundle data) {
-//			Log.d("Olá Facebook", String.format("Error: %s", error.toString()));
-//		}
-//
-//		@Override
-//		public void onComplete(FacebookDialog.PendingCall pendingCall, Bundle data) {
-//			Log.d("Olá Facebook", "Successo!");
-//		}
-//	};
+	// Instance of Facebook Class
+	String FILENAME = "AndroidSSO_data";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		
-		if (savedInstanceState == null) {
-	       // Add the fragment on initial activity setup
-	        mainFragment = new MainFragment();
-	        getSupportFragmentManager().beginTransaction().add(android.R.id.content, mainFragment).commit();
-	    } else {
-	        // Or set the fragment from restored state info
-	        mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(android.R.id.content);
-	    }
-		
+
 		setContentView(R.layout.activity_fiscalizacao_concluida);
-		
+
 		/*
 		 * Captando a missão
 		 */
@@ -84,8 +82,7 @@ public class FiscalizacaoConcluidaActivity extends FragmentActivity
 				secao = bundle.getString(InformacoesFiscalizacaoActivity.SECAO);
 				zonaEleitoral = bundle.getString(InformacoesFiscalizacaoActivity.ZONA);
 				municipio = bundle.getString(InformacoesFiscalizacaoActivity.MUNICIPIO);
-				
-				//Toast.makeText(getBaseContext(), ("Você fiscalizou a seção: "+ secao +"\nna zona eleitoral").toString() + zonaEleitoral, Toast.LENGTH_LONG).show();
+
 			}
 		}
 
@@ -97,7 +94,48 @@ public class FiscalizacaoConcluidaActivity extends FragmentActivity
 
 		TextView municipio = (TextView)findViewById(R.id.municipio);
 		municipio.setText(this.municipio);
-	
+
+		//Listener do botão Compartilhar no Facebook
+		facebookLogin = (ImageButton) findViewById(R.id.btn_facebook);
+		facebookLogin.setOnClickListener(new OnClickListener() 
+		{
+
+			@Override
+			public void onClick(View v) {
+				
+			
+				//Pega a sessão ativa
+				Session session = Session.getActiveSession();
+				if(session.isOpened())
+				{
+					publishStory();	
+				}
+
+			}
+		});
+
+		statusCallback = new SessionStatusCallback();
+
+		Settings.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
+
+		Session session = Session.getActiveSession();
+		if (session == null) 
+		{
+			if (savedInstanceState != null) 
+			{
+				session = Session.restoreSession(this, null, statusCallback, savedInstanceState);
+			}
+			else if (session == null) 
+			{
+				session = new Session(this);
+			}
+			Session.setActiveSession(session);
+			if (session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) 
+			{
+				session.openForRead(new Session.OpenRequest(this).setCallback(statusCallback));
+			}
+		}
+
 	}
 
 	/**
@@ -145,40 +183,140 @@ public class FiscalizacaoConcluidaActivity extends FragmentActivity
 
 	}
 
-	/**
-	 * Método de clique do botão "compartilhar" que realiza a postagem de status no facebook
-	 * @param view
-	 */
-	public void compartilharFacebook(View view)
-	{
-		//loginToFacebook();
-		//publishStory();
-		//postToWall();
-		//onClickPostStatusUpdate();
-	}
-	
-	public String getSecao(){
-		return this.secao;
-	}
-	
-	public String getZonaEleitoral(){
-		return this.zonaEleitoral;
-	}
-	
-	public String getMunicipio(){
-		return this.municipio;
-	}
 
-
-
-	
 	/**
 	 * Chamada quando o botão mapa é clicado
 	 * @param view
 	 */
 	public void mapaSecoes(View view)
 	{
-		//TODO
-		
+
 	}
+
+	/**
+	 * Publica no mural do Facebook
+	 */
+	private void publishStory() {
+		Session session = Session.getActiveSession();
+
+		if (session != null){
+
+			// Check for publish permissions    
+			List<String> permissions = session.getPermissions();
+			if (!isSubsetOf(PERMISSIONS, permissions)) {
+				Session.NewPermissionsRequest newPermissionsRequest = new Session
+						.NewPermissionsRequest(this, PERMISSIONS);
+				session.requestNewPublishPermissions(newPermissionsRequest);
+				return;
+			}
+
+			Bundle postParams = new Bundle();
+			postParams.putString("name", "Você Fiscal");
+
+			// Receber os dados da eleição!!!
+			postParams.putString("message", "Você fiscalizou a seção: "+ this.secao +"\nNa zona eleitoral: " + this.zonaEleitoral + "\nNo município de: " + this.municipio);
+			//postParams.putString("caption", "Você fiscalizou a seção: "+ this.secao +"\nna zona eleitoral" + this.zonaEleitoral + "\nno município de" + this.municipio);
+			postParams.putString("description", "Obrigado por contribruir com a democracia!");
+			postParams.putString("link", "http://www.vocefiscal.org/");
+			postParams.putString("picture", "http://imagizer.imageshack.us/v2/150x100q90/913/bAwPgx.png");
+
+			Request.Callback callback= new Request.Callback() {
+				public void onCompleted(Response response) {
+					JSONObject graphResponse = response.getGraphObject().getInnerJSONObject();
+					String postId = null;
+					try {
+						postId = graphResponse.getString("id");
+					} catch (JSONException e) {
+						Log.i(TAG,
+								"JSON error "+ e.getMessage());
+					}
+					FacebookRequestError error = response.getError();
+					if (error != null) {
+						Toast.makeText(FiscalizacaoConcluidaActivity.this.getApplicationContext(),error.getErrorMessage(),
+								Toast.LENGTH_SHORT).show();
+					} else {
+						Toast.makeText(FiscalizacaoConcluidaActivity.this.getApplicationContext(), 
+								postId,
+								Toast.LENGTH_LONG).show();
+					}
+				}
+			};
+
+			Request request = new Request(session, "me/feed", postParams, 
+					HttpMethod.POST, callback);
+
+			RequestAsyncTask task = new RequestAsyncTask(request);
+			task.execute();
+		}
+
+	}
+
+	private class SessionStatusCallback implements Session.StatusCallback
+	{
+		@Override
+		public void call(Session session, SessionState state, Exception exception) 
+		{
+			if (session.isOpened()) 
+			{							
+				List<String> permissions = session.getPermissions();
+
+				List<String> PERMISSIONS = Arrays.asList("publish_actions");
+
+				if (!isSubsetOf(PERMISSIONS, permissions)) 
+				{
+					Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(FiscalizacaoConcluidaActivity.this, PERMISSIONS);
+					session.requestNewReadPermissions(newPermissionsRequest);
+					return;
+				}
+				
+			}									
+			
+		}
+	}
+
+	private boolean isSubsetOf(Collection<String> subset,Collection<String> superset) 
+	{
+		for (String string : subset) 
+		{
+			if (!superset.contains(string)) 
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void onStart() 
+	{
+		super.onStart();
+		Session.getActiveSession().addCallback(statusCallback);
+	}
+
+	@Override
+	public void onStop() 
+	{   
+		super.onStop();
+		Session.getActiveSession().removeCallback(statusCallback);        
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) 
+	{
+		super.onSaveInstanceState(outState);
+		Session session = Session.getActiveSession();
+		Session.saveSession(session, outState);
+	}	
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    super.onActivityResult(requestCode, resultCode, data);
+	    Session.getActiveSession()
+	        .onActivityResult(this, requestCode, resultCode, data);
+	}
+	public void voltar(View view)
+	{
+		finish();
+	}
+
 }

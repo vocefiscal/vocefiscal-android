@@ -192,8 +192,8 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         int id = item.getItemId();
         if (id == R.id.sobre) 
         {
-        	Intent intent = new Intent(HomeActivity.this,SobreActivity.class);
-        	//Intent intent = new Intent(HomeActivity.this,FiscalizacaoConcluidaActivity.class);
+        	//Intent intent = new Intent(HomeActivity.this,SobreActivity.class);
+        	Intent intent = new Intent(HomeActivity.this,FiscalizacaoConcluidaActivity.class);
         	startActivity(intent);
             return true;
         }
