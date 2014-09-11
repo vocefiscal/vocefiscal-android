@@ -193,6 +193,9 @@ public class FiscalizacaoConcluidaActivity extends Activity
 
 	}
 
+	/**
+	 * Publica no mural do Facebook
+	 */
 	private void publishStory() {
 		Session session = Session.getActiveSession();
 
@@ -211,7 +214,8 @@ public class FiscalizacaoConcluidaActivity extends Activity
 			postParams.putString("name", "Você Fiscal");
 
 			// Receber os dados da eleição!!!
-			postParams.putString("caption", "Você fiscalizou a seção: "+ this.secao +"\nna zona eleitoral" + this.zonaEleitoral + "\nno município de" + this.municipio);
+			postParams.putString("message", "Você fiscalizou a seção: "+ this.secao +"\nNa zona eleitoral: " + this.zonaEleitoral + "\nNo município de: " + this.municipio);
+			//postParams.putString("caption", "Você fiscalizou a seção: "+ this.secao +"\nna zona eleitoral" + this.zonaEleitoral + "\nno município de" + this.municipio);
 			postParams.putString("description", "Obrigado por contribruir com a democracia!");
 			postParams.putString("link", "http://www.vocefiscal.org/");
 			postParams.putString("picture", "http://imagizer.imageshack.us/v2/150x100q90/913/bAwPgx.png");
@@ -265,11 +269,7 @@ public class FiscalizacaoConcluidaActivity extends Activity
 					return;
 				}
 				
-			}
-			
-			
-			
-			
+			}									
 			
 		}
 	}
