@@ -181,6 +181,100 @@ public class VoceFiscalDatabase
 		
 		return fiscalizacoes;
 	}
+	
+	public Fiscalizacao getFiscalizacao(Long idFiscalizacao) 
+	{
+		Fiscalizacao fiscalizacao = null;
+
+		if(idFiscalizacao!=null)
+		{
+			try
+			{
+				String selection = null;
+				String[] selectionArgs = null;
+
+				selection = FISCALIZACAO_IDFISCALIZACAO + " = ?";
+				selectionArgs = new String[] {String.valueOf(idFiscalizacao)};
+
+				Cursor fiscalizacaoCursor =  query(selection, selectionArgs, null, TABELA_FISCALIZACAO);
+				if(fiscalizacaoCursor!=null)
+				{
+					fiscalizacao = new Fiscalizacao();
+
+					fiscalizacao.setIdFiscalizacao(idFiscalizacao);
+
+					int index = fiscalizacaoCursor.getColumnIndex(FISCALIZACAO_MUNICIPIO);
+					if(!fiscalizacaoCursor.isNull(index))
+					{
+						String municipio = fiscalizacaoCursor.getString(index);
+						fiscalizacao.setMunicipio(municipio);
+					}
+
+					index = fiscalizacaoCursor.getColumnIndex(FISCALIZACAO_ESTADO);
+					if(!fiscalizacaoCursor.isNull(index))
+					{
+						String estado = fiscalizacaoCursor.getString(index);
+						fiscalizacao.setEstado(estado);
+					}
+
+					index = fiscalizacaoCursor.getColumnIndex(FISCALIZACAO_ZONAELEITORAL);
+					if(!fiscalizacaoCursor.isNull(index))
+					{
+						String zonaEleitoral = fiscalizacaoCursor.getString(index);
+						fiscalizacao.setZonaEleitoral(zonaEleitoral); 
+					}
+
+					index = fiscalizacaoCursor.getColumnIndex(FISCALIZACAO_LOCALDAVOTACAO);
+					if(!fiscalizacaoCursor.isNull(index))
+					{
+						String localDaVotacao = fiscalizacaoCursor.getString(index);
+						fiscalizacao.setLocalDaVotacao(localDaVotacao);
+					}
+
+					index = fiscalizacaoCursor.getColumnIndex(FISCALIZACAO_SECAOELEITORAL);
+					if(!fiscalizacaoCursor.isNull(index))
+					{
+						String secaoEleitoral = fiscalizacaoCursor.getString(index);
+						fiscalizacao.setSecaoEleitoral(secaoEleitoral); 
+					}
+
+					index = fiscalizacaoCursor.getColumnIndex(FISCALIZACAO_PODEENVIARREDEDADOS);
+					if(!fiscalizacaoCursor.isNull(index))
+					{
+						Integer podeEnviarRedeDados = fiscalizacaoCursor.getInt(index);
+						fiscalizacao.setPodeEnviarRedeDados(podeEnviarRedeDados);
+					}
+
+					index = fiscalizacaoCursor.getColumnIndex(FISCALIZACAO_STATUSDOENVIO);
+					if(!fiscalizacaoCursor.isNull(index))
+					{
+						Integer statusDoEnvio = fiscalizacaoCursor.getInt(index);
+						fiscalizacao.setStatusDoEnvio(statusDoEnvio);
+					}
+
+					index = fiscalizacaoCursor.getColumnIndex(FISCALIZACAO_DATA);
+					if(!fiscalizacaoCursor.isNull(index))
+					{
+						Long data = fiscalizacaoCursor.getLong(index);
+						fiscalizacao.setData(data);
+					}
+
+					fiscalizacao.setPicturePathList(getPicturePathList(idFiscalizacao));
+
+					fiscalizacao.setPicture30PCPathList(getPicture30pcPathList(idFiscalizacao));
+
+					fiscalizacao.setPictureURLList(getPictureURLList(idFiscalizacao));
+
+					fiscalizacaoCursor.close();	
+				}				
+			}catch(Exception e)
+			{
+
+			}
+		}
+
+		return fiscalizacao;
+	}
 
 	private ArrayList<String> getPictureURLList(Long idFiscalizacao) 
 	{

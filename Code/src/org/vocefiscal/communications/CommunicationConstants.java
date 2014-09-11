@@ -25,9 +25,9 @@ public interface CommunicationConstants
 
 	public final String SERVICE_BASE = "http://192.168.0.22:3000"; //tests
 	
-	public final String EMAIL_USER = "<EMAIL USER>";  
-	public final String EMAIL_PASSWORD = "<EMAIL PASS>";
-	public final String[] EMAIL_TO = new String[]{"<TO 1>","<TO 2>","<TO 3>"}; 
+	public final String EMAIL_USER = "<EMAIL_USER>";  
+	public final String EMAIL_PASSWORD = "<EMAIL_PASSWORD>";
+	public final String[] EMAIL_TO = new String[]{"<EMAIL_TO1>","<EMAIL_TO2>","<EMAIL_TO3>"}; 
 	
 
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
