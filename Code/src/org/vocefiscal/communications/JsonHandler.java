@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.vocefiscal.utils;
+package org.vocefiscal.communications;
 
 import java.io.IOException;
 import java.io.StringWriter;

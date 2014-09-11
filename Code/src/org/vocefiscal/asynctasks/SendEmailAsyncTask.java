@@ -7,9 +7,9 @@ import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 
 import org.vocefiscal.communications.CommunicationConstants;
+import org.vocefiscal.communications.JsonHandler;
 import org.vocefiscal.email.GMailSender;
 import org.vocefiscal.models.Fiscalizacao;
-import org.vocefiscal.utils.JsonHandler;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

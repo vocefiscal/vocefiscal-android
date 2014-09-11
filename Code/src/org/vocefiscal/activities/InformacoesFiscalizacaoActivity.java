@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.vocefiscal.R;
 import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
 import org.vocefiscal.bitmaps.ImageFetcher;
+import org.vocefiscal.bitmaps.ImageHandler;
 import org.vocefiscal.bitmaps.RecyclingImageView;
 import org.vocefiscal.database.VoceFiscalDatabase;
 import org.vocefiscal.dialogs.CustomDialogClass;
@@ -15,7 +16,6 @@ import org.vocefiscal.dialogs.CustomDialogClass.BtnsControl;
 import org.vocefiscal.models.Fiscalizacao;
 import org.vocefiscal.models.enums.StatusEnvioEnum;
 import org.vocefiscal.services.UploadManagerService;
-import org.vocefiscal.utils.ImageHandler;
 
 import android.app.Activity;
 import android.content.Intent;

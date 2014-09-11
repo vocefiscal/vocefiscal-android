@@ -6,8 +6,8 @@ package org.vocefiscal.activities;
 import org.vocefiscal.R;
 import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
 import org.vocefiscal.bitmaps.ImageFetcher;
+import org.vocefiscal.bitmaps.ImageHandler;
 import org.vocefiscal.bitmaps.RecyclingImageView;
-import org.vocefiscal.utils.ImageHandler;
 
 import android.app.Activity;
 import android.content.Intent;

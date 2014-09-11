@@ -1,25 +1,14 @@
 package org.vocefiscal.models;
 
-import java.net.URL;
 
 
 public class S3TaskResult 
 {	
-	private URL urlDaFoto = null;
+	private String urlDaFoto = null;
 	private Integer posicaoFoto = null;
 	private Long idFiscalizacao = null;
-	/**
-	 * @return the urlDaFoto
-	 */
-	public URL getUrlDaFoto() {
-		return urlDaFoto;
-	}
-	/**
-	 * @param urlDaFoto the urlDaFoto to set
-	 */
-	public void setUrlDaFoto(URL urlDaFoto) {
-		this.urlDaFoto = urlDaFoto;
-	}
+
+	
 	/**
 	 * @return the posicaoFoto
 	 */
@@ -43,6 +32,18 @@ public class S3TaskResult
 	 */
 	public void setIdFiscalizacao(Long idFiscalizacao) {
 		this.idFiscalizacao = idFiscalizacao;
+	}
+	/**
+	 * @return the urlDaFoto
+	 */
+	public String getUrlDaFoto() {
+		return urlDaFoto;
+	}
+	/**
+	 * @param urlDaFoto the urlDaFoto to set
+	 */
+	public void setUrlDaFoto(String urlDaFoto) {
+		this.urlDaFoto = urlDaFoto;
 	}
 
 }

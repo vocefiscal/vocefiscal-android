@@ -24,25 +24,14 @@ public interface CommunicationConstants
 	public final Integer WAIT_RETRY = 1000;
 
 	public final String SERVICE_BASE = "http://192.168.0.22:3000"; //tests
-	
-	public final String EMAIL_USER = "<EMAIL_USER>";  
-	public final String EMAIL_PASSWORD = "<EMAIL_PASSWORD>";
-	public final String[] EMAIL_TO = new String[]{"<EMAIL_TO1>","<EMAIL_TO2>","<EMAIL_TO3>"}; 
-	
 
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// TODO  É muito importante lembrar de não deixar as credenciais
-	// quando gerar a versão do cliente.
-	// DO NOT EMBED YOUR CREDENTIALS IN PRODUCTION APPS.
-	// We offer two solutions for getting credentials to your mobile App.
-	// Please read the following article to learn about Token Vending Machine:
-	// * http://aws.amazon.com/articles/Mobile/4611615499399490
-	// Or consider using web identity federation:
-	// * http://aws.amazon.com/articles/Mobile/4617974389850313
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	public final String EMAIL_USER = "EMAIL_USER";  
+	public final String EMAIL_PASSWORD = "EMAIL_PASSWORD";
+	public final String[] EMAIL_TO = new String[]{"EMAIL_TO","EMAIL_TO","EMAIL_TO"}; 
 
-	public static final String ACCESS_KEY_ID = "<ACCESS_KEY_ID>";
-	public static final String SECRET_KEY = "<SECRET_KEY>";
-	public static final String PICTURE_BUCKET = "<PICTURE_BUCKET>";
-	
+
+    public static final String AWS_ACCOUNT_ID = "AWS_ACCOUNT_ID";
+    public static final String COGNITO_POOL_ID =  "COGNITO_POOL_ID";
+    public static final String COGNITO_ROLE_UNAUTH = "COGNITO_ROLE_UNAUTH";
+    public static final String BUCKET_NAME = "BUCKET_NAME";	
 }
