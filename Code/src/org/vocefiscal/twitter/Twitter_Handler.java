@@ -31,37 +31,44 @@ public class Twitter_Handler {
     private TwDialogListener mListener;
     private final Activity context;
 
-    public static final String CALLBACK_URL = "twitterapp://connect";
+    public static final String  CALLBACK_URL = "twitterapp://connect";
     private static final String TWITTER_ACCESS_TOKEN_URL = "https://api.twitter.com/oauth/access_token";
     private static final String TWITTER_AUTHORZE_URL = "https://api.twitter.com/oauth/authorize";
     private static final String TWITTER_REQUEST_URL = "https://api.twitter.com/oauth/request_token";
 
+
+    String verifier = null;
+
+    
     public Twitter_Handler(Activity context, String consumerKey,
-	    String secretKey) {
-	this.context = context;
+    	    String secretKey) {
+    	this.context = context;
 
-	twitterObj = new TwitterFactory().getInstance();
-	mSession = new TwitterSession(context);
-	mProgressDlg = new ProgressDialog(context);
+    	twitterObj = new TwitterFactory().getInstance();	
+    	mSession = new TwitterSession(context);
+    	
+    	
+    	mProgressDlg = new ProgressDialog(context);
 
-	mProgressDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
+    	mProgressDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-	mConsumerKey = consumerKey;
-	mSecretKey = secretKey;
+    	mConsumerKey = consumerKey;
+    	mSecretKey = secretKey;
+    	
+    	//twitterObj.setOAuthConsumer(consumerKey,secretKey );
+    	mHttpOauthConsumer = new CommonsHttpOAuthConsumer(mConsumerKey,
+    		mSecretKey);
 
-	mHttpOauthConsumer = new CommonsHttpOAuthConsumer(mConsumerKey,
-		mSecretKey);
+    	String request_url = TWITTER_REQUEST_URL;
+    	String access_token_url = TWITTER_ACCESS_TOKEN_URL;
+    	String authorize_url = TWITTER_AUTHORZE_URL;
 
-	String request_url = TWITTER_REQUEST_URL;
-	String access_token_url = TWITTER_ACCESS_TOKEN_URL;
-	String authorize_url = TWITTER_AUTHORZE_URL;
+    	mHttpOauthprovider = new DefaultOAuthProvider(request_url,
+    		access_token_url, authorize_url);
+    	mAccessToken = mSession.getAccessToken();
 
-	mHttpOauthprovider = new DefaultOAuthProvider(request_url,
-		access_token_url, authorize_url);
-	mAccessToken = mSession.getAccessToken();
-
-	configureToken();
-    }
+    	configureToken();
+        }
 
     public void setListener(TwDialogListener listener) {
 	mListener = listener;
@@ -99,7 +106,7 @@ public class Twitter_Handler {
     }
 
     public void authorize() {
-	mProgressDlg.setMessage("Loading ...");
+	mProgressDlg.setMessage("Carregando ...");
 	mProgressDlg.show();
 
 	new Thread() {
@@ -122,7 +129,7 @@ public class Twitter_Handler {
     }
 
     public void processToken(String callbackUrl) {
-	mProgressDlg.setMessage("Finalizing ...");
+	mProgressDlg.setMessage("Finalizando ...");
 	mProgressDlg.show();
 
 	final String verifier = getVerifier(callbackUrl);

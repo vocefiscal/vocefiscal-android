@@ -10,8 +10,11 @@ public class TwitterSession {
     private final Editor editor;
 
     private static final String TWEET_AUTH_KEY = "auth_key";
+
     private static final String TWEET_AUTH_SECRET_KEY = "auth_secret_key";
+
     private static final String TWEET_USER_NAME = "user_name";
+
     private static final String SHARED = "Twitter_Preferences";
 
     public TwitterSession(Context context) {

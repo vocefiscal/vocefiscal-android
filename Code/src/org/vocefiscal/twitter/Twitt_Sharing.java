@@ -20,7 +20,7 @@ public class Twitt_Sharing {
 	private String twitt_msg;
 	private File image_path;
 
-	public Twitt_Sharing( Activity act, String consumer_key, String consumer_secret ) {
+	public Twitt_Sharing( Activity act, String consumer_key, String consumer_secret ) throws TwitterException {
 		this.activity = act;
 		mTwitter = new Twitter_Handler(activity, consumer_key, consumer_secret);
 	}
@@ -81,7 +81,7 @@ public class Twitt_Sharing {
 		@Override
 		protected void onPreExecute() {
 			pDialog = new ProgressDialog(activity);
-			pDialog.setMessage("Posting Twitt...");
+			pDialog.setMessage("Postando Twitt...");
 			pDialog.setCancelable(false);
 			pDialog.show();
 			super.onPreExecute();
@@ -97,10 +97,10 @@ public class Twitt_Sharing {
 
 			} catch (Exception e) {
 				if (e.getMessage().toString().contains("duplicate")) {
-					return "Posting Failed because of Duplicate message...";
+					return "Postagem falhou devido a uma mensagem duplicada...";
 				}
 				e.printStackTrace();
-				return "Posting Failed!!!";
+				return "Postagem Falhou!!!";
 			}
 
 		}
@@ -110,7 +110,7 @@ public class Twitt_Sharing {
 
 			super.onPostExecute(result);
 			pDialog.dismiss();
-			if (null != result && result.equals("success")) {
+			if (null != result && result.equals("successo")) {
 				activity.runOnUiThread(new Runnable() {
 
 					@Override
@@ -138,7 +138,7 @@ public class Twitt_Sharing {
 				public void run() {
 					// TODO Auto-generated method stub
 
-					Toast.makeText(activity, "Successfully update on Twitter...!",
+					Toast.makeText(activity, "Compartilhado no Twitter com sucesso...!",
 							Toast.LENGTH_SHORT).show();
 				}
 			});
@@ -155,7 +155,7 @@ public class Twitt_Sharing {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
-					Toast.makeText(activity, "Ooopss..!!! Failed to update on Twitter.",
+					Toast.makeText(activity, "Ooopss..!!! Falha em compartilhar no Twitter.",
 							Toast.LENGTH_SHORT).show();
 				}
 			});

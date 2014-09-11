@@ -1,6 +1,10 @@
 package org.vocefiscal.activities;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -9,15 +13,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.vocefiscal.R;
 
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.vocefiscal.twitter.Twitt_Sharing;
+
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
 
 import com.facebook.FacebookRequestError;
 import com.facebook.HttpMethod;
@@ -31,13 +45,17 @@ import com.facebook.Settings;
 
 public class FiscalizacaoConcluidaActivity extends Activity 
 {
-	// Replace your KEY here and Run ,
-	public final String consumer_key = "trWwomp0b09ER2A8H1cQg";
-	public final String secret_key = "PAC3E3CtcPcTuPl9VpCuzY6eDD8hPZPwp6gRDCviLs";
+	// Chaves do Twitter
+	public final String consumer_key = "3kaLCW75ETOIbM5JwyslXT0QW";
+	public final String secret_key = "eCPWgOSLchA8O7fsOUfdzem2bWZzfgGAA0y1HezHT2SuOedvtF";
+	
+	//public final String consumer_key = "trWwomp0b09ER2A8H1cQg";
+	//public final String secret_key = "PAC3E3CtcPcTuPl9VpCuzY6eDD8hPZPwp6gRDCviLs";
+	
 	File casted_image;
 
 	String string_img_url = null , string_msg = null;
-	TextView btn;
+	//TextView btn;
 	public static final String SECAO = "secao";
 	public static final String ZONA = "zona";
 	public static final String MUNICIPIO = "municipio";
@@ -50,14 +68,18 @@ public class FiscalizacaoConcluidaActivity extends Activity
 	private String secao;
 	private String zonaEleitoral;
 	private String municipio;
+	public Boolean isStatusChanged = false;
 
-	public static final String USER = "user";
+	public static final String USER = "Fredsvv";
 
 	//Facebook Login
 	private Session.StatusCallback statusCallback;
 	private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
 	private ImageButton facebookLogin;	
 	private static final String TAG = "FiscalizacaoConcluidaActivity";
+
+	//Twitter Variables
+	ImageButton twitterButton;
 
 
 	// Instance of Facebook Class
@@ -69,7 +91,7 @@ public class FiscalizacaoConcluidaActivity extends Activity
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_fiscalizacao_concluida);
-
+	
 		/*
 		 * Captando a missão
 		 */
@@ -86,14 +108,32 @@ public class FiscalizacaoConcluidaActivity extends Activity
 			}
 		}
 
-		TextView secao = (TextView)findViewById(R.id.secaoEleitoral);
-		secao.setText(this.secao);
+		//Twitter Button Click
+		try {
 
-		TextView zona = (TextView)findViewById(R.id.zonaEleitoral);
-		zona.setText(this.zonaEleitoral);
+			twitterButton = (ImageButton) findViewById(R.id.twitterButton);
+			twitterButton.setOnClickListener(new View.OnClickListener() {
 
-		TextView municipio = (TextView)findViewById(R.id.municipio);
-		municipio.setText(this.municipio);
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					try {
+						onClickTwitt();
+					} catch (TwitterException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+		} catch (Exception e) {
+			// TODO: handle exception
+			runOnUiThread(new Runnable() {
+				public void run() {
+					showToast("View problem");
+				}
+			});
+
+		}
 
 		//Listener do botão Compartilhar no Facebook
 		facebookLogin = (ImageButton) findViewById(R.id.btn_facebook);
@@ -102,17 +142,30 @@ public class FiscalizacaoConcluidaActivity extends Activity
 
 			@Override
 			public void onClick(View v) {
-				
-			
 				//Pega a sessão ativa
 				Session session = Session.getActiveSession();
-				if(session.isOpened())
+				if (!session.isOpened() && !session.isClosed()) 
 				{
+					session.openForRead(new Session.OpenRequest(FiscalizacaoConcluidaActivity.this).setCallback(statusCallback));
+
+				} else
+				{
+					//Session.openActiveSession(FiscalizacaoConcluidaActivity.this, true, statusCallback);
 					publishStory();	
+
 				}
 
 			}
 		});
+
+		TextView secao = (TextView)findViewById(R.id.secaoEleitoral);
+		secao.setText(this.secao);
+
+		TextView zona = (TextView)findViewById(R.id.zonaEleitoral);
+		zona.setText(this.zonaEleitoral);
+
+		TextView municipio = (TextView)findViewById(R.id.municipio);
+		municipio.setText(this.municipio);
 
 		statusCallback = new SessionStatusCallback();
 
@@ -130,7 +183,7 @@ public class FiscalizacaoConcluidaActivity extends Activity
 				session = new Session(this);
 			}
 			Session.setActiveSession(session);
-			if (session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) 
+			if (session.getState().equals(SessionState.CREATED) || session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) 
 			{
 				session.openForRead(new Session.OpenRequest(this).setCallback(statusCallback));
 			}
@@ -183,7 +236,6 @@ public class FiscalizacaoConcluidaActivity extends Activity
 
 	}
 
-
 	/**
 	 * Chamada quando o botão mapa é clicado
 	 * @param view
@@ -223,9 +275,9 @@ public class FiscalizacaoConcluidaActivity extends Activity
 			Request.Callback callback= new Request.Callback() {
 				public void onCompleted(Response response) {
 					JSONObject graphResponse = response.getGraphObject().getInnerJSONObject();
-					String postId = null;
+					String postId = "Compartilhado com sucesso!";
 					try {
-						postId = graphResponse.getString("id");
+						postId = graphResponse.getString("Compartilhado com sucesso!");
 					} catch (JSONException e) {
 						Log.i(TAG,
 								"JSON error "+ e.getMessage());
@@ -252,7 +304,8 @@ public class FiscalizacaoConcluidaActivity extends Activity
 	}
 
 	private class SessionStatusCallback implements Session.StatusCallback
-	{
+	{ 
+
 		@Override
 		public void call(Session session, SessionState state, Exception exception) 
 		{
@@ -269,9 +322,17 @@ public class FiscalizacaoConcluidaActivity extends Activity
 					return;
 				}
 				
-			}									
-			
+////				if(isStatusChanged == false)
+////				{	
+//					publishStory();
+//					isStatusChanged = true;
+//				}
+
+			}
+
+
 		}
+
 	}
 
 	private boolean isSubsetOf(Collection<String> subset,Collection<String> superset) 
@@ -307,16 +368,108 @@ public class FiscalizacaoConcluidaActivity extends Activity
 		Session session = Session.getActiveSession();
 		Session.saveSession(session, outState);
 	}	
-	
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    super.onActivityResult(requestCode, resultCode, data);
-	    Session.getActiveSession()
-	        .onActivityResult(this, requestCode, resultCode, data);
+		super.onActivityResult(requestCode, resultCode, data);
+		Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
 	}
+
 	public void voltar(View view)
 	{
 		finish();
+	}
+
+
+	/*
+	 * MÉTODOS DO TWITTER 
+	 */
+
+
+	// Here you can pass the string message & image path which you want to share
+	// in Twitter.
+	public void onClickTwitt() throws TwitterException {
+		if (isNetworkAvailable()) {
+			Twitt_Sharing twitt = new Twitt_Sharing(FiscalizacaoConcluidaActivity.this, consumer_key, secret_key);
+			//string_img_url = "http://imagizer.imageshack.us/v2/150x100q90/913/bAwPgx.png";
+			//string_msg = "Você fiscalizou a seção: "+ this.secao +"\nNa zona eleitoral: " + this.zonaEleitoral + "\nNo município de: " + this.municipio;
+			
+			string_img_url = "http://www.bharatbpo.in/bbpo/images/AndroidLogo.jpg";
+			string_msg = "TESTE";
+			
+			// here we have web url image so we have to make it as file to
+			// upload
+			String_to_File(string_img_url);
+			
+			// Now share both message & image to sharing activity
+			twitt.shareToTwitter(string_msg, casted_image);
+			//twitt.shareToTwitter(string_img_url, casted_image);
+
+		} else {
+			showToast("Sem conexão disponível!");
+		}
+	}
+
+	private void showToast(String msg) {
+		Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+
+	}
+
+	// when user will click on twitte then first that will check that is
+	// internet exist or not
+	public boolean isNetworkAvailable() {
+		ConnectivityManager connectivity = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (connectivity == null) {
+			return false;
+		} else {
+			NetworkInfo [ ] info = connectivity.getAllNetworkInfo();
+			if (info != null) {
+				for (int i = 0; i < info.length; i++) {
+					if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	// this function will make your image to file
+	public File String_to_File(String img_url) {
+
+		try {
+			File rootSdDirectory = Environment.getExternalStorageDirectory();
+
+			casted_image = new File(rootSdDirectory, "attachment.jpg");
+			if (casted_image.exists()) {
+				casted_image.delete();
+			}
+			casted_image.createNewFile();
+
+			FileOutputStream fos = new FileOutputStream(casted_image);
+
+			URL url = new URL(img_url);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setDoOutput(true);
+			connection.connect();
+			InputStream in = connection.getInputStream();
+
+			byte [ ] buffer = new byte [1024];
+			int size = 0;
+			while ((size = in.read(buffer)) > 0) {
+				fos.write(buffer, 0, size);
+			}
+			fos.close();
+			return casted_image;
+
+		} catch (Exception e) {
+
+			System.out.print(e);
+			// e.printStackTrace();
+
+		}
+		return casted_image;
 	}
 
 }
