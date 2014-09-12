@@ -6,10 +6,15 @@ package org.vocefiscal.utils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 import org.vocefiscal.R;
 import org.vocefiscal.communications.JsonHandler;
 import org.vocefiscal.models.Country;
+import org.vocefiscal.models.Municipality;
+import org.vocefiscal.models.State;
 
 import android.content.Context;
 
@@ -22,6 +27,10 @@ public class Municipalities
 	private static Municipalities instance = null;
 	
 	private Country country;
+	
+	private ArrayList<String> nomesEstados;
+	
+	private HashMap<String, ArrayList<String>> nomesMunicipiosPorEstado;
 	
 	private Municipalities(Context context) 
 	{
@@ -59,6 +68,35 @@ public class Municipalities
 				
 			}		
 		}
+		
+		if(country!=null)
+		{
+			nomesEstados = new ArrayList<String>();
+			
+			nomesMunicipiosPorEstado = new HashMap<String, ArrayList<String>>();
+			
+			ArrayList<State> states = country.getStates();
+			
+			if(states!=null)
+			{
+				for(State state : states)
+				{
+					nomesEstados.add(state.getName());
+					ArrayList<Municipality> municipalities = state.getMunicipalities();
+					if(municipalities!=null)
+					{
+						ArrayList<String> nomesMunicipalities = new ArrayList<String>();
+						for(Municipality municipality : municipalities)
+						{
+							nomesMunicipalities.add(municipality.getMunicipalityName());
+						}
+						Collections.sort(nomesMunicipalities);
+						nomesMunicipiosPorEstado.put(state.getName(), nomesMunicipalities);
+					}
+				}
+			}
+						
+		}
 	}
 
 	// Esta classe eh um Singleton!
@@ -83,5 +121,34 @@ public class Municipalities
 	 */
 	public void setCountry(Country country) {
 		this.country = country;
+	}
+
+	/**
+	 * @return the nomesEstados
+	 */
+	public ArrayList<String> getNomesEstados() {
+		return nomesEstados;
+	}
+
+	/**
+	 * @param nomesEstados the nomesEstados to set
+	 */
+	public void setNomesEstados(ArrayList<String> nomesEstados) {
+		this.nomesEstados = nomesEstados;
+	}
+
+	/**
+	 * @return the nomesMunicipiosPorEstado
+	 */
+	public HashMap<String, ArrayList<String>> getNomesMunicipiosPorEstado() {
+		return nomesMunicipiosPorEstado;
+	}
+
+	/**
+	 * @param nomesMunicipiosPorEstado the nomesMunicipiosPorEstado to set
+	 */
+	public void setNomesMunicipiosPorEstado(
+			HashMap<String, ArrayList<String>> nomesMunicipiosPorEstado) {
+		this.nomesMunicipiosPorEstado = nomesMunicipiosPorEstado;
 	}
 }

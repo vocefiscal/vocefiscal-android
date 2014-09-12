@@ -16,6 +16,7 @@ import org.vocefiscal.dialogs.CustomDialogClass.BtnsControl;
 import org.vocefiscal.models.Fiscalizacao;
 import org.vocefiscal.models.enums.StatusEnvioEnum;
 import org.vocefiscal.services.UploadManagerService;
+import org.vocefiscal.utils.Municipalities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -77,6 +78,8 @@ public class InformacoesFiscalizacaoActivity extends Activity
 	
 	private Fiscalizacao fiscalizacao;
 	
+	private Municipalities municipalities;
+	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
@@ -89,6 +92,8 @@ public class InformacoesFiscalizacaoActivity extends Activity
 		voceFiscalDatabase = new VoceFiscalDatabase(this);
 		
 		fiscalizacao = new Fiscalizacao();
+		
+		municipalities = Municipalities.getInstance(this);
 		
 		/*
 		 * Customização de tamanhos para as diferentes telas dos dispositivos Android
@@ -180,12 +185,19 @@ public class InformacoesFiscalizacaoActivity extends Activity
 		envio = new CustomDialogClass(InformacoesFiscalizacaoActivity.this, "Enviar a fiscalização", "Deseja enviar a fiscalização também usando rede de dados (3G) ou somente quando estiver em uma rede Wi-Fi?");
 		envio.setBtnsControl(btnsControlTimeout, "Dados (3G)", "Wi-Fi");
 		
+		estado_spinner = (Spinner) findViewById(R.id.estado_et);
+		ArrayAdapter<String> estadoAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
+		estadoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		estado_spinner.setAdapter(estadoAdapter);
+		estadoAdapter.addAll(municipalities.getNomesEstados());
+		estado_spinner.setSelection(25);
+		
 		municipio_spinner = (Spinner) findViewById(R.id.municipio_et);
 		ArrayAdapter<String> municipioAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 		municipioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		municipio_spinner.setAdapter(municipioAdapter);
-		
-		estado_spinner = (Spinner) findViewById(R.id.estado_et);
+		municipio_spinner.setAdapter(municipioAdapter);	
+		municipioAdapter.addAll(municipalities.getNomesMunicipiosPorEstado().get("SP"));
+		municipio_spinner.setSelection(38);
 		
 		zona_eleitoral_et = (EditText) findViewById(R.id.zona_eleitoral_et);
 		
