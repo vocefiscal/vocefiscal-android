@@ -251,7 +251,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 
 			if(fiscalizacao.getStatusDoEnvio()!=null)
 			{
-				if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()) || fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_S3.ordinal()))
+				if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()) || fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_PICTURES.ordinal()))
 				{				
 					refreshItemParaEnvioInProgress(fiscalizacao,upload_progress, status_envio, porcentagem_envio);
 				}else
@@ -302,7 +302,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 			{									
 				if(fiscalizacao.getStatusDoEnvio()!=null)
 				{
-					if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()) || fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_S3.ordinal()))
+					if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()) || fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_PICTURES.ordinal()))
 					{
 						fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.PAUSADO.ordinal());
 						if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())

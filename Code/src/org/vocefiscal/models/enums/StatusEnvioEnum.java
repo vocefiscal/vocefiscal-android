@@ -11,7 +11,7 @@ import org.vocefiscal.R;
  */
 public enum StatusEnvioEnum 
 {
-	PAUSADO,ENVIANDO,ENVIADO_S3,ENVIADO_VF;
+	PAUSADO,ENVIANDO,ENVIADO_PICTURES,ENVIADO_TOTAL;
 
 	public static int getImageResource(Integer statusDoEnvio) 
 	{
@@ -25,10 +25,10 @@ public enum StatusEnvioEnum
 			}else if(statusDoEnvio.equals(ENVIANDO.ordinal()))
 			{
 				imageResource = R.drawable.ic_pausar;
-			}else if(statusDoEnvio.equals(ENVIADO_S3.ordinal()))
+			}else if(statusDoEnvio.equals(ENVIADO_PICTURES.ordinal()))
 			{
 				imageResource = R.drawable.ic_pausar;
-			}else if(statusDoEnvio.equals(ENVIADO_VF.ordinal()))
+			}else if(statusDoEnvio.equals(ENVIADO_TOTAL.ordinal()))
 			{
 				imageResource = R.drawable.ic_enviado;
 			}else

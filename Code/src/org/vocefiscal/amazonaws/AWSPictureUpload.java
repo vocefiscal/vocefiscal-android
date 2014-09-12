@@ -45,7 +45,7 @@ import com.amazonaws.services.s3.transfer.exception.PauseException;
  *
  * You can easily avoid this by directly using an InputStream instead of a Uri.
  */
-public class AWSPictureUploadModel extends AWSTransferModel 
+public class AWSPictureUpload extends AWSTransferModel 
 {
 	private static final String TAG = "UploadModel";
 
@@ -71,7 +71,7 @@ public class AWSPictureUploadModel extends AWSTransferModel
 	
 	private String zonaFiscalizacao;
 
-	public AWSPictureUploadModel(Context context,OnPictureUploadS3PostExecuteListener uploadListener, String picturePath,String slugFiscalizacao, String zonaFiscalizacao, Long idFiscalizacao,Integer posicaoFoto,Integer sleep) 
+	public AWSPictureUpload(Context context,OnPictureUploadS3PostExecuteListener uploadListener, String picturePath,String slugFiscalizacao, String zonaFiscalizacao, Long idFiscalizacao,Integer posicaoFoto,Integer sleep) 
 	{
 		super(context);
 		
@@ -105,7 +105,7 @@ public class AWSPictureUploadModel extends AWSTransferModel
 						ResponseHeaderOverrides override = new ResponseHeaderOverrides();
 						override.setContentType("image/jpeg");
 
-						GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(CommunicationConstants.PICTURE_BUCKET_NAME, AWSUtil.getPrefix(getContext())+ AWSPictureUploadModel.this.slugFiscalizacao + "/zona-" + AWSPictureUploadModel.this.zonaFiscalizacao + "/"+ pictureName);
+						GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(CommunicationConstants.PICTURE_BUCKET_NAME, AWSUtil.getPrefix(getContext())+ AWSPictureUpload.this.slugFiscalizacao + "/zona-" + AWSPictureUpload.this.zonaFiscalizacao + "/"+ pictureName);
 						urlRequest.setResponseHeaders(override);
 						Calendar calendar = Calendar.getInstance();
 						calendar.add(Calendar.YEAR, 12);						
@@ -120,12 +120,12 @@ public class AWSPictureUploadModel extends AWSTransferModel
 
 							S3UploadPictureResult result = new S3UploadPictureResult();					
 							result.setUrlDaFoto(url);
-							result.setPosicaoFoto(AWSPictureUploadModel.this.posicaoFoto);
-							result.setIdFiscalizacao(AWSPictureUploadModel.this.idFiscalizacao);
-							result.setSlugFiscalizacao(AWSPictureUploadModel.this.slugFiscalizacao);
-							result.setZonaFiscalizacao(AWSPictureUploadModel.this.zonaFiscalizacao);
+							result.setPosicaoFoto(AWSPictureUpload.this.posicaoFoto);
+							result.setIdFiscalizacao(AWSPictureUpload.this.idFiscalizacao);
+							result.setSlugFiscalizacao(AWSPictureUpload.this.slugFiscalizacao);
+							result.setZonaFiscalizacao(AWSPictureUpload.this.zonaFiscalizacao);
 
-							AWSPictureUploadModel.this.uploadListener.finishedPictureUploadS3ComResultado(result);	
+							AWSPictureUpload.this.uploadListener.finishedPictureUploadS3ComResultado(result);	
 						} 
 					}catch(Exception e)
 					{
@@ -135,7 +135,7 @@ public class AWSPictureUploadModel extends AWSTransferModel
 				{
 					mStatus = Status.CANCELED;
 
-					AWSPictureUploadModel.this.uploadListener.finishedPictureUploadS3ComError(AWSPictureUploadModel.this.slugFiscalizacao,AWSPictureUploadModel.this.zonaFiscalizacao,AWSPictureUploadModel.this.idFiscalizacao, AWSPictureUploadModel.this.posicaoFoto);
+					AWSPictureUpload.this.uploadListener.finishedPictureUploadS3ComError(AWSPictureUpload.this.slugFiscalizacao,AWSPictureUpload.this.zonaFiscalizacao,AWSPictureUpload.this.idFiscalizacao, AWSPictureUpload.this.posicaoFoto);
 				}
 			}
 		};
@@ -235,7 +235,7 @@ public class AWSPictureUploadModel extends AWSTransferModel
 			{				
 				TransferManager mTransferManager = getTransferManager();				
 				
-				mUpload = mTransferManager.upload(CommunicationConstants.PICTURE_BUCKET_NAME, AWSUtil.getPrefix(getContext())+ AWSPictureUploadModel.this.slugFiscalizacao + "/zona-" + AWSPictureUploadModel.this.zonaFiscalizacao + "/"+ pictureName, pictureFile);
+				mUpload = mTransferManager.upload(CommunicationConstants.PICTURE_BUCKET_NAME, AWSUtil.getPrefix(getContext())+ AWSPictureUpload.this.slugFiscalizacao + "/zona-" + AWSPictureUpload.this.zonaFiscalizacao + "/"+ pictureName, pictureFile);
 				mUpload.addProgressListener(progressListener);
 			} catch(Exception e) 
 			{

@@ -5,8 +5,8 @@ package org.vocefiscal.services;
 
 import java.util.ArrayList;
 
-import org.vocefiscal.amazonaws.AWSPictureUploadModel;
-import org.vocefiscal.amazonaws.AWSPictureUploadModel.OnPictureUploadS3PostExecuteListener;
+import org.vocefiscal.amazonaws.AWSPictureUpload;
+import org.vocefiscal.amazonaws.AWSPictureUpload.OnPictureUploadS3PostExecuteListener;
 import org.vocefiscal.asynctasks.AsyncTask;
 import org.vocefiscal.asynctasks.SendEmailAsyncTask;
 import org.vocefiscal.asynctasks.SendEmailAsyncTask.OnSentMailListener;
@@ -33,7 +33,7 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 
 	private VoceFiscalDatabase voceFiscalDatabase;	
 
-	private int backoffS3 = 0;
+	private int backoffPictures = 0;
 
 	private int backoffEmail = 0;
 	
@@ -107,7 +107,7 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 					{
 						startUploadingFiscalizacao(fiscalizacao);
 
-					}else if(fiscalizacao.getStatusDoEnvio()!=null&&fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_S3.ordinal()))
+					}else if(fiscalizacao.getStatusDoEnvio()!=null&&fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_PICTURES.ordinal()))
 					{
 						boolean isOnWiFi = CommunicationUtils.isWifi(getApplicationContext());
 
@@ -143,14 +143,14 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 
 				if(quantidadeDeFotosUploaded<picturePathList.size())
 				{														
-					AWSPictureUploadModel model = new AWSPictureUploadModel(getApplicationContext(), this, picturePathList.get(quantidadeDeFotosUploaded), municipalites.getSlug(fiscalizacao.getEstado(),fiscalizacao.getMunicipio()), fiscalizacao.getZonaEleitoral(), fiscalizacao.getIdFiscalizacao(), quantidadeDeFotosUploaded,0);
+					AWSPictureUpload model = new AWSPictureUpload(getApplicationContext(), this, picturePathList.get(quantidadeDeFotosUploaded), municipalites.getSlug(fiscalizacao.getEstado(),fiscalizacao.getMunicipio()), fiscalizacao.getZonaEleitoral(), fiscalizacao.getIdFiscalizacao(), quantidadeDeFotosUploaded,0);
 					Thread t = new Thread(model.getUploadRunnable());
 					t.start();
 				}else
 				{		
-					fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO_S3.ordinal());
+					fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO_PICTURES.ordinal());
 					if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-						voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO_S3.ordinal());
+						voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO_PICTURES.ordinal());
 
 					// redundância de envio por email. Não tem garantia que vai chegar, apesar de ter backoff
 					SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
@@ -224,7 +224,7 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 	@Override
 	public void finishedPictureUploadS3ComResultado(S3UploadPictureResult resultado) 
 	{
-		backoffS3 = 0;
+		backoffPictures = 0;
 
 		Long idFiscalizacao = resultado.getIdFiscalizacao();	
 		Fiscalizacao fiscalizacao = getFiscalizacaoById(idFiscalizacao);		
@@ -257,14 +257,14 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 					posicaoFoto++;
 					if(posicaoFoto<picturePathList.size())
 					{						
-						AWSPictureUploadModel model = new AWSPictureUploadModel(getApplicationContext(), this,picturePathList.get(posicaoFoto), slugFiscalizacao,zonaFiscalizacao, idFiscalizacao, posicaoFoto,0);
+						AWSPictureUpload model = new AWSPictureUpload(getApplicationContext(), this,picturePathList.get(posicaoFoto), slugFiscalizacao,zonaFiscalizacao, idFiscalizacao, posicaoFoto,0);
 						Thread t = new Thread(model.getUploadRunnable());
 						t.start();
 					}else
 					{		
-						fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO_S3.ordinal());
+						fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO_PICTURES.ordinal());
 						if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-							voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO_S3.ordinal());
+							voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO_PICTURES.ordinal());
 
 						// redundância de envio por email. Não tem garantia que vai chegar, apesar de ter backoff
 						SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
@@ -285,11 +285,11 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 
 		if(fiscalizacao!=null)
 		{
-			backoffS3++;	
+			backoffPictures++;	
 
 			ArrayList<String> picturePathList = fiscalizacao.getPicturePathList();
 
-			AWSPictureUploadModel model = new AWSPictureUploadModel(getApplicationContext(), this,picturePathList.get(posicaoFoto), slugFiscalizacao,zonaFiscalizacao,idFiscalizacao, posicaoFoto,CommunicationConstants.WAIT_RETRY*backoffS3);
+			AWSPictureUpload model = new AWSPictureUpload(getApplicationContext(), this,picturePathList.get(posicaoFoto), slugFiscalizacao,zonaFiscalizacao,idFiscalizacao, posicaoFoto,CommunicationConstants.WAIT_RETRY*backoffPictures);
 			Thread t = new Thread(model.getUploadRunnable());
 			t.start();
 		}	
