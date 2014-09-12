@@ -39,8 +39,8 @@
             android:id="@+id/capa"
             android:layout_width="fill_parent"
             android:layout_height="109dp"
-            android:src="@drawable/capa_conferir"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/capa_conferir" />
 
         <ProgressBar
             android:id="@+id/progress_bar_capa"
@@ -62,35 +62,27 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="1" >
-
-            <EditText
-                android:id="@+id/municipio_et"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                android:layout_weight="0.275"
-                android:background="@drawable/bg_input"
-                android:hint="Município"
-                android:inputType="textCapWords"
-                android:maxLength="60"
-                android:paddingLeft="10dp"
-                android:textColor="@color/preto"
-                android:textColorHint="@color/preto"
-                android:textSize="16sp" />
-
-            <EditText
+            
+            <Spinner
                 android:id="@+id/estado_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
                 android:layout_weight="0.725"
-                android:background="@drawable/bg_input"
-                android:hint="Estado"
-                android:inputType="textCapCharacters"
-                android:maxLength="2"
+                android:background="@drawable/bg_input"               
                 android:paddingLeft="10dp"
                 android:textColor="@color/preto"
-                android:textColorHint="@color/preto"
+                android:textSize="16sp" />
+
+            <Spinner
+                android:id="@+id/municipio_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="0.275"
+                android:background="@drawable/bg_input"
+                android:paddingLeft="10dp"
+                android:textColor="@color/preto"
                 android:textSize="16sp" />
         </LinearLayout>
 

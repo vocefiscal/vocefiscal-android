@@ -25,9 +25,11 @@ import android.os.Handler;
 import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,9 +65,9 @@ public class InformacoesFiscalizacaoActivity extends Activity
 	
 	private CustomDialogClass envio;
 	
-	private EditText municipio_et;
+	private Spinner municipio_spinner;
 	
-	private EditText estado_et;
+	private Spinner estado_spinner;
 	
 	private EditText zona_eleitoral_et;
 	
@@ -178,9 +180,12 @@ public class InformacoesFiscalizacaoActivity extends Activity
 		envio = new CustomDialogClass(InformacoesFiscalizacaoActivity.this, "Enviar a fiscalização", "Deseja enviar a fiscalização também usando rede de dados (3G) ou somente quando estiver em uma rede Wi-Fi?");
 		envio.setBtnsControl(btnsControlTimeout, "Dados (3G)", "Wi-Fi");
 		
-		municipio_et = (EditText) findViewById(R.id.municipio_et);
+		municipio_spinner = (Spinner) findViewById(R.id.municipio_et);
+		ArrayAdapter<String> municipioAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
+		municipioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		municipio_spinner.setAdapter(municipioAdapter);
 		
-		estado_et = (EditText) findViewById(R.id.estado_et);
+		estado_spinner = (Spinner) findViewById(R.id.estado_et);
 		
 		zona_eleitoral_et = (EditText) findViewById(R.id.zona_eleitoral_et);
 		
@@ -200,14 +205,14 @@ public class InformacoesFiscalizacaoActivity extends Activity
 				String local_votacao = null;
 				String secao_eleitoral = null;
 				
-				if(municipio_et!=null&&municipio_et.getText()!=null&&municipio_et.getText().length()>0)
+				if(estado_spinner!=null)
 				{
-					municipio = municipio_et.getText().toString();
+					//estado = estado_et.getText().toString();	
 					
-					if(estado_et!=null&&estado_et.getText()!=null&&estado_et.getText().length()>0)
+					if(municipio_spinner!=null)
 					{
-						estado = estado_et.getText().toString();	
-						
+						//municipio = municipio_et.getText().toString();
+												
 						if(zona_eleitoral_et!=null&&zona_eleitoral_et.getText()!=null&&zona_eleitoral_et.getText().length()>0)
 						{
 							zona_eleitoral = zona_eleitoral_et.getText().toString();	
@@ -235,27 +240,27 @@ public class InformacoesFiscalizacaoActivity extends Activity
 									
 								}else
 								{
-									Toast.makeText(getApplicationContext(), "Município é obrigatório.", Toast.LENGTH_SHORT).show();
+									Toast.makeText(getApplicationContext(), "Seção eleitoral é obrigatória.", Toast.LENGTH_SHORT).show();
 								}	
 								
 							}else
 							{
-								Toast.makeText(getApplicationContext(), "Município é obrigatório.", Toast.LENGTH_SHORT).show();
+								Toast.makeText(getApplicationContext(), "Local de votação é obrigatório.", Toast.LENGTH_SHORT).show();
 							}	
 							
 						}else
 						{
-							Toast.makeText(getApplicationContext(), "Município é obrigatório.", Toast.LENGTH_SHORT).show();
+							Toast.makeText(getApplicationContext(), "Zona eleitoral é obrigatória.", Toast.LENGTH_SHORT).show();
 						}	
 						
 					}else
 					{
-						Toast.makeText(getApplicationContext(), "Estado é obrigatório.", Toast.LENGTH_SHORT).show();
+						Toast.makeText(getApplicationContext(), "Município é obrigatório.", Toast.LENGTH_SHORT).show();
 					}	
 					
 				}else
 				{
-					Toast.makeText(getApplicationContext(), "Município é obrigatório.", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "Estado é obrigatório.", Toast.LENGTH_SHORT).show();
 				}				
 			}
 		});
