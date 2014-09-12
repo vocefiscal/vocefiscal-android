@@ -25,12 +25,8 @@ import android.widget.ImageView;
  *
  */
 
-
 public class FiscalizarFragment extends Fragment 
 {
-
-
-
 	private ImageView primeiraBolinha;   
 
 	private ImageView segundaBolinha;
