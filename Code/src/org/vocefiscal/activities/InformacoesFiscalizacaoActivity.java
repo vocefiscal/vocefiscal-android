@@ -26,6 +26,8 @@ import android.os.Handler;
 import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -78,7 +80,13 @@ public class InformacoesFiscalizacaoActivity extends Activity
 	
 	private Fiscalizacao fiscalizacao;
 	
-	private Municipalities municipalities;
+	private Municipalities municipalities;	
+	
+	private String estadoSelecionado;
+	
+	private String municipioSelecionado;
+	
+	private ArrayAdapter<String> municipioAdapter;
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -189,15 +197,66 @@ public class InformacoesFiscalizacaoActivity extends Activity
 		ArrayAdapter<String> estadoAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 		estadoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		estado_spinner.setAdapter(estadoAdapter);
-		estadoAdapter.addAll(municipalities.getNomesEstados());
-		estado_spinner.setSelection(25);
+		ArrayList<String> nomesEstados = municipalities.getNomesEstados();
+		estadoAdapter.addAll(nomesEstados);
+		estado_spinner.setOnItemSelectedListener(new OnItemSelectedListener() 
+		{
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) 
+			{
+				estadoSelecionado = (String) parent.getItemAtPosition(position);	
+				
+				ArrayList<String> nomesMunicipiosEstadoSelecionado = municipalities.getNomesMunicipiosPorEstado().get(estadoSelecionado);
+				municipioAdapter.clear();  
+				municipioAdapter.addAll(nomesMunicipiosEstadoSelecionado);
+				municipio_spinner.setSelection(0);
+				municipioSelecionado = nomesMunicipiosEstadoSelecionado.get(0);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) 
+			{
+				// do nothing		
+			}
+			
+		});
 		
 		municipio_spinner = (Spinner) findViewById(R.id.municipio_et);
-		ArrayAdapter<String> municipioAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
+		municipioAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 		municipioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		municipio_spinner.setAdapter(municipioAdapter);	
-		municipioAdapter.addAll(municipalities.getNomesMunicipiosPorEstado().get("SP"));
-		municipio_spinner.setSelection(38);
+		municipio_spinner.setOnItemSelectedListener(new OnItemSelectedListener() 
+		{
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) 
+			{
+				municipioSelecionado = (String) parent.getItemAtPosition(position);			
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) 
+			{
+				// do nothing		
+			}
+			
+		});
+		
+		
+		int posicaoSP = 25;
+		estado_spinner.setSelection(posicaoSP);
+		
+		handler.postDelayed(new Runnable() 
+		{			
+			@Override
+			public void run() 
+			{
+				int posicaoCPS = 38;
+				municipio_spinner.setSelection(posicaoCPS);				
+			}
+		}, 100);
+		
 		
 		zona_eleitoral_et = (EditText) findViewById(R.id.zona_eleitoral_et);
 		
@@ -211,55 +270,65 @@ public class InformacoesFiscalizacaoActivity extends Activity
 			@Override
 			public void onClick(View v) 
 			{
-				String municipio = null;
-				String estado = null;
 				String zona_eleitoral = null;
 				String local_votacao = null;
 				String secao_eleitoral = null;
 				
-				if(estado_spinner!=null)
-				{
-					//estado = estado_et.getText().toString();	
-					
-					if(municipio_spinner!=null)
-					{
-						//municipio = municipio_et.getText().toString();
-												
+				if(estadoSelecionado!=null&&estadoSelecionado.length()>0)
+				{										
+					if(municipioSelecionado!=null&&municipioSelecionado.length()>0)
+					{												
 						if(zona_eleitoral_et!=null&&zona_eleitoral_et.getText()!=null&&zona_eleitoral_et.getText().length()>0)
 						{
-							zona_eleitoral = zona_eleitoral_et.getText().toString();	
+							zona_eleitoral = zona_eleitoral_et.getText().toString();
 							
-							if(local_votacao_et!=null&&local_votacao_et.getText()!=null&&local_votacao_et.getText().length()>0)
+							if(zona_eleitoral.length()==4)
 							{
-								local_votacao = local_votacao_et.getText().toString();	
-								
-								if(secao_eleitoral_et!=null&&secao_eleitoral_et.getText()!=null&&secao_eleitoral_et.getText().length()>0)
+								if(local_votacao_et!=null&&local_votacao_et.getText()!=null&&local_votacao_et.getText().length()>0)
 								{
-									secao_eleitoral= secao_eleitoral_et.getText().toString();
+									local_votacao = local_votacao_et.getText().toString();
 									
-									fiscalizacao.setMunicipio(municipio);
-									fiscalizacao.setEstado(estado);
-									fiscalizacao.setZonaEleitoral(zona_eleitoral);
-									fiscalizacao.setLocalDaVotacao(local_votacao);
-									fiscalizacao.setSecaoEleitoral(secao_eleitoral);
-									fiscalizacao.setPicturePathList(picturePathList);
-									fiscalizacao.setPicture30PCPathList(picture30PCPathList);
-									fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIANDO.ordinal());
-									fiscalizacao.setData(System.currentTimeMillis());
-									
-									if(envio!=null&&!envio.isShowing())
-										envio.show();
-									
+									if(local_votacao.length()==4)
+									{
+										if(secao_eleitoral_et!=null&&secao_eleitoral_et.getText()!=null&&secao_eleitoral_et.getText().length()>0)
+										{
+											secao_eleitoral= secao_eleitoral_et.getText().toString();
+											
+											if(secao_eleitoral.length()==4)
+											{
+												fiscalizacao.setMunicipio(municipioSelecionado);
+												fiscalizacao.setEstado(estadoSelecionado);
+												fiscalizacao.setZonaEleitoral(zona_eleitoral);
+												fiscalizacao.setLocalDaVotacao(local_votacao);
+												fiscalizacao.setSecaoEleitoral(secao_eleitoral);
+												fiscalizacao.setPicturePathList(picturePathList);
+												fiscalizacao.setPicture30PCPathList(picture30PCPathList);
+												fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIANDO.ordinal());
+												fiscalizacao.setData(System.currentTimeMillis());
+												
+												if(envio!=null&&!envio.isShowing())
+													envio.show();
+											}else
+											{
+												Toast.makeText(getApplicationContext(), "Número da Seção Eleitoral incompleto.", Toast.LENGTH_SHORT).show();
+											}																																		
+										}else
+										{
+											Toast.makeText(getApplicationContext(), "Seção eleitoral é obrigatória.", Toast.LENGTH_SHORT).show();
+										}	
+									}else
+									{
+										Toast.makeText(getApplicationContext(), "Número do Local de Votação incompleto.", Toast.LENGTH_SHORT).show();
+									}																			
 								}else
 								{
-									Toast.makeText(getApplicationContext(), "Seção eleitoral é obrigatória.", Toast.LENGTH_SHORT).show();
+									Toast.makeText(getApplicationContext(), "Local de votação é obrigatório.", Toast.LENGTH_SHORT).show();
 								}	
-								
 							}else
 							{
-								Toast.makeText(getApplicationContext(), "Local de votação é obrigatório.", Toast.LENGTH_SHORT).show();
+								Toast.makeText(getApplicationContext(), "Número da Zona Eleitoral incompleto.", Toast.LENGTH_SHORT).show();
 							}	
-							
+														
 						}else
 						{
 							Toast.makeText(getApplicationContext(), "Zona eleitoral é obrigatória.", Toast.LENGTH_SHORT).show();
