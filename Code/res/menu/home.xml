@@ -8,5 +8,11 @@
         android:orderInCategory="100"
         android:title="Sobre"
         app:showAsAction="never"/>
+    
+    <item
+        android:id="@+id/Tutorial"
+        android:orderInCategory="100"
+        android:title="Tour"
+        app:showAsAction="never"/>
 
 </menu>
