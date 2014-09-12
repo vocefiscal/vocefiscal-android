@@ -116,11 +116,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="org.vocefiscal.activities.SobreFullScreenActivity"
+            android:name=".activities.SobreFullScreenActivity"
             android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name="org.vocefiscal.activities.TourActivity"
+            android:label="@string/title_activity_tour" >
         </activity>
     </application>
 

@@ -202,8 +202,7 @@
                     android:layout_alignTop="@+id/twitterButton"
                     android:layout_marginLeft="30dp"
                     android:layout_weight="1"
-                    android:background="@null"
-                    android:src="@drawable/selector_facebook_button"  />
+                    android:background="@null" />
 
                 <ImageButton
                     android:id="@+id/twitterButton"

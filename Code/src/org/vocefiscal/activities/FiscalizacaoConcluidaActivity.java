@@ -109,31 +109,31 @@ public class FiscalizacaoConcluidaActivity extends Activity
 		}
 
 		//Twitter Button Click
-		try {
-
-			twitterButton = (ImageButton) findViewById(R.id.twitterButton);
-			twitterButton.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					try {
-						onClickTwitt();
-					} catch (TwitterException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			});
-		} catch (Exception e) {
-			// TODO: handle exception
-			runOnUiThread(new Runnable() {
-				public void run() {
-					showToast("View problem");
-				}
-			});
-
-		}
+//		try {
+//
+//			twitterButton = (ImageButton) findViewById(R.id.twitterButton);
+//			twitterButton.setOnClickListener(new View.OnClickListener() {
+//
+//				@Override
+//				public void onClick(View v) {
+//					// TODO Auto-generated method stub
+//					try {
+//						onClickTwitt();
+//					} catch (TwitterException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			});
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//			runOnUiThread(new Runnable() {
+//				public void run() {
+//					showToast("View problem");
+//				}
+//			});
+//
+//		}
 
 		//Listener do botão Compartilhar no Facebook
 		facebookLogin = (ImageButton) findViewById(R.id.btn_facebook);

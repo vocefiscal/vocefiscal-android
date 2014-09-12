@@ -25,6 +25,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 
+
 public class HomeActivity extends ActionBarActivity implements ActionBar.TabListener 
 {
 	/**
@@ -40,7 +41,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
+    private ViewPager mViewPager;  
     
     private ImageFetcher conferirFragmentImageFetcher;
     
@@ -69,7 +70,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
         voceFiscalDatabase = new VoceFiscalDatabase(this);
         
         handler = new Handler();
-        
+       
         /*
 		 * Customização de tamanhos para as diferentes telas dos dispositivos Android
 		 */
@@ -171,7 +172,7 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 				handler.postDelayed(refreshTelaConferir, 1000);
 				
 			}
-		};
+		};			
 		
 		Intent intent = new Intent(getApplicationContext(), UploadManagerService.class);
 		startService(intent);

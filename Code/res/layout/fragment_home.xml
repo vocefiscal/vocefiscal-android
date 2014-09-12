@@ -3,11 +3,67 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <RelativeLayout
+        android:id="@+id/bolinhas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:orientation="vertical"
+        android:layout_above="@+id/btn_fiscalizar" >
+
+        <android.support.v4.view.ViewPager
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/pagerTour"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" 
+            android:layout_above="@+id/linearLayout1"/>
+
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tutorial_home"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true" >
+
+            <ImageView
+                android:id="@+id/primeira_bolinha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_bolinha_home" />
+
+            <ImageView
+                android:id="@+id/segunda_bolinha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/ic_bolinha_home_apagada" />
+
+            <ImageView
+                android:id="@+id/terceira_bolinha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/ic_bolinha_home_apagada" />
+
+            <ImageView
+                android:id="@+id/quarta_bolinha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/ic_bolinha_home_apagada" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
     <ImageView
         android:id="@+id/btn_fiscalizar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/selector_fiscalizar"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/selector_fiscalizar" />
 
 </RelativeLayout>

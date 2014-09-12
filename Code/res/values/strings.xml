@@ -25,5 +25,6 @@
     <string name="error">Erro</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_sobre_full_screen">SobreFullScreenActivity</string>
+    <string name="title_activity_tour">TourActivity</string>
 
 </resources>
