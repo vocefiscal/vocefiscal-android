@@ -5,8 +5,8 @@ package org.vocefiscal.services;
 
 import java.util.ArrayList;
 
-import org.vocefiscal.amazonaws.AWSUploadModel;
-import org.vocefiscal.amazonaws.AWSUploadModel.OnUploadS3PostExecuteListener;
+import org.vocefiscal.amazonaws.AWSPictureUploadModel;
+import org.vocefiscal.amazonaws.AWSPictureUploadModel.OnPictureUploadS3PostExecuteListener;
 import org.vocefiscal.asynctasks.AsyncTask;
 import org.vocefiscal.asynctasks.SendEmailAsyncTask;
 import org.vocefiscal.asynctasks.SendEmailAsyncTask.OnSentMailListener;
@@ -14,8 +14,9 @@ import org.vocefiscal.communications.CommunicationConstants;
 import org.vocefiscal.communications.CommunicationUtils;
 import org.vocefiscal.database.VoceFiscalDatabase;
 import org.vocefiscal.models.Fiscalizacao;
-import org.vocefiscal.models.S3TaskResult;
+import org.vocefiscal.models.S3UploadPictureResult;
 import org.vocefiscal.models.enums.StatusEnvioEnum;
+import org.vocefiscal.utils.Municipalities;
 
 import android.app.Service;
 import android.content.Intent;
@@ -26,7 +27,7 @@ import android.os.IBinder;
  * @author andre
  *
  */
-public class UploadManagerService extends Service implements OnUploadS3PostExecuteListener, OnSentMailListener
+public class UploadManagerService extends Service implements OnPictureUploadS3PostExecuteListener, OnSentMailListener
 {
 	public static final String ID_FISCALIZACAO = "id_fiscalizacao";
 
@@ -35,6 +36,8 @@ public class UploadManagerService extends Service implements OnUploadS3PostExecu
 	private int backoffS3 = 0;
 
 	private int backoffEmail = 0;
+	
+	private Municipalities municipalites;
 
 	/* (non-Javadoc)
 	 * @see android.app.Service#onCreate()
@@ -44,7 +47,9 @@ public class UploadManagerService extends Service implements OnUploadS3PostExecu
 	{
 		super.onCreate();
 
-		voceFiscalDatabase = new VoceFiscalDatabase(this);		 
+		voceFiscalDatabase = new VoceFiscalDatabase(this);
+		
+		municipalites = Municipalities.getInstance(this);
 	}
 
 	/* (non-Javadoc)
@@ -138,7 +143,7 @@ public class UploadManagerService extends Service implements OnUploadS3PostExecu
 
 				if(quantidadeDeFotosUploaded<picturePathList.size())
 				{														
-					AWSUploadModel model = new AWSUploadModel(getApplicationContext(), this, picturePathList.get(quantidadeDeFotosUploaded), fiscalizacao.getIdFiscalizacao(), quantidadeDeFotosUploaded,0);
+					AWSPictureUploadModel model = new AWSPictureUploadModel(getApplicationContext(), this, picturePathList.get(quantidadeDeFotosUploaded), municipalites.getSlug(fiscalizacao.getEstado(),fiscalizacao.getMunicipio()), fiscalizacao.getZonaEleitoral(), fiscalizacao.getIdFiscalizacao(), quantidadeDeFotosUploaded,0);
 					Thread t = new Thread(model.getUploadRunnable());
 					t.start();
 				}else
@@ -217,7 +222,7 @@ public class UploadManagerService extends Service implements OnUploadS3PostExecu
 	}
 
 	@Override
-	public void finishedUploadS3ComResultado(S3TaskResult resultado) 
+	public void finishedPictureUploadS3ComResultado(S3UploadPictureResult resultado) 
 	{
 		backoffS3 = 0;
 
@@ -246,11 +251,13 @@ public class UploadManagerService extends Service implements OnUploadS3PostExecu
 				{
 					ArrayList<String> picturePathList = fiscalizacao.getPicturePathList();
 
+					String slugFiscalizacao = resultado.getSlugFiscalizacao();
+					String zonaFiscalizacao = resultado.getZonaFiscalizacao();
 					Integer posicaoFoto = resultado.getPosicaoFoto();
 					posicaoFoto++;
 					if(posicaoFoto<picturePathList.size())
 					{						
-						AWSUploadModel model = new AWSUploadModel(getApplicationContext(), this,picturePathList.get(posicaoFoto), idFiscalizacao, posicaoFoto,0);
+						AWSPictureUploadModel model = new AWSPictureUploadModel(getApplicationContext(), this,picturePathList.get(posicaoFoto), slugFiscalizacao,zonaFiscalizacao, idFiscalizacao, posicaoFoto,0);
 						Thread t = new Thread(model.getUploadRunnable());
 						t.start();
 					}else
@@ -272,7 +279,7 @@ public class UploadManagerService extends Service implements OnUploadS3PostExecu
 	}
 
 	@Override
-	public void finishedUploadS3ComError(Long idFiscalizacao,Integer posicaoFoto) 
+	public void finishedPictureUploadS3ComError(String slugFiscalizacao, String zonaFiscalizacao, Long idFiscalizacao,Integer posicaoFoto) 
 	{
 		Fiscalizacao fiscalizacao = getFiscalizacaoById(idFiscalizacao);
 
@@ -282,7 +289,7 @@ public class UploadManagerService extends Service implements OnUploadS3PostExecu
 
 			ArrayList<String> picturePathList = fiscalizacao.getPicturePathList();
 
-			AWSUploadModel model = new AWSUploadModel(getApplicationContext(), this,picturePathList.get(posicaoFoto), idFiscalizacao, posicaoFoto,CommunicationConstants.WAIT_RETRY*backoffS3);
+			AWSPictureUploadModel model = new AWSPictureUploadModel(getApplicationContext(), this,picturePathList.get(posicaoFoto), slugFiscalizacao,zonaFiscalizacao,idFiscalizacao, posicaoFoto,CommunicationConstants.WAIT_RETRY*backoffS3);
 			Thread t = new Thread(model.getUploadRunnable());
 			t.start();
 		}	

@@ -151,4 +151,42 @@ public class Municipalities
 			HashMap<String, ArrayList<String>> nomesMunicipiosPorEstado) {
 		this.nomesMunicipiosPorEstado = nomesMunicipiosPorEstado;
 	}
+
+	public String getSlug(String estado, String municipio) 
+	{
+		String slug = null;
+		
+		if(estado!=null&&municipio!=null)
+		{
+			if(country!=null)
+			{
+				ArrayList<State> states = country.getStates();
+				
+				if(states!=null)
+				{
+					for(State state : states)
+					{
+						if(state.getName().equalsIgnoreCase(estado))
+						{
+							ArrayList<Municipality> municipalities = state.getMunicipalities();
+							if(municipalities!=null)
+							{
+								for(Municipality municipality : municipalities)
+								{
+									if(municipality.getMunicipalityName().equalsIgnoreCase(municipio))
+									{
+										slug = municipality.getSlug();
+										break;
+									}
+								}
+							}
+						}						
+					}
+				}
+							
+			}
+		}
+		
+		return slug;
+	}
 }

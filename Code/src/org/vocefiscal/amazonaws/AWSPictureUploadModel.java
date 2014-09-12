@@ -20,7 +20,7 @@ import java.util.Calendar;
 
 import org.vocefiscal.bitmaps.ImageHandler;
 import org.vocefiscal.communications.CommunicationConstants;
-import org.vocefiscal.models.S3TaskResult;
+import org.vocefiscal.models.S3UploadPictureResult;
 
 import android.content.Context;
 import android.util.Log;
@@ -45,7 +45,7 @@ import com.amazonaws.services.s3.transfer.exception.PauseException;
  *
  * You can easily avoid this by directly using an InputStream instead of a Uri.
  */
-public class AWSUploadModel extends AWSTransferModel 
+public class AWSPictureUploadModel extends AWSTransferModel 
 {
 	private static final String TAG = "UploadModel";
 
@@ -65,15 +65,23 @@ public class AWSUploadModel extends AWSTransferModel
 	
 	private Integer sleep;
 	
-	private OnUploadS3PostExecuteListener uploadListener;
+	private OnPictureUploadS3PostExecuteListener uploadListener;
+	
+	private String slugFiscalizacao;
+	
+	private String zonaFiscalizacao;
 
-	public AWSUploadModel(Context context,OnUploadS3PostExecuteListener uploadListener, String picturePath,Long idFiscalizacao,Integer posicaoFoto,Integer sleep) 
+	public AWSPictureUploadModel(Context context,OnPictureUploadS3PostExecuteListener uploadListener, String picturePath,String slugFiscalizacao, String zonaFiscalizacao, Long idFiscalizacao,Integer posicaoFoto,Integer sleep) 
 	{
 		super(context);
 		
 		this.uploadListener = uploadListener;
 
 		this.picturePath = picturePath;
+		
+		this.slugFiscalizacao = slugFiscalizacao;
+		
+		this.zonaFiscalizacao = zonaFiscalizacao;
 
 		this.idFiscalizacao = idFiscalizacao;
 
@@ -97,7 +105,7 @@ public class AWSUploadModel extends AWSTransferModel
 						ResponseHeaderOverrides override = new ResponseHeaderOverrides();
 						override.setContentType("image/jpeg");
 
-						GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(CommunicationConstants.BUCKET_NAME, AWSUtil.getPrefix(getContext())+ pictureName);
+						GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(CommunicationConstants.PICTURE_BUCKET_NAME, AWSUtil.getPrefix(getContext())+ AWSPictureUploadModel.this.slugFiscalizacao + "/zona-" + AWSPictureUploadModel.this.zonaFiscalizacao + "/"+ pictureName);
 						urlRequest.setResponseHeaders(override);
 						Calendar calendar = Calendar.getInstance();
 						calendar.add(Calendar.YEAR, 12);						
@@ -110,12 +118,14 @@ public class AWSUploadModel extends AWSTransferModel
 						{
 							String url = urlDaFoto.toString();                 	
 
-							S3TaskResult result = new S3TaskResult();					
+							S3UploadPictureResult result = new S3UploadPictureResult();					
 							result.setUrlDaFoto(url);
-							result.setPosicaoFoto(AWSUploadModel.this.posicaoFoto);
-							result.setIdFiscalizacao(AWSUploadModel.this.idFiscalizacao);
+							result.setPosicaoFoto(AWSPictureUploadModel.this.posicaoFoto);
+							result.setIdFiscalizacao(AWSPictureUploadModel.this.idFiscalizacao);
+							result.setSlugFiscalizacao(AWSPictureUploadModel.this.slugFiscalizacao);
+							result.setZonaFiscalizacao(AWSPictureUploadModel.this.zonaFiscalizacao);
 
-							AWSUploadModel.this.uploadListener.finishedUploadS3ComResultado(result);	
+							AWSPictureUploadModel.this.uploadListener.finishedPictureUploadS3ComResultado(result);	
 						} 
 					}catch(Exception e)
 					{
@@ -125,7 +135,7 @@ public class AWSUploadModel extends AWSTransferModel
 				{
 					mStatus = Status.CANCELED;
 
-					AWSUploadModel.this.uploadListener.finishedUploadS3ComError(AWSUploadModel.this.idFiscalizacao, AWSUploadModel.this.posicaoFoto);
+					AWSPictureUploadModel.this.uploadListener.finishedPictureUploadS3ComError(AWSPictureUploadModel.this.slugFiscalizacao,AWSPictureUploadModel.this.zonaFiscalizacao,AWSPictureUploadModel.this.idFiscalizacao, AWSPictureUploadModel.this.posicaoFoto);
 				}
 			}
 		};
@@ -225,20 +235,20 @@ public class AWSUploadModel extends AWSTransferModel
 			{				
 				TransferManager mTransferManager = getTransferManager();				
 				
-				mUpload = mTransferManager.upload(CommunicationConstants.BUCKET_NAME, AWSUtil.getPrefix(getContext()) + pictureName, pictureFile);
+				mUpload = mTransferManager.upload(CommunicationConstants.PICTURE_BUCKET_NAME, AWSUtil.getPrefix(getContext())+ AWSPictureUploadModel.this.slugFiscalizacao + "/zona-" + AWSPictureUploadModel.this.zonaFiscalizacao + "/"+ pictureName, pictureFile);
 				mUpload.addProgressListener(progressListener);
 			} catch(Exception e) 
 			{
 				mStatus = Status.CANCELED;
 
-				uploadListener.finishedUploadS3ComError(idFiscalizacao, posicaoFoto);
+				uploadListener.finishedPictureUploadS3ComError(slugFiscalizacao,zonaFiscalizacao,idFiscalizacao, posicaoFoto);
 			}
 		}
 	}
 
-	public interface OnUploadS3PostExecuteListener
+	public interface OnPictureUploadS3PostExecuteListener
 	{
-		public void finishedUploadS3ComResultado(S3TaskResult resultado);
-		public void finishedUploadS3ComError(Long idFiscalizacao,Integer posicaoFoto);		
+		public void finishedPictureUploadS3ComResultado(S3UploadPictureResult resultado);
+		public void finishedPictureUploadS3ComError(String slugFiscalizacao, String zonaFiscalizacao, Long idFiscalizacao,Integer posicaoFoto);		
 	}
 }

@@ -23,15 +23,17 @@ public interface CommunicationConstants
 
 	public final Integer WAIT_RETRY = 1000;
 
-	public final String SERVICE_BASE = "http://192.168.0.22:3000"; //tests
-
+	//GMAIL
 	public final String EMAIL_USER = "EMAIL_USER";  
 	public final String EMAIL_PASSWORD = "EMAIL_PASSWORD";
 	public final String[] EMAIL_TO = new String[]{"EMAIL_TO","EMAIL_TO","EMAIL_TO"}; 
 
-
+	//AWS COGNITO	
     public static final String AWS_ACCOUNT_ID = "AWS_ACCOUNT_ID";
     public static final String COGNITO_POOL_ID =  "COGNITO_POOL_ID";
     public static final String COGNITO_ROLE_UNAUTH = "COGNITO_ROLE_UNAUTH";
-    public static final String BUCKET_NAME = "BUCKET_NAME";	
+    
+    //AWS S3
+    public static final String PICTURE_BUCKET_NAME = "PICTURE_BUCKET_NAME";
+    public static final String JSON_BUCKET_NAME = "JSON_BUCKET_NAME"; 
 }
