@@ -78,7 +78,7 @@
                 android:id="@+id/linha_vermelha_foto_anterior_baixo"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="75dp"
+                android:layout_marginTop="100dp"
                 android:src="@drawable/linha_camera"
                 android:visibility="gone" />
 
@@ -87,7 +87,7 @@
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="37.5dp"
+                android:layout_marginTop="62.5dp"
                 android:visibility="gone" />
 
             <ImageView
@@ -103,7 +103,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_marginBottom="60dp" >
+                android:layout_marginBottom="85dp" >
 
                 <ImageView
                     android:layout_width="fill_parent"

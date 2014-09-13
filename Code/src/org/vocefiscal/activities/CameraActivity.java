@@ -93,7 +93,7 @@ public class CameraActivity extends Activity
 
 	private static final float FOTO_SIZE_REF_30PC_WIDTH = 720;
 
-	private static final float FOTO_SIZE_REF_30PC_HEIGHT = 100;
+	private static final float FOTO_SIZE_REF_30PC_HEIGHT = 150;
 
 	public static final String PICTURE_PREVIEW_PATH = "picture_preview";
 

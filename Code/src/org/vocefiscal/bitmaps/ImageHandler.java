@@ -92,7 +92,7 @@ public class ImageHandler
 	    
 	    float dh = pictureHeight/(float) height;
 		
-	    int beginCutHeight = (int) (pictureHeight-1.5*cutHeight*dh);
+	    int beginCutHeight = (int) (pictureHeight-1.33333*cutHeight*dh);
 	    
 	    int beginCutWidth = 0+cutWidth;
 	    
