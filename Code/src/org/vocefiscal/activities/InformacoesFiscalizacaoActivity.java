@@ -255,7 +255,7 @@ public class InformacoesFiscalizacaoActivity extends Activity
 				int posicaoCPS = 38;
 				municipio_spinner.setSelection(posicaoCPS);				
 			}
-		}, 100);
+		}, 300);
 		
 		
 		zona_eleitoral_et = (EditText) findViewById(R.id.zona_eleitoral_et);

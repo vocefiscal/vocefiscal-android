@@ -4,15 +4,14 @@
     tools:context="org.vocefiscal.HomeActivity" >
 
     <item
+        android:id="@+id/tutorial"
+        android:orderInCategory="100"
+        android:title="Tutorial"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/sobre"
         android:orderInCategory="100"
         android:title="Sobre"
-        app:showAsAction="never"/>
-    
-    <item
-        android:id="@+id/Tutorial"
-        android:orderInCategory="100"
-        android:title="Tour"
         app:showAsAction="never"/>
 
 </menu>

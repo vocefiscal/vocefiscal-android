@@ -27,6 +27,14 @@ import android.widget.ImageView;
 
 public class FiscalizarFragment extends Fragment 
 {
+	protected static final long TEMPO_PROXIMA_TENTATIVA = 1000;
+
+	protected static final long TEMPO_PROXIMA_TELA_1 = 7000;
+
+	protected static final long TEMPO_PROXIMA_TELA_2 = 15000;
+
+	protected static final long TEMPO_PROXIMA_TELA_3 = 5000;
+
 	private ImageView primeiraBolinha;   
 
 	private ImageView segundaBolinha;
@@ -49,13 +57,21 @@ public class FiscalizarFragment extends Fragment
 		handler = new Handler();
 		
 		passadorDePassos = new Runnable() 
-		{
-			
+		{			
 			@Override
 			public void run() 
 			{
-				// TODO Auto-generated method stub
-				
+				if(tutorialHomePager!=null)
+				{
+					int currentItem = tutorialHomePager.getCurrentItem();
+					if(currentItem<3)
+						tutorialHomePager.setCurrentItem(currentItem+1);
+					else
+						tutorialHomePager.setCurrentItem(0);	
+				}else
+				{
+					handler.postDelayed(passadorDePassos, TEMPO_PROXIMA_TENTATIVA);
+				}
 			}
 		};
 	}
@@ -66,33 +82,16 @@ public class FiscalizarFragment extends Fragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,	Bundle savedInstanceState) 
 	{		
-		View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+		View rootView = inflater.inflate(R.layout.fragment_fiscalizar, container, false);
 		ImageView btnFiscalizar = (ImageView) rootView.findViewById(R.id.btn_fiscalizar);
 
-
-		// ViewPager and its adapters use support library
-		// fragments, so use getSupportFragmentManager.
-		// telaTutorialHome = (ImageView) rootView.findViewById(R.id.tutorial_home);
 		 primeiraBolinha  = (ImageView) rootView.findViewById(R.id.primeira_bolinha);      
 		 segundaBolinha   = (ImageView) rootView.findViewById(R.id.segunda_bolinha);
 		 terceiraBolinha  = (ImageView) rootView.findViewById(R.id.terceira_bolinha); 
 		 quartaBolinha    = (ImageView) rootView.findViewById(R.id.quarta_bolinha); 
 
 		//Pager utilizado na passagem de imagens de tutorial da tela Home
-		HomeFlipAdapter homeFlipAdapter = new HomeFlipAdapter(getActivity().getSupportFragmentManager());
-
-		passadorDePassos = new Runnable() 
-		{			
-			@Override
-			public void run() 
-			{
-				int currentItem = tutorialHomePager.getCurrentItem();
-				if(currentItem<2)
-					tutorialHomePager.setCurrentItem(currentItem+1);
-				else
-					tutorialHomePager.setCurrentItem(0);				
-			}
-		};
+		HomeFlipAdapter homeFlipAdapter = new HomeFlipAdapter(getActivity().getSupportFragmentManager());				
 		
 		tutorialHomePager = (ViewPager) rootView.findViewById(R.id.pagerTour);
 		tutorialHomePager.setAdapter(homeFlipAdapter);
@@ -102,42 +101,37 @@ public class FiscalizarFragment extends Fragment
 			public void onPageSelected(int position) 
 			{
 				if(position==0)
-				{
-				
+				{				
 					primeiraBolinha.setImageResource(R.drawable.ic_bolinha_home);
 					segundaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					terceiraBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					quartaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					handler.removeCallbacks(passadorDePassos);
-					handler.postDelayed(passadorDePassos, 5000);
+					handler.postDelayed(passadorDePassos, TEMPO_PROXIMA_TELA_1);
 				}else if(position==1)
-				{
-					
+				{					
 					primeiraBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					segundaBolinha.setImageResource(R.drawable.ic_bolinha_home);
 					terceiraBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					quartaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					handler.removeCallbacks(passadorDePassos);
-					handler.postDelayed(passadorDePassos, 5000);
+					handler.postDelayed(passadorDePassos,  TEMPO_PROXIMA_TELA_2);
 				}else if(position==2)
-				{
-					
+				{					
 					primeiraBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					segundaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					terceiraBolinha.setImageResource(R.drawable.ic_bolinha_home);
 					quartaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					handler.removeCallbacks(passadorDePassos);
-					handler.postDelayed(passadorDePassos, 5000);
+					handler.postDelayed(passadorDePassos,  TEMPO_PROXIMA_TELA_2);
 				}else if(position==3)
-				{
-					
+				{					
 					primeiraBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					segundaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					terceiraBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					quartaBolinha.setImageResource(R.drawable.ic_bolinha_home);
 					handler.removeCallbacks(passadorDePassos);
-					handler.postDelayed(passadorDePassos, 5000);
-
+					handler.postDelayed(passadorDePassos,  TEMPO_PROXIMA_TELA_3);
 				}	
 
 			}
@@ -170,5 +164,25 @@ public class FiscalizarFragment extends Fragment
 
 		return rootView;
 	}
+	
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onResume()
+	 */
+	@Override
+	public void onResume() 
+	{
+		super.onResume();
+		
+		handler.postDelayed(passadorDePassos,  TEMPO_PROXIMA_TELA_1);
+	}
 
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onPause()
+	 */
+	@Override
+	public void onPause() 
+	{
+		super.onPause();
+		handler.removeCallbacks(passadorDePassos);
+	}
 }

@@ -1,21 +1,17 @@
 package org.vocefiscal.activities;
 
 import org.vocefiscal.R;
-import org.vocefiscal.adapters.HomeFlipAdapter;
 import org.vocefiscal.adapters.TourFlipAdapter;
 
+import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ImageView;
 
-public class TourActivity extends ActionBarActivity {
-
-
+public class TourActivity extends ActionBarActivity 
+{
 	private ImageView primeiraBolinha;   
 
 	private ImageView segundaBolinha;
@@ -32,8 +28,6 @@ public class TourActivity extends ActionBarActivity {
 
 	private ImageView oitavaBolinha; 
 
-	private ImageView telaTour;
-	
 	private Handler handler;	
 
 	private Runnable passadorDePassos;
@@ -41,25 +35,25 @@ public class TourActivity extends ActionBarActivity {
 	private ViewPager tourPager;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_tour);
 
 		handler = new Handler();
 
-		 //telaTour         = (ImageView) findViewById(R.id.tutorial_home);
-		 primeiraBolinha  = (ImageView) findViewById(R.id.primeira_bolinha);      
-		 segundaBolinha   = (ImageView) findViewById(R.id.segunda_bolinha);
-		 terceiraBolinha  = (ImageView) findViewById(R.id.terceira_bolinha); 
-		 quartaBolinha    = (ImageView) findViewById(R.id.quarta_bolinha); 
-		 quintaBolinha    = (ImageView) findViewById(R.id.quinta_bolinha);      
-		 sextaBolinha     = (ImageView) findViewById(R.id.sexta_bolinha);
-		 setimaBolinha    = (ImageView) findViewById(R.id.setima_bolinha); 
-		// oitavaBolinha    = (ImageView) findViewById(R.id.oitava_bolinha); 
+		primeiraBolinha  = (ImageView) findViewById(R.id.primeira_bolinha);      
+		segundaBolinha   = (ImageView) findViewById(R.id.segunda_bolinha);
+		terceiraBolinha  = (ImageView) findViewById(R.id.terceira_bolinha); 
+		quartaBolinha    = (ImageView) findViewById(R.id.quarta_bolinha); 
+		quintaBolinha    = (ImageView) findViewById(R.id.quinta_bolinha);      
+		sextaBolinha     = (ImageView) findViewById(R.id.sexta_bolinha);
+		setimaBolinha    = (ImageView) findViewById(R.id.setima_bolinha); 
+		oitavaBolinha    = (ImageView) findViewById(R.id.oitava_bolinha); 
 
 		//Pager utilizado na passagem de imagens de 
 		//Tour na primeira vez que entra no app
-		
+
 		TourFlipAdapter tourFlipAdapter = new TourFlipAdapter(getSupportFragmentManager());
 		tourPager = (ViewPager) findViewById(R.id.pagerTour);
 		tourPager.setAdapter(tourFlipAdapter);
@@ -71,7 +65,6 @@ public class TourActivity extends ActionBarActivity {
 			{
 				if(position==0)
 				{
-
 					primeiraBolinha.setImageResource(R.drawable.ic_bolinha_home);
 					segundaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					terceiraBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
@@ -82,7 +75,7 @@ public class TourActivity extends ActionBarActivity {
 					oitavaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					handler.removeCallbacks(passadorDePassos);
 					handler.postDelayed(passadorDePassos, 5000);
-					
+
 				}else if(position==1)
 				{
 
@@ -96,7 +89,7 @@ public class TourActivity extends ActionBarActivity {
 					oitavaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					handler.removeCallbacks(passadorDePassos);
 					handler.postDelayed(passadorDePassos, 5000);
-					
+
 				}else if(position==2)
 				{
 
@@ -123,7 +116,7 @@ public class TourActivity extends ActionBarActivity {
 					oitavaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada); 
 					handler.removeCallbacks(passadorDePassos);
 					handler.postDelayed(passadorDePassos, 5000);
-					
+
 				}else if(position==4)
 				{
 
@@ -137,7 +130,7 @@ public class TourActivity extends ActionBarActivity {
 					oitavaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					handler.removeCallbacks(passadorDePassos);
 					handler.postDelayed(passadorDePassos, 5000);
-					
+
 				}else if(position==5)
 				{
 
@@ -151,7 +144,7 @@ public class TourActivity extends ActionBarActivity {
 					oitavaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					handler.removeCallbacks(passadorDePassos);
 					handler.postDelayed(passadorDePassos, 5000);
-					
+
 				}else if(position==6)
 				{
 
@@ -176,7 +169,7 @@ public class TourActivity extends ActionBarActivity {
 					quintaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);      
 					sextaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					setimaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
-					 oitavaBolinha.setImageResource(R.drawable.ic_bolinha_home);
+					oitavaBolinha.setImageResource(R.drawable.ic_bolinha_home);
 					handler.removeCallbacks(passadorDePassos);
 					handler.postDelayed(passadorDePassos, 5000);
 				}
@@ -186,33 +179,14 @@ public class TourActivity extends ActionBarActivity {
 			@Override
 			public void onPageScrollStateChanged(int arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 	}
-
-		@Override
-		public boolean onCreateOptionsMenu(Menu menu) {
-			// Inflate the menu; this adds items to the action bar if it is present.
-			getMenuInflater().inflate(R.menu.tour, menu);
-			return true;
-		}
-
-		@Override
-		public boolean onOptionsItemSelected(MenuItem item) {
-			// Handle action bar item clicks here. The action bar will
-			// automatically handle clicks on the Home/Up button, so long
-			// as you specify a parent activity in AndroidManifest.xml.
-			int id = item.getItemId();
-			if (id == R.id.action_settings) {
-				return true;
-			}
-			return super.onOptionsItemSelected(item);
-		}
-	}
+}

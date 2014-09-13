@@ -10,9 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView.FindListener;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 /**
  * @author andre
@@ -46,32 +44,25 @@ public class FlipTour extends Fragment
 			imageFlip.setImageResource(R.drawable.tour_3);
 		}else if(position==3)
 		{
-		imageFlip.setImageResource(R.drawable.tour_4);
+			imageFlip.setImageResource(R.drawable.tour_4);
 		}
 		else if(position==4)
 		{
-		imageFlip.setImageResource(R.drawable.tour_5);
+			imageFlip.setImageResource(R.drawable.tour_5);
 		}
 		else if(position==5)
 		{
-		imageFlip.setImageResource(R.drawable.tour_6);
+			imageFlip.setImageResource(R.drawable.tour_6);
 		}
 		else if(position==6)
 		{
-		imageFlip.setImageResource(R.drawable.tour_7);
+			imageFlip.setImageResource(R.drawable.tour_7);
 		}
 		else if(position==7)
 		{
-		imageFlip.setImageResource(R.drawable.tour_8);
+			imageFlip.setImageResource(R.drawable.tour_8);
 		}
-		
-		
-		
-		
-		
-		
-
-	return rootView;
-}
+		return rootView;
+	}
 }
 

@@ -17,8 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:src="@drawable/selector_up_logo"
-            android:onClick="voltar" />
+            android:src="@drawable/selector_up_logo"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -202,7 +201,7 @@
                     android:layout_alignTop="@+id/twitterButton"
                     android:layout_marginLeft="30dp"
                     android:layout_weight="1"
-                    android:background="@null" />
+                    android:background="@drawable/btn_facebook" />
 
                 <ImageButton
                     android:id="@+id/twitterButton"
@@ -212,8 +211,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginRight="30dp"
                     android:layout_weight="1"
-                    android:background="@null"
-                    android:src="@drawable/btn_twitter" />
+                    android:background="@drawable/btn_twitter" />
 
             </RelativeLayout>
 
