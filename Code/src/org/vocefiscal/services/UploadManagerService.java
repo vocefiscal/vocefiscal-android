@@ -5,6 +5,8 @@ package org.vocefiscal.services;
 
 import java.util.ArrayList;
 
+import org.vocefiscal.amazonaws.AWSFiscalizacaoUpload;
+import org.vocefiscal.amazonaws.AWSFiscalizacaoUpload.OnFiscalizacaoUploadS3PostExecuteListener;
 import org.vocefiscal.amazonaws.AWSPictureUpload;
 import org.vocefiscal.amazonaws.AWSPictureUpload.OnPictureUploadS3PostExecuteListener;
 import org.vocefiscal.asynctasks.AsyncTask;
@@ -27,7 +29,7 @@ import android.os.IBinder;
  * @author andre
  *
  */
-public class UploadManagerService extends Service implements OnPictureUploadS3PostExecuteListener, OnSentMailListener
+public class UploadManagerService extends Service implements OnPictureUploadS3PostExecuteListener, OnSentMailListener, OnFiscalizacaoUploadS3PostExecuteListener
 {
 	public static final String ID_FISCALIZACAO = "id_fiscalizacao";
 
@@ -36,6 +38,8 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 	private int backoffPictures = 0;
 
 	private int backoffEmail = 0;
+	
+	private int backoffFiscalizacao = 0;
 	
 	private Municipalities municipalites;
 
@@ -117,7 +121,9 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 							SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
 							sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
 
-							//TODO - serviço para a API VF.
+							AWSFiscalizacaoUpload awsFiscalizacaoUpload = new AWSFiscalizacaoUpload(getApplicationContext(), this, fiscalizacao,0);
+							Thread t = new Thread(awsFiscalizacaoUpload.getUploadRunnable());
+							t.start();
 						}
 					}
 				}
@@ -156,7 +162,9 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 					SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
 					sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
 
-					//TODO - serviço para a API VF.
+					AWSFiscalizacaoUpload awsFiscalizacaoUpload = new AWSFiscalizacaoUpload(getApplicationContext(), this, fiscalizacao,0);
+					Thread t = new Thread(awsFiscalizacaoUpload.getUploadRunnable());
+					t.start();
 				}
 			}
 		}
@@ -270,7 +278,9 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 						SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
 						sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
 
-						//TODO - serviço para a API VF e no resultado colocar ENVIADO_VF
+						AWSFiscalizacaoUpload awsFiscalizacaoUpload = new AWSFiscalizacaoUpload(getApplicationContext(), this, fiscalizacao,0);
+						Thread t = new Thread(awsFiscalizacaoUpload.getUploadRunnable());
+						t.start();
 					}
 				}
 			}
@@ -294,6 +304,32 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 			t.start();
 		}	
 
+	}
+
+	@Override
+	public void finishedFiscalizacaoUploadS3ComResultado(Long idFiscalizacao)
+	{
+		backoffFiscalizacao = 0;
+		
+		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
+			voceFiscalDatabase.updateStatusEnvio(idFiscalizacao,StatusEnvioEnum.ENVIADO_TOTAL.ordinal());
+		
+	}
+
+	@Override
+	public void finishedFiscalizacaoUploadS3ComError(Long idFiscalizacao)
+	{
+		Fiscalizacao fiscalizacao = getFiscalizacaoById(idFiscalizacao);
+
+		if(fiscalizacao!=null)
+		{
+			backoffFiscalizacao++;	
+			
+			AWSFiscalizacaoUpload awsFiscalizacaoUpload = new AWSFiscalizacaoUpload(getApplicationContext(), this, fiscalizacao,CommunicationConstants.WAIT_RETRY*backoffFiscalizacao);
+			Thread t = new Thread(awsFiscalizacaoUpload.getUploadRunnable());
+			t.start();
+		}
+		
 	}
 
 }

@@ -428,10 +428,10 @@ public class CameraActivity extends Activity
 
 				} catch (FileNotFoundException e) 
 				{
-					Log.d(TAG, "File not found: " + e.getMessage());
+					
 				} catch (IOException e)
 				{
-					Log.d(TAG, "Error accessing file: " + e.getMessage());
+					
 				}				
 			}			
 		};  

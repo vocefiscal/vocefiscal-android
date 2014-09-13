@@ -35,20 +35,13 @@ import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.amazonaws.services.s3.transfer.exception.PauseException;
 
-/* UploadModel handles the interaction between the Upload and TransferManager.
- * This also makes sure that the file that is uploaded has the same file extension
+/**
+ * 
+ * @author andre
  *
- * One thing to note is that we always create a copy of the file we are given. This
- * is because we wanted to demonstrate pause/resume which is only possible with a
- * File parameter, but there is no reliable way to get a File from a Uri(mainly
- * because there is no guarantee that the Uri has an associated File).
- *
- * You can easily avoid this by directly using an InputStream instead of a Uri.
  */
 public class AWSPictureUpload extends AWSTransferModel 
 {
-	private static final String TAG = "UploadModel";
-
 	private Upload mUpload;
 	private PersistableUpload mPersistableUpload;
 	private ProgressListener progressListener;
@@ -187,7 +180,6 @@ public class AWSPictureUpload extends AWSTransferModel
 					mPersistableUpload = mUpload.pause();
 				} catch(PauseException e) 
 				{ 
-					Log.d(TAG, "", e);
 				}
 			}
 		}
