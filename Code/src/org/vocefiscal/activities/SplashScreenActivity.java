@@ -4,6 +4,7 @@ import org.vocefiscal.R;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -33,11 +34,23 @@ public class SplashScreenActivity extends Activity
 			@Override
 			public void run() 
 			{
-				
-				/* Create an Intent that will start the Menu-Activity. */
-				Intent mainIntent = new Intent(SplashScreenActivity.this,HomeActivity.class);
-				SplashScreenActivity.this.startActivity(mainIntent);
-				SplashScreenActivity.this.finish();				
+				SharedPreferences prefs = getSharedPreferences("vocefiscal", 0);
+				if (prefs.getBoolean("dontshowagain", false)) 
+				{ 
+					Intent mainIntent = new Intent(SplashScreenActivity.this,HomeActivity.class);
+					SplashScreenActivity.this.startActivity(mainIntent);
+					SplashScreenActivity.this.finish();			
+				}else
+				{
+					SharedPreferences.Editor editor = prefs.edit();
+					
+					editor.putBoolean("dontshowagain", true);
+					editor.commit();
+
+					Intent mainIntent = new Intent(SplashScreenActivity.this,TourActivity.class);
+					SplashScreenActivity.this.startActivity(mainIntent);
+					SplashScreenActivity.this.finish();	
+				}
 			}
 		};
 
@@ -55,8 +68,5 @@ public class SplashScreenActivity extends Activity
 		handler.removeCallbacks(goToHome);
 
 		finish();
-
 	}
-
-
 }
