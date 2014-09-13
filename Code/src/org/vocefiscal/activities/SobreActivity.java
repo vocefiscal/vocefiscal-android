@@ -5,7 +5,6 @@ package org.vocefiscal.activities;
 
 import org.vocefiscal.R;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -15,7 +14,7 @@ import android.view.View;
  * @author fredveloso
  *
  */
-public class SobreActivity extends Activity 
+public class SobreActivity extends AnalyticsActivity 
 {
 
 	/* (non-Javadoc)

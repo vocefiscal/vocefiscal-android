@@ -25,6 +25,8 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.flurry.android.FlurryAgent;
+
 
 public class HomeActivity extends ActionBarActivity implements ActionBar.TabListener 
 {
@@ -299,5 +301,25 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 				}, 500);				
 			}
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see android.support.v7.app.ActionBarActivity#onStop()
+	 */
+	@Override
+	protected void onStop() 
+	{
+		super.onStop();
+		FlurryAgent.onEndSession(this);
+	}
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onStart()
+	 */
+	@Override
+	protected void onStart() 
+	{
+		super.onStart();
+		FlurryAgent.onStartSession(this, AnalyticsActivity.FLURRY_API_KEY);
 	}
 }

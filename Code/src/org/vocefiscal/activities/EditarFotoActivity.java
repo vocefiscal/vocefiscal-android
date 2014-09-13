@@ -9,7 +9,6 @@ import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.bitmaps.ImageHandler;
 import org.vocefiscal.bitmaps.RecyclingImageView;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Display;
@@ -23,7 +22,7 @@ import android.widget.Toast;
  * @author andre
  *
  */
-public class EditarFotoActivity extends Activity 
+public class EditarFotoActivity extends AnalyticsActivity 
 {
 
 	private ImageFetcher imageFetcher;

@@ -21,7 +21,6 @@ import org.vocefiscal.models.enums.FlashModeEnum;
 import org.vocefiscal.views.CameraPreview;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -55,7 +54,7 @@ import android.widget.TextView;
  * @author andre
  *
  */
-public class CameraActivity extends Activity
+public class CameraActivity extends AnalyticsActivity
 {
 	private int pictureHeight = -1;
 

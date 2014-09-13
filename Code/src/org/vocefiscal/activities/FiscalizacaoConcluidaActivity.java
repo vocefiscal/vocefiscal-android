@@ -2,13 +2,12 @@ package org.vocefiscal.activities;
 
 import org.vocefiscal.R;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-public class FiscalizacaoConcluidaActivity extends Activity 
+public class FiscalizacaoConcluidaActivity extends AnalyticsActivity 
 {
 	// Chaves do Twitter
 //	public final String consumer_key = "3kaLCW75ETOIbM5JwyslXT0QW";

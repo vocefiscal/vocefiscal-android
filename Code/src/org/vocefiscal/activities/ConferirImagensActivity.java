@@ -11,7 +11,6 @@ import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
 import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.bitmaps.ImageHandler;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,7 +27,7 @@ import android.widget.TextView;
  * @author andre
  *
  */
-public class ConferirImagensActivity extends Activity
+public class ConferirImagensActivity extends AnalyticsActivity
 {
 
 	private ArrayList<String> picturePathList;

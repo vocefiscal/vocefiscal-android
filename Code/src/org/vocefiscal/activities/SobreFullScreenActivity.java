@@ -2,10 +2,9 @@ package org.vocefiscal.activities;
 
 import org.vocefiscal.R;
 
-import android.app.Activity;
 import android.os.Bundle;
 
-public class SobreFullScreenActivity extends Activity 
+public class SobreFullScreenActivity extends AnalyticsActivity 
 {
 
 	@Override

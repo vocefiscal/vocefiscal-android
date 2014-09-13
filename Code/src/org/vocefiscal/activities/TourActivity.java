@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
+import com.flurry.android.FlurryAgent;
+
 public class TourActivity extends FragmentActivity 
 {
 	private ImageView primeiraBolinha;   
@@ -265,5 +267,25 @@ public class TourActivity extends FragmentActivity
 	public void onBackPressed() 
 	{
 		//do nothing
+	}
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onStart()
+	 */
+	@Override
+	protected void onStart() 
+	{
+		super.onStart();
+		FlurryAgent.onStartSession(this, AnalyticsActivity.FLURRY_API_KEY);
+	}
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onStop()
+	 */
+	@Override
+	protected void onStop() 
+	{
+		super.onStop();
+		FlurryAgent.onEndSession(this);
 	}
 }

@@ -18,7 +18,6 @@ import org.vocefiscal.models.enums.StatusEnvioEnum;
 import org.vocefiscal.services.UploadManagerService;
 import org.vocefiscal.utils.Municipalities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -36,11 +35,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flurry.android.FlurryAgent;
+
 /**
  * @author andre
  *
  */
-public class InformacoesFiscalizacaoActivity extends Activity 
+public class InformacoesFiscalizacaoActivity extends AnalyticsActivity 
 {
 	private ArrayList<String> picturePathList;
 
@@ -352,16 +353,24 @@ public class InformacoesFiscalizacaoActivity extends Activity
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 			voceFiscalDatabase.addFiscalizacao(fiscalizacao);
 		
+		FlurryAgent.logEvent("Fiscalizou");
+		
 		Intent intentService = new Intent(getApplicationContext(), UploadManagerService.class);
+		
+		Bundle bundle = new Bundle();
+		bundle.putLong(UploadManagerService.ID_FISCALIZACAO,fiscalizacao.getIdFiscalizacao());
+		
+		intentService.putExtras(bundle);
+		
 		startService(intentService);
 		
 		Intent intent = new Intent(getApplicationContext(), FiscalizacaoConcluidaActivity.class);
-		Bundle bundle = new Bundle();
-		bundle.putString(SECAO, fiscalizacao.getSecaoEleitoral());
-		bundle.putString(ZONA, fiscalizacao.getZonaEleitoral());
-		bundle.putString(MUNICIPIO, fiscalizacao.getMunicipio());
+		Bundle bundleActivity = new Bundle();
+		bundleActivity.putString(SECAO, fiscalizacao.getSecaoEleitoral());
+		bundleActivity.putString(ZONA, fiscalizacao.getZonaEleitoral());
+		bundleActivity.putString(MUNICIPIO, fiscalizacao.getMunicipio());
 
-		intent.putExtras(bundle);
+		intent.putExtras(bundleActivity);
 
 		startActivity(intent);
 
