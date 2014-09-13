@@ -172,7 +172,8 @@ public class FiscalizarFragment extends Fragment
 	public void onResume() 
 	{
 		super.onResume();
-		
+		if(tutorialHomePager!=null)
+			tutorialHomePager.setCurrentItem(0);
 		handler.postDelayed(passadorDePassos,  TEMPO_PROXIMA_TELA_1);
 	}
 

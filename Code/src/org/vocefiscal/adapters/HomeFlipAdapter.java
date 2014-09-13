@@ -6,7 +6,7 @@ package org.vocefiscal.adapters;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import org.vocefiscal.fragments.FlipFragment;
+import org.vocefiscal.fragments.FlipHomeFragment;
 
 /**
  * @author andre
@@ -23,7 +23,7 @@ public class HomeFlipAdapter extends FragmentPagerAdapter
 	@Override
 	public Fragment getItem(int position) 
 	{
-		Fragment fragment = new FlipFragment(position);		
+		Fragment fragment = new FlipHomeFragment(position);		
 		return fragment;
 	}
 

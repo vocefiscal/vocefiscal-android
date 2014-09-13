@@ -16,11 +16,11 @@ import android.widget.ImageView;
  * @author andre
  *
  */
-public class FlipTour extends Fragment 
+public class FlipHomeFragment extends Fragment 
 {
 	private int position = -1;	
 
-	public FlipTour(int position) 
+	public FlipHomeFragment(int position) 
 	{
 		super();
 		this.position = position;
@@ -35,34 +35,19 @@ public class FlipTour extends Fragment
 
 		if(position==0)
 		{
-			imageFlip.setImageResource(R.drawable.tour_1);
+			imageFlip.setImageResource(R.drawable.tutorial_home_1);
 		}else if(position==1)
 		{
-			imageFlip.setImageResource(R.drawable.tour_2);
+			imageFlip.setImageResource(R.drawable.tutorial_home_2);
 		}else if(position==2)
 		{
-			imageFlip.setImageResource(R.drawable.tour_3);
+			imageFlip.setImageResource(R.drawable.tutorial_home_3);
 		}else if(position==3)
 		{
-			imageFlip.setImageResource(R.drawable.tour_4);
+		imageFlip.setImageResource(R.drawable.tutorial_home_4);
 		}
-		else if(position==4)
-		{
-			imageFlip.setImageResource(R.drawable.tour_5);
-		}
-		else if(position==5)
-		{
-			imageFlip.setImageResource(R.drawable.tour_6);
-		}
-		else if(position==6)
-		{
-			imageFlip.setImageResource(R.drawable.tour_7);
-		}
-		else if(position==7)
-		{
-			imageFlip.setImageResource(R.drawable.tour_8);
-		}
-		return rootView;
-	}
+
+	return rootView;
+}
 }
 

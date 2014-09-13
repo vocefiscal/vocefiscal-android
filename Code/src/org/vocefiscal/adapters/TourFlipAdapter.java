@@ -3,10 +3,11 @@
  */
 package org.vocefiscal.adapters;
 
+import org.vocefiscal.fragments.FlipTourFragment;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import org.vocefiscal.fragments.FlipFragment;
 
 /**
  * @author andre
@@ -23,7 +24,7 @@ public class TourFlipAdapter extends FragmentPagerAdapter
 	@Override
 	public Fragment getItem(int position) 
 	{
-		Fragment fragment = new FlipFragment(position);		
+		Fragment fragment = new FlipTourFragment(position);		
 		return fragment;
 	}
 
