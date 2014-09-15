@@ -10,6 +10,7 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+
 import org.vocefiscal.twitter.Twitter_Handler;
 import org.vocefiscal.twitter.Twitter_Handler.TwDialogListener;
 
@@ -138,7 +139,7 @@ public class Twitt_Sharing {
 				public void run() {
 					// TODO Auto-generated method stub
 
-					Toast.makeText(activity, "Compartilhado no Twitter com sucesso...!",
+					Toast.makeText(activity, "Successfully update on Twitter...!",
 							Toast.LENGTH_SHORT).show();
 				}
 			});
@@ -155,7 +156,7 @@ public class Twitt_Sharing {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
-					Toast.makeText(activity, "Ooopss..!!! Falha em compartilhar no Twitter.",
+					Toast.makeText(activity, "Ooopss..!!! Failed to update on Twitter.",
 							Toast.LENGTH_SHORT).show();
 				}
 			});
