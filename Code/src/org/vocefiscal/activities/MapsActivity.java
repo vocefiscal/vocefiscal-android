@@ -5,14 +5,10 @@ import org.vocefiscal.location.LocationController;
 import org.vocefiscal.location.LocationUtils;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -26,11 +22,8 @@ import com.google.android.gms.maps.MapFragment;
 
 
 public class MapsActivity extends FragmentActivity  implements GooglePlayServicesClient.ConnectionCallbacks,GooglePlayServicesClient.OnConnectionFailedListener
-{
-
-	private static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
-
-	private Context mContext;
+{	
+	private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	
 	private GoogleMap mapa;
 	
@@ -41,24 +34,33 @@ public class MapsActivity extends FragmentActivity  implements GooglePlayService
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_maps);
-
-		/*
-		 * *************************************************
-		 * Map
-		 * *************************************************
-		 */
-
-		// Get a handle to the Map Fragment
-		mapa = ((MapFragment) getFragmentManager().findFragmentById(R.id.mapa)).getMap();
-		if(mapa!=null)
-		{
-			mapa.setMyLocationEnabled(true);
-		}else
-		{
-			Toast.makeText(getApplicationContext(), "Problemas para apresentar o mapa. Atualize a versão do Google Maps no cel e tente novamente depois.", Toast.LENGTH_LONG).show();
-			finish();		
-		}
 		
+		/*
+		 * *************************************************************************************
+		 *  Check device for Play Services APK. If check succeeds, proceed with GCM registration.
+		 *  *************************************************************************************
+		 */
+		
+		if (checkPlayServices()) 
+		{
+			/*
+			 * *************************************************
+			 * Map
+			 * *************************************************
+			 */
+
+			// Get a handle to the Map Fragment
+			mapa = ((MapFragment) getFragmentManager().findFragmentById(R.id.mapa)).getMap();
+			if(mapa!=null)
+			{
+				mapa.setMyLocationEnabled(true);
+			}else
+			{
+				Toast.makeText(getApplicationContext(), "Problemas para apresentar o mapa. Atualize a versão do Google Maps no cel e tente novamente depois.", Toast.LENGTH_LONG).show();
+				finish();		
+			}
+		} 
+	
 		/*
 		 * *************************************************
 		 * Location
@@ -66,35 +68,30 @@ public class MapsActivity extends FragmentActivity  implements GooglePlayService
 		 */
 		LocationClient mLocationClient = new LocationClient(this, this, this);		
 		locationController = new LocationController(mLocationClient, mapa);
-
 	}
-
-
-	// Define a DialogFragment that displays the error dialog
-	public static class ErrorDialogFragment extends DialogFragment 
+	
+	/**
+	 * Check the device to make sure it has the Google Play Services APK. If
+	 * it doesn't, display a dialog that allows users to download the APK from
+	 * the Google Play Store or enable it in the device's system settings.
+	 */
+	private boolean checkPlayServices() 
 	{
-		// Global field to contain the error dialog
-		private Dialog mDialog;
-		// Default constructor. Sets the dialog field to null
-		public ErrorDialogFragment() {
-			super();
-			mDialog = null;
+		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (resultCode != ConnectionResult.SUCCESS) 
+		{
+			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) 
+			{
+				GooglePlayServicesUtil.getErrorDialog(resultCode, this, PLAY_SERVICES_RESOLUTION_REQUEST).show();
+			} else 
+			{
+				finish();
+			}
+			return false;
 		}
-		// Set the dialog to display
-		public void setDialog(Dialog dialog) {
-			mDialog = dialog;
-		}
-
-		// Return a Dialog to the DialogFragment.
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			return mDialog;
-		}
-		public void show(FragmentManager supportFragmentManager, String string) {
-			// TODO Auto-generated method stub
-
-		}
+		return true;
 	}
+
 
 	/*
 	 * Handle results returned to the FragmentActivity
@@ -132,7 +129,7 @@ public class MapsActivity extends FragmentActivity  implements GooglePlayService
 					break;
 				}
 	}
-	
+
 	/*
 	 * Called by Location Services when the request to connect the
 	 * client finishes successfully. At this point, you can
@@ -144,7 +141,7 @@ public class MapsActivity extends FragmentActivity  implements GooglePlayService
 		locationController.onConnected();
 
 	}
-
+	
 	/*
 	 * Called by Location Services if the connection to the
 	 * location client drops because of an error.
@@ -154,17 +151,6 @@ public class MapsActivity extends FragmentActivity  implements GooglePlayService
 	{
 		//do nothing
 
-	}
-
-	public void ErrorAlert(final Context context) 
-	{
-		mContext = context;
-	}
-
-
-	void showErrorDialog(int code) 
-	{
-		GooglePlayServicesUtil.getErrorDialog(code, this, REQUEST_CODE_RECOVER_PLAY_SERVICES).show();
 	}
 
 	/**
@@ -237,5 +223,4 @@ public class MapsActivity extends FragmentActivity  implements GooglePlayService
 
 		locationController.start();
 	}
-
 }

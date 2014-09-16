@@ -37,7 +37,7 @@ public interface CommunicationConstants
     //AWS S3
     public static final String PICTURE_BUCKET_NAME = "PICTURE_BUCKET_NAME";
     public static final String JSON_BUCKET_NAME = "JSON_BUCKET_NAME"; 
-  //public final String STATE_STATS_BASE_ADDRESS = "https://s3-sa-east-1.amazonaws.com/vocefiscal-poll-tape-stats/"; 
+  //public final String STATE_STATS_BASE_ADDRESS = "https://s3-sa-east-1.amazonaws.com/vocefiscal-poll-tape-stats/";  //TODO release address
   	public final String STATE_STATS_BASE_ADDRESS = "https://s3-sa-east-1.amazonaws.com/ponga/"; 
 
 }
