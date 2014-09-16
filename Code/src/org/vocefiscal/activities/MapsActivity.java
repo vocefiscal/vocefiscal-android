@@ -59,6 +59,7 @@ GooglePlayServicesClient.OnConnectionFailedListener,LocationListener,OnMyLocatio
 	//private LatLng latLong;
 	
 	private float zoomLevel;
+
 	
 	private LocationManager locationManager;
 	private static final long MIN_TIME = 400;
@@ -82,12 +83,11 @@ GooglePlayServicesClient.OnConnectionFailedListener,LocationListener,OnMyLocatio
 	  //  locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 	 //   locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, (android.location.LocationListener) this);
 	        
-
+		View mapa =  findViewById(R.id.mapa);
+	   
 		mLocationClient = new LocationClient(this, this, this);	
 		zoomLevel = 5;
 	}
-
-
 
 	// Define a DialogFragment that displays the error dialog
 	public static class ErrorDialogFragment extends DialogFragment {
@@ -145,21 +145,7 @@ GooglePlayServicesClient.OnConnectionFailedListener,LocationListener,OnMyLocatio
 			}
 
 		}
-	}
-
-	private void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (mapa == null) {
-            // Try to obtain the map from the SupportMapFragment.
-        	mapa = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapa))
-                    .getMap();
-            // Check if we were successful in obtaining the map.
-            if (mapa != null) {
-            	mapa.setMyLocationEnabled(true);
-                mapa.setOnMyLocationButtonClickListener((OnMyLocationButtonClickListener) this);
-            }
-        }
-    }
+	}	
 	
 	private boolean servicesConnected() {
 		// Check that Google Play services is available
@@ -234,13 +220,6 @@ GooglePlayServicesClient.OnConnectionFailedListener,LocationListener,OnMyLocatio
 
 	}
 
-	@Override
-    public void onPause() {
-        super.onPause();
-        if (mLocationClient != null) {
-            mLocationClient.disconnect();
-        }
-    }
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -249,17 +228,6 @@ GooglePlayServicesClient.OnConnectionFailedListener,LocationListener,OnMyLocatio
 		return true;
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
 
 	public void ErrorAlert(final Context context) {
 		mContext = context;
@@ -335,19 +303,6 @@ GooglePlayServicesClient.OnConnectionFailedListener,LocationListener,OnMyLocatio
 
 	}
 
-	public Location getLocation(LocationClient locationClient){
-
-		if(locationClient.getLastLocation() == null){
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			return getLocation(locationClient);
-		}else{
-			return locationClient.getLastLocation();
-		}
-	}
 
 	@Override
 	public boolean onMyLocationButtonClick() {
@@ -357,40 +312,12 @@ GooglePlayServicesClient.OnConnectionFailedListener,LocationListener,OnMyLocatio
         return false;
 	}
 	
-	  private void setUpLocationClientIfNeeded() {
-	        if (mLocationClient == null) {
-	            mLocationClient = new LocationClient(
-	                    getApplicationContext(),
-	                    this,  // ConnectionCallbacks
-	                    this); // OnConnectionFailedListener
-	        }
-	    }
-	  
-	  /**
-	     * Button to get current Location. This demonstrates how to get the current Location as required
-	     * without needing to register a LocationListener.
-	     */
-	    public void showMyLocation(View view) {
-	        if (mLocationClient != null && mLocationClient.isConnected()) {
-	            String msg = "Location = " + mLocationClient.getLastLocation();
-	            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-	        }
-	    }
-	    
-//	    @Override
-//	    protected void onResume() {
-//	        super.onResume();
-//	        setUpMapIfNeeded();
-//	        setUpLocationClientIfNeeded();
-//	        mLocationClient.connect();
-//	    }    
-
 	@Override
 	public void onLocationChanged(Location location) {
 		LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-	   // CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+	    //CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
 	   // mapa.animateCamera(cameraUpdate);
-	   // locationManager.removeUpdates((android.location.LocationListener) this);
+	    //locationManager.removeUpdates((android.location.LocationListener) this);
 
 		//mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
 		
