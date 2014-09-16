@@ -149,7 +149,7 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 
 				if(quantidadeDeFotosUploaded<picturePathList.size())
 				{														
-					AWSPictureUpload model = new AWSPictureUpload(getApplicationContext(), this, picturePathList.get(quantidadeDeFotosUploaded), municipalites.getSlug(fiscalizacao.getEstado(),fiscalizacao.getMunicipio()), fiscalizacao.getZonaEleitoral(), fiscalizacao.getIdFiscalizacao(), quantidadeDeFotosUploaded,0);
+					AWSPictureUpload model = new AWSPictureUpload(getApplicationContext(), this, picturePathList.get(quantidadeDeFotosUploaded), municipalites.getMunicipalitySlug(fiscalizacao.getEstado(),fiscalizacao.getMunicipio()), fiscalizacao.getZonaEleitoral(), fiscalizacao.getIdFiscalizacao(), quantidadeDeFotosUploaded,0);
 					Thread t = new Thread(model.getUploadRunnable());
 					t.start();
 				}else

@@ -152,7 +152,7 @@ public class Municipalities
 		this.nomesMunicipiosPorEstado = nomesMunicipiosPorEstado;
 	}
 
-	public String getSlug(String estado, String municipio) 
+	public String getMunicipalitySlug(String estado, String municipio) 
 	{
 		String slug = null;
 		
@@ -176,7 +176,7 @@ public class Municipalities
 									if(municipality.getMunicipalityName().equalsIgnoreCase(municipio))
 									{
 										slug = municipality.getSlug();
-										break;
+										return slug;
 									}
 								}
 							}
@@ -187,6 +187,32 @@ public class Municipalities
 			}
 		}
 		
+		return slug;
+	}
+
+	public String getStateSlug(String estado) 
+	{
+		String slug = null;
+
+		if(estado!=null)
+		{
+			if(country!=null)
+			{
+				ArrayList<State> states = country.getStates();
+
+				if(states!=null)
+				{
+					for(State state : states)
+					{
+						if(state.getName().equalsIgnoreCase(estado))
+						{
+							slug = state.getSlug();
+							break;
+						}						
+					}
+				}
+			}
+		}
 		return slug;
 	}
 }
