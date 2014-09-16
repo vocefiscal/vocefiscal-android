@@ -20,6 +20,8 @@ public class State implements Serializable
 	private static final long serialVersionUID = -9109368711525532976L;
 
 	private String name;
+	
+	private String slug;
 
 	private ArrayList<Municipality> municipalities;
 
@@ -49,6 +51,20 @@ public class State implements Serializable
 	 */
 	public void setMunicipalities(ArrayList<Municipality> municipalities) {
 		this.municipalities = municipalities;
+	}
+
+	/**
+	 * @return the slug
+	 */
+	public String getSlug() {
+		return slug;
+	}
+
+	/**
+	 * @param slug the slug to set
+	 */
+	public void setSlug(String slug) {
+		this.slug = slug;
 	}
 
 }

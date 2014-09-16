@@ -21,12 +21,13 @@ public interface CommunicationConstants
 	public final String CONTENTTYPE_PARAM = "Content-Type";
 	public final String CONTENTTYPE_JSON = "application/json; charset=utf-8";
 
-	public final Integer WAIT_RETRY = 1000;
+	public final Integer WAIT_RETRY = 1000;		
 
 	//GMAIL
 	public final String EMAIL_USER = "EMAIL_USER";  
 	public final String EMAIL_PASSWORD = "EMAIL_PASSWORD";
-	public final String[] EMAIL_TO = new String[]{"EMAIL_TO","EMAIL_TO","EMAIL_TO"}; 
+	public final String[] EMAIL_TO = new String[]{"EMAIL_TO","EMAIL_TO","EMAIL_TO"};
+	
 
 	//AWS COGNITO	
     public static final String AWS_ACCOUNT_ID = "AWS_ACCOUNT_ID";
@@ -36,4 +37,7 @@ public interface CommunicationConstants
     //AWS S3
     public static final String PICTURE_BUCKET_NAME = "PICTURE_BUCKET_NAME";
     public static final String JSON_BUCKET_NAME = "JSON_BUCKET_NAME"; 
+  //public final String STATE_STATS_BASE_ADDRESS = "https://s3-sa-east-1.amazonaws.com/vocefiscal-poll-tape-stats/"; 
+  	public final String STATE_STATS_BASE_ADDRESS = "https://s3-sa-east-1.amazonaws.com/ponga/"; 
+
 }

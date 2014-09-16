@@ -202,7 +202,7 @@ public class AWSFiscalizacaoUpload extends AWSTransferModel
 				{				
 					TransferManager mTransferManager = getTransferManager();				
 
-					mUpload = mTransferManager.upload(CommunicationConstants.JSON_BUCKET_NAME, AWSUtil.getPrefix(getContext())+ municipalities.getSlug(fiscalizacao.getEstado(), fiscalizacao.getMunicipio()) + "/zona-" + fiscalizacao.getZonaEleitoral() + "/"+ fiscalizacaoJSONFileName, fiscalizacaoJSONFile);
+					mUpload = mTransferManager.upload(CommunicationConstants.JSON_BUCKET_NAME, AWSUtil.getPrefix(getContext())+ municipalities.getMunicipalitySlug(fiscalizacao.getEstado(), fiscalizacao.getMunicipio()) + "/zona-" + fiscalizacao.getZonaEleitoral() + "/"+ fiscalizacaoJSONFileName, fiscalizacaoJSONFile);
 					mUpload.addProgressListener(progressListener);
 				} catch(Exception e) 
 				{

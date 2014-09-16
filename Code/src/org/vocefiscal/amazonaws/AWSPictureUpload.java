@@ -99,17 +99,16 @@ public class AWSPictureUpload extends AWSTransferModel
 						override.setContentType("image/jpeg");
 
 						GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(CommunicationConstants.PICTURE_BUCKET_NAME, AWSUtil.getPrefix(getContext())+ AWSPictureUpload.this.slugFiscalizacao + "/zona-" + AWSPictureUpload.this.zonaFiscalizacao + "/"+ pictureName);
-						urlRequest.setResponseHeaders(override);
-						Calendar calendar = Calendar.getInstance();
-						calendar.add(Calendar.YEAR, 12);						
-						urlRequest.setExpiration(calendar.getTime());//expiry date 12 years ahead						
+						urlRequest.setResponseHeaders(override);						
 
 						URL urlDaFoto = AWSUtil.getS3Client(getContext()).generatePresignedUrl(urlRequest);
 
 
 						if(urlDaFoto!=null)
 						{
-							String url = urlDaFoto.toString();                 	
+							String string = urlDaFoto.toString();
+							String[] parts = string.split("\\?");
+							String url = parts[0];                	
 
 							S3UploadPictureResult result = new S3UploadPictureResult();					
 							result.setUrlDaFoto(url);

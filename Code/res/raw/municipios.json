@@ -3,6 +3,7 @@
 	"states": [
 	           {
 	        	   "name" : "AC",
+	        	   "slug": "br/ac",
 	        	   "municipalities"  : [
 	        	                        {
 	        	                        	"stateCode": "AC",
@@ -48,6 +49,7 @@
 	           },
 	           {
 	        	   "name" : "AL",
+	        	   "slug": "br/al",
 	        	   "municipalities": [
 	        	                      {
 	        	                    	  "stateCode": "AL",
@@ -303,6 +305,7 @@
 	           },
 	           {
 	        	   "name" : "AM",
+	        	   "slug": "br/am",
 	        	   "municipalities" : [
 	        	                       {
 	        	                    	   "stateCode": "AM",
@@ -598,6 +601,7 @@
 	           },
 	           {
 	        	   "name" : "AP" ,
+	        	   "slug": "br/ap",
 	        	   "municipalities"  : [
 	        	                        {
 	        	                        	"stateCode": "AP",
@@ -663,6 +667,7 @@
 	           },
 	           {
 	        	   "name" : "BA" ,
+	        	   "slug": "br/ba",
 	        	   "municipalities"   : [
 	        	                         {
 	        	                        	 "stateCode": "BA",
@@ -1523,6 +1528,7 @@
 	           },
 	           {
 	        	   "name" : "CE",
+	        	   "slug": "br/ce",
 	        	   "municipalities"  : [
 	        	                        {
 	        	                        	"stateCode": "CE",
@@ -2058,6 +2064,7 @@
 	           },
 	           {
 	        	   "name" : "DF",
+	        	   "slug": "br/df",
 	        	   "municipalities" : [
 	        	                       {
 	        	                    	   "stateCode": "DF",
@@ -2068,6 +2075,7 @@
 	           },
 	           {
 	        	   "name" :  "ES",
+	        	   "slug": "br/es",
 	        	   "municipalities"  : [
 	        	                        {
 	        	                        	"stateCode": "ES",
@@ -2328,6 +2336,7 @@
 	           },
 	           {
 	        	   "name" : "GO",
+	        	   "slug": "br/go",
 	        	   "municipalities" : [
 	        	                       {
 	        	                    	   "stateCode": "GO",
@@ -2898,6 +2907,7 @@
 	           },
 	           {
 	        	   "name" : "MA",
+	        	   "slug": "br/ma",
 	        	   "municipalities"  : [
 	        	                        {
 	        	                        	"stateCode": "MA",
@@ -3343,6 +3353,7 @@
 	           },
 	           {
 	        	   "name" : "MG",
+	        	   "slug": "br/mg",
 	        	   "municipalities"  : [
 	        	                        {
 	        	                        	"stateCode": "MG",
@@ -4818,6 +4829,7 @@
 	           },
 	           {
 	        	   "name" : "MS",
+	        	   "slug": "br/ms",
 	        	   "municipalities" : [
 	        	                       {
 	        	                    	   "stateCode": "MS",
@@ -5048,6 +5060,7 @@
 	           },
 	           {
 	        	   "name" : "MT",
+	        	   "slug": "br/mt",
 	        	   "municipalities" : [
 	        	                       {
 	        	                    	   "stateCode": "MT",
@@ -5293,6 +5306,7 @@
 	           },
 	           {
 	        	   "name" : "PA",
+	        	   "slug": "br/pa",
 	        	   "municipalities"  : [
 	        	                        {
 	        	                        	"stateCode": "PA",
@@ -5748,6 +5762,7 @@
 	           },
 	           {
 	        	   "name" : "PB",
+	        	   "slug": "br/pb",
 	        	   "municipalities"  : [
 	        	                        {
 	        	                        	"stateCode": "PB",
@@ -6083,6 +6098,7 @@
 	           },
 	           {
 	        	   "name" : "PE",
+	        	   "slug": "br/pe",
 	        	   "municipalities"  : [
 	        	                        {
 	        	                        	"stateCode": "PE",
@@ -6708,6 +6724,7 @@
 	           },
 	           {
 	        	   "name" : "PI",
+	        	   "slug": "br/pi",
 	        	   "municipalities"   : [
 	        	                         {
 	        	                        	 "stateCode": "PI",
@@ -7158,6 +7175,7 @@
 	           },
 	           {
 	        	   "name" : "PR",
+	        	   "slug": "br/pr",
 	        	   "municipalities"   : [
 	        	                         {
 	        	                        	 "stateCode": "PR",
@@ -7953,6 +7971,7 @@
 	           },
 	           {
 	        	   "name" : "RJ",
+	        	   "slug": "br/rj",
 	        	   "municipalities"  : [
 	        	                        {
 	        	                        	"stateCode": "RJ",
@@ -8353,6 +8372,7 @@
 	           },
 	           {
 	        	   "name" : "RN",
+	        	   "slug": "br/rn",
 	        	   "municipalities"   : [
 	        	                         {
 	        	                        	 "stateCode": "RN",
@@ -8668,6 +8688,7 @@
 	           },
 	           {
 	        	   "name" : "RO",
+	        	   "slug": "br/ro",
 	        	   "municipalities"   : [
 	        	                         {
 	        	                        	 "stateCode": "RO",
@@ -8783,6 +8804,7 @@
 	           },
 	           {
 	        	   "name" : "RR",
+	        	   "slug": "br/rr",
 	        	   "municipalities" : [
 	        	                       {
 	        	                    	   "stateCode": "RR",
@@ -8823,6 +8845,7 @@
 	           },
 	           {
 	        	   "name" : "RS",
+	        	   "slug": "br/rs",
 	        	   "municipalities" : [
 	        	                       {
 	        	                    	   "stateCode": "RS",
@@ -9543,6 +9566,7 @@
 	           },
 	           {
 	        	   "name" : "SC",
+	        	   "slug": "br/sc",
 	        	   "municipalities" : [
 	        	                       {
 	        	                    	   "stateCode": "SC",
@@ -9958,6 +9982,7 @@
 	           },
 	           {
 	        	   "name" : "SE",
+	        	   "slug": "br/se",
 	        	   "municipalities" : [
 	        	                       {
 	        	                    	   "stateCode": "SE",
@@ -10123,6 +10148,7 @@
 	           },
 	           {
 	        	   "name" : "SP",
+	        	   "slug": "br/sp",
 	        	   "municipalities"  : [
 	        	                        {
 	        	                        	"stateCode": "SP",
@@ -11423,6 +11449,7 @@
 	           },
 	           {
 	        	   "name" : "TO" ,
+	        	   "slug": "br/to",
 	        	   "municipalities"  : [
 	        	                        {
 	        	                        	"stateCode": "TO",
