@@ -54,27 +54,30 @@ GooglePlayServicesClient.OnConnectionFailedListener,LocationListener,OnMyLocatio
 
 	private Context mContext;
 	
-	private GoogleMap mapa;
+    //private GoogleMap mapa;
 	
 	//private LatLng latLong;
 	
 	private float zoomLevel;
 
-	
-	private LocationManager locationManager;
-	private static final long MIN_TIME = 400;
-	private static final float MIN_DISTANCE = 1000;
-	
 	// These settings are the same as the settings for the map. They will in fact give you updates
     // at the maximal rates currently possible.
     private static final LocationRequest REQUEST = LocationRequest.create()
             .setInterval(5000)         // 5 seconds
             .setFastestInterval(16)    // 16ms = 60fps
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+	
+	private LocationManager locationManager;
+	private static final long MIN_TIME = 400;
+	private static final float MIN_DISTANCE = 1000;
 
 	Location mCurrentLocation;
 	LocationClient mLocationClient;
+	
 
+//----------------------------------------------------------------------------------------------------------------	
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -83,11 +86,16 @@ GooglePlayServicesClient.OnConnectionFailedListener,LocationListener,OnMyLocatio
 	  //  locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 	 //   locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, (android.location.LocationListener) this);
 	        
-		View mapa =  findViewById(R.id.mapa);
+		GoogleMap mapa =  ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapa)).getMap();
+		mapa.setMyLocationEnabled(true);
 	   
 		mLocationClient = new LocationClient(this, this, this);	
 		zoomLevel = 5;
 	}
+	
+	
+//----------------------------------------------------------------------------------------------------------------	
+	
 
 	// Define a DialogFragment that displays the error dialog
 	public static class ErrorDialogFragment extends DialogFragment {
@@ -118,6 +126,8 @@ GooglePlayServicesClient.OnConnectionFailedListener,LocationListener,OnMyLocatio
 
 		}
 	}
+	
+//----------------------------------------------------------------------------------------------------------------		
 
 
 	/*
@@ -146,6 +156,9 @@ GooglePlayServicesClient.OnConnectionFailedListener,LocationListener,OnMyLocatio
 
 		}
 	}	
+	
+//----------------------------------------------------------------------------------------------------------------		
+	
 	
 	private boolean servicesConnected() {
 		// Check that Google Play services is available
@@ -183,6 +196,8 @@ GooglePlayServicesClient.OnConnectionFailedListener,LocationListener,OnMyLocatio
 			return false;
 		}
 	}
+	
+//----------------------------------------------------------------------------------------------------------------		
 
 	/*
 	 * Called by Location Services when the request to connect the
