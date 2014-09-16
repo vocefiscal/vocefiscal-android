@@ -17,7 +17,8 @@
             android:id="@+id/up_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/selector_up_logo" />
+            android:src="@drawable/selector_up_logo"
+            android:onClick="voltar" />
 
         <TextView
             android:id="@+id/dados_secao"
@@ -30,5 +31,12 @@
             android:textSize="16sp"
             android:textStyle="bold" />
     </RelativeLayout>
+    
+    <fragment 
+          android:id="@+id/mapa"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:name="com.google.android.gms.maps.MapFragment"
+          />
 
 </LinearLayout>

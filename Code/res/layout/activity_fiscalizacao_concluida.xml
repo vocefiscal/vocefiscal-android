@@ -245,7 +245,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:onClick="mapaSecoes"
+                    android:onClick="buttonMapaSecoes"
                     android:src="@drawable/btn_map" />
             </RelativeLayout>
         </LinearLayout>
