@@ -12,6 +12,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
+import twitter4j.conf.ConfigurationBuilder;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -31,7 +32,7 @@ public class Twitter_Handler {
     private TwDialogListener mListener;
     private final Activity context;
 
-    public static final String  CALLBACK_URL = "twitterapp://connect";
+    public static final String  CALLBACK_URL = "http://www.vocefiscal.org";
     private static final String TWITTER_ACCESS_TOKEN_URL = "https://api.twitter.com/oauth/access_token";
     private static final String TWITTER_AUTHORZE_URL = "https://api.twitter.com/oauth/authorize";
     private static final String TWITTER_REQUEST_URL = "https://api.twitter.com/oauth/request_token";
@@ -43,7 +44,8 @@ public class Twitter_Handler {
     public Twitter_Handler(Activity context, String consumerKey,
     	    String secretKey) {
     	this.context = context;
-
+	
+    	
     	twitterObj = new TwitterFactory().getInstance();	
     	mSession = new TwitterSession(context);
     	

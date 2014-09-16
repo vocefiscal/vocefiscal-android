@@ -201,7 +201,7 @@
                     android:layout_alignTop="@+id/twitterButton"
                     android:layout_marginLeft="30dp"
                     android:layout_weight="1"
-                    android:background="@drawable/btn_facebook" />
+                    android:background="@drawable/selector_facebook_button" />
 
                 <ImageButton
                     android:id="@+id/twitterButton"
@@ -211,7 +211,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginRight="30dp"
                     android:layout_weight="1"
-                    android:background="@drawable/btn_twitter" />
+                    android:background="@drawable/selector_twitter_button" />
 
             </RelativeLayout>
 

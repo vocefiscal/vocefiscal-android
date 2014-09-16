@@ -8,6 +8,7 @@
         android:minSdkVersion="11"
         android:targetSdkVersion="19" />
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -47,6 +48,10 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/Theme.Vocefical" >
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <activity
             android:name=".activities.HomeActivity"
             android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
@@ -123,8 +128,14 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name="org.vocefiscal.activities.TourActivity"
+            android:name=".activities.TourActivity"
             android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
+            android:name="org.vocefiscal.activities.MapsActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
