@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -19,16 +20,26 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
+import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 
 public class MapsActivity extends FragmentActivity  implements GooglePlayServicesClient.ConnectionCallbacks,
-GooglePlayServicesClient.OnConnectionFailedListener
+GooglePlayServicesClient.OnConnectionFailedListener,LocationListener,OnMyLocationButtonClickListener
 {
 
 	// Global constants
@@ -44,6 +55,21 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	private Context mContext;
 	
 	private GoogleMap mapa;
+	
+	//private LatLng latLong;
+	
+	private float zoomLevel;
+	
+	private LocationManager locationManager;
+	private static final long MIN_TIME = 400;
+	private static final float MIN_DISTANCE = 1000;
+	
+	// These settings are the same as the settings for the map. They will in fact give you updates
+    // at the maximal rates currently possible.
+    private static final LocationRequest REQUEST = LocationRequest.create()
+            .setInterval(5000)         // 5 seconds
+            .setFastestInterval(16)    // 16ms = 60fps
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 	Location mCurrentLocation;
 	LocationClient mLocationClient;
@@ -52,39 +78,47 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_maps);
+    
+	  //  locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+	 //   locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, (android.location.LocationListener) this);
+	        
 
-		mLocationClient = new LocationClient(this, this, this);
-		
-		
-
-		//mCurrentLocation = mLocationClient.getLastLocation();
+		mLocationClient = new LocationClient(this, this, this);	
+		zoomLevel = 5;
 	}
+
 
 
 	// Define a DialogFragment that displays the error dialog
 	public static class ErrorDialogFragment extends DialogFragment {
 		// Global field to contain the error dialog
 		private Dialog mDialog;
+		
 		// Default constructor. Sets the dialog field to null
-		public ErrorDialogFragment() {
+		public ErrorDialogFragment() 
+		{
 			super();
 			mDialog = null;
 		}
 		// Set the dialog to display
-		public void setDialog(Dialog dialog) {
+		public void setDialog(Dialog dialog) 
+		{
 			mDialog = dialog;
 		}
 
 		// Return a Dialog to the DialogFragment.
 		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
+		public Dialog onCreateDialog(Bundle savedInstanceState) 
+		{
 			return mDialog;
 		}
-		public void show(FragmentManager supportFragmentManager, String string) {
+		public void show(FragmentManager supportFragmentManager, String string) 
+		{
 			// TODO Auto-generated method stub
 
 		}
 	}
+
 
 	/*
 	 * Handle results returned to the FragmentActivity
@@ -153,8 +187,7 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			// If Google Play services can provide an error dialog
 			if (errorDialog != null) {
 				// Create a new DialogFragment for the error dialog
-				ErrorDialogFragment errorFragment =
-						new ErrorDialogFragment();
+				ErrorDialogFragment errorFragment = new ErrorDialogFragment();
 				// Set the dialog in the DialogFragment
 				errorFragment.setDialog(errorDialog);
 				// Show the error dialog in the DialogFragment
@@ -173,10 +206,22 @@ GooglePlayServicesClient.OnConnectionFailedListener
 	@Override
 	public void onConnected(Bundle dataBundle) {
 		// Display the connection status
+		mLocationClient.requestLocationUpdates(REQUEST,this);  // LocationListener
+		 
+//		 CameraPosition cameraPosition = new CameraPosition.Builder()
+//		    .target(mLocationClient.)  // Sets the center of the map to Mountain View
+//		    .zoom(17)                   // Sets the zoom
+//		    .bearing(90)                // Sets the orientation of the camera to east
+//		    .tilt(30)                   // Sets the tilt of the camera to 30 degrees
+//		    .build();                   // Creates a CameraPosition from the builder
+//		 
+//		mapa.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+		 
+		 
+	
 		Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
-
 	}
-
+	
 	/*
 	 * Called by Location Services if the connection to the
 	 * location client drops because of an error.
@@ -189,6 +234,14 @@ GooglePlayServicesClient.OnConnectionFailedListener
 
 	}
 
+	@Override
+    public void onPause() {
+        super.onPause();
+        if (mLocationClient != null) {
+            mLocationClient.disconnect();
+        }
+    }
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -212,20 +265,6 @@ GooglePlayServicesClient.OnConnectionFailedListener
 		mContext = context;
 	}
 
-	//	public void showErrorDialog(final String title, final String message) {
-	//	    AlertDialog aDialog = new AlertDialog.Builder(mContext).setMessage(message).setTitle(title).setNeutralButton("Close", new OnClickListener() {
-	//	          public void onClick(final DialogInterface dialog,
-	//	              final int which) {
-	//	            //Prevent to finish activity, if user clicks about.
-	//	            if (!title.equalsIgnoreCase("About") && !title.equalsIgnoreCase("Directory Error") && !title.equalsIgnoreCase("View")) {
-	//	              ((Activity) mContext).finish();
-	//	            }
-	//	            
-	//	          }
-	//	        }).create();
-	//	    aDialog.setOnKeyListener((OnKeyListener) this);
-	//	    aDialog.show();
-	//	  }
 
 	void showErrorDialog(int code) {
 		GooglePlayServicesUtil.getErrorDialog(code, this, REQUEST_CODE_RECOVER_PLAY_SERVICES).show();
@@ -309,5 +348,73 @@ GooglePlayServicesClient.OnConnectionFailedListener
 			return locationClient.getLastLocation();
 		}
 	}
+
+	@Override
+	public boolean onMyLocationButtonClick() {
+		Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
+        // Return false so that we don't consume the event and the default behavior still occurs
+        // (the camera animates to the user's current position).
+        return false;
+	}
+	
+	  private void setUpLocationClientIfNeeded() {
+	        if (mLocationClient == null) {
+	            mLocationClient = new LocationClient(
+	                    getApplicationContext(),
+	                    this,  // ConnectionCallbacks
+	                    this); // OnConnectionFailedListener
+	        }
+	    }
+	  
+	  /**
+	     * Button to get current Location. This demonstrates how to get the current Location as required
+	     * without needing to register a LocationListener.
+	     */
+	    public void showMyLocation(View view) {
+	        if (mLocationClient != null && mLocationClient.isConnected()) {
+	            String msg = "Location = " + mLocationClient.getLastLocation();
+	            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+	        }
+	    }
+	    
+//	    @Override
+//	    protected void onResume() {
+//	        super.onResume();
+//	        setUpMapIfNeeded();
+//	        setUpLocationClientIfNeeded();
+//	        mLocationClient.connect();
+//	    }    
+
+	@Override
+	public void onLocationChanged(Location location) {
+		LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+	   // CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+	   // mapa.animateCamera(cameraUpdate);
+	   // locationManager.removeUpdates((android.location.LocationListener) this);
+
+		//mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
+		
+	}
+
+
+	
+//	private void mostrarLocalMapa(LatLng latLng) {
+//
+//		if(mapa!=null)
+//		{
+//			mapa.clear();
+//			if(eventPosition!=null)
+//			{
+//				mapa.addMarker(new MarkerOptions().position(eventPosition));
+//			}else if(myPosition!=null)
+//			{
+//				mapa.addMarker(new MarkerOptions().position(myPosition));
+//			}
+//			mapa.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+//		}else{
+//			Toast.makeText(getApplicationContext(),
+//					getString(R.string.nao_foi_possivel_carregar_o_mapa), Toast.LENGTH_SHORT).show();
+//		}
+//	}
 
 }
