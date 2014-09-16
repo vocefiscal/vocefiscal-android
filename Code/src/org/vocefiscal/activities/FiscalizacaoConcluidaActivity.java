@@ -12,9 +12,9 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.vocefiscal.R;
-import org.vocefiscal.twitter.Twitt_Sharing;
 
-import twitter4j.TwitterException;
+
+
 
 import com.facebook.FacebookRequestError;
 import com.facebook.HttpMethod;
@@ -105,31 +105,31 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 		}
 
 		//Twitter Button Click
-		try {
-
-			twitterButton = (ImageButton) findViewById(R.id.twitterButton);
-			twitterButton.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					try {
-						onClickTwitt();
-					} catch (TwitterException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			});
-		} catch (Exception e) {
-			// TODO: handle exception
-			runOnUiThread(new Runnable() {
-				public void run() {
-					showToast("View problem");
-				}
-			});
-
-		}
+//		try {
+//
+//			twitterButton = (ImageButton) findViewById(R.id.twitterButton);
+//			twitterButton.setOnClickListener(new View.OnClickListener() {
+//
+//				@Override
+//				public void onClick(View v) {
+//					// TODO Auto-generated method stub
+//					try {
+//						onClickTwitt();
+//					} catch (TwitterException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			});
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//			runOnUiThread(new Runnable() {
+//				public void run() {
+//					showToast("View problem");
+//				}
+//			});
+//
+//		}
 
 		//Listener do botão Compartilhar no Facebook
 		facebookLogin = (ImageButton) findViewById(R.id.btn_facebook);
@@ -385,27 +385,27 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 
 //	// Here you can pass the string message & image path which you want to share
 //	// in Twitter.
-	public void onClickTwitt() throws TwitterException {
-		if (isNetworkAvailable()) {
-			Twitt_Sharing twitt = new Twitt_Sharing(FiscalizacaoConcluidaActivity.this, consumer_key, secret_key);
-			//string_img_url = "http://imagizer.imageshack.us/v2/150x100q90/913/bAwPgx.png";
-			string_msg = "Você fiscalizou a seção: "+ this.secao +"\nNa zona eleitoral: " + this.zonaEleitoral + "\nNo município de: " + this.municipio;
-			
-			string_img_url = "http://www.bharatbpo.in/bbpo/images/AndroidLogo.jpg";
-			//string_msg = "TESTE";
-			
-			// here we have web url image so we have to make it as file to
-			// upload
-			String_to_File(string_img_url);
-			
-			// Now share both message & image to sharing activity
-			twitt.shareToTwitter(string_msg, casted_image);
-			//twitt.shareToTwitter(string_img_url, casted_image);
-
-		} else {
-			showToast("Sem conexão disponível!");
-		}
-	}
+//	public void onClickTwitt() throws TwitterException {
+//		if (isNetworkAvailable()) {
+//			Twitt_Sharing twitt = new Twitt_Sharing(FiscalizacaoConcluidaActivity.this, consumer_key, secret_key);
+//			//string_img_url = "http://imagizer.imageshack.us/v2/150x100q90/913/bAwPgx.png";
+//			string_msg = "Você fiscalizou a seção: "+ this.secao +"\nNa zona eleitoral: " + this.zonaEleitoral + "\nNo município de: " + this.municipio;
+//			
+//			string_img_url = "http://www.bharatbpo.in/bbpo/images/AndroidLogo.jpg";
+//			//string_msg = "TESTE";
+//			
+//			// here we have web url image so we have to make it as file to
+//			// upload
+//			String_to_File(string_img_url);
+//			
+//			// Now share both message & image to sharing activity
+//			twitt.shareToTwitter(string_msg, casted_image);
+//			//twitt.shareToTwitter(string_img_url, casted_image);
+//
+//		} else {
+//			showToast("Sem conexão disponível!");
+//		}
+//	}
 
 	private void showToast(String msg) {
 		Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
@@ -429,6 +429,17 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Chama a sessão de Mapas da Activity
+	 * @param view
+	 */
+	public void buttonMapaSecoes (View view)
+	{
+		Intent intent = new Intent(FiscalizacaoConcluidaActivity.this, MapsActivity.class);
+		startActivity(intent);
+			
 	}
 
 	// this function will make your image to file
