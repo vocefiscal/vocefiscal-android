@@ -182,14 +182,7 @@ public class ConferirImagensActivity extends AnalyticsActivity
 
 				startActivity(intent);
 
-				handler.postDelayed(new Runnable() 
-				{
-					@Override
-					public void run() 
-					{
-						ConferirImagensActivity.this.finish();					
-					}
-				}, 1000);
+				finish();					
 			}
 		});
 	}	
@@ -240,14 +233,6 @@ public class ConferirImagensActivity extends AnalyticsActivity
 
 		startActivity(intent);
 
-		handler.postDelayed(new Runnable() 
-		{
-
-			@Override
-			public void run() 
-			{
-				ConferirImagensActivity.this.finish();
-			}
-		}, 1000);		
+		finish();	
 	}
 }
