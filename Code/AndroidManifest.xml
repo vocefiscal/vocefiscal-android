@@ -62,7 +62,7 @@
             android:name=".activities.HomeActivity"
             android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
             android:label="@string/app_name"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" >
         </activity>
         <activity

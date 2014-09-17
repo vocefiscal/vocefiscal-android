@@ -500,6 +500,8 @@ public class CameraActivity extends AnalyticsActivity
 
 		if(wl!=null && !wl.isHeld())
 			wl.acquire();	
+		
+		preview.removeAllViews();
 
 		mCamera = getCameraInstance();
 
@@ -622,11 +624,25 @@ public class CameraActivity extends AnalyticsActivity
 
 	private void releaseCamera()
 	{
+		
 		if (mCamera != null)
 		{
+			mCamera.stopPreview();
+			mCamera.setPreviewCallback(null);
+			try 
+			{
+				mCamera.setPreviewDisplay(null);
+			} catch (IOException e) 
+			{
+				
+				e.printStackTrace();
+			}
+			mCamera.lock();
 			mCamera.release();        // release the camera for other applications
 			mCamera = null;
+			mPreview = null;
 		}
+
 	}
 
 	private void setupSound() 
