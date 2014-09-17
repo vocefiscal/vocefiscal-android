@@ -13,7 +13,6 @@ import org.vocefiscal.asynctasks.AsyncTask;
 import org.vocefiscal.asynctasks.SendEmailAsyncTask;
 import org.vocefiscal.asynctasks.SendEmailAsyncTask.OnSentMailListener;
 import org.vocefiscal.communications.CommunicationConstants;
-import org.vocefiscal.communications.CommunicationUtils;
 import org.vocefiscal.database.VoceFiscalDatabase;
 import org.vocefiscal.models.Fiscalizacao;
 import org.vocefiscal.models.S3UploadPictureResult;
@@ -112,19 +111,10 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 						startUploadingFiscalizacao(fiscalizacao);
 
 					}else if(fiscalizacao.getStatusDoEnvio()!=null&&fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_PICTURES.ordinal()))
-					{
-						boolean isOnWiFi = CommunicationUtils.isWifi(getApplicationContext());
-
-						if(isOnWiFi || (fiscalizacao.getPodeEnviarRedeDados()!=null&&fiscalizacao.getPodeEnviarRedeDados().equals(1)))
-						{
-							// redundância de envio por email. Não tem garantia que vai chegar, apesar de ter backoff
-							SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
-							sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
-
-							AWSFiscalizacaoUpload awsFiscalizacaoUpload = new AWSFiscalizacaoUpload(getApplicationContext(), this, fiscalizacao,0);
-							Thread t = new Thread(awsFiscalizacaoUpload.getUploadRunnable());
-							t.start();
-						}
+					{						
+						AWSFiscalizacaoUpload awsFiscalizacaoUpload = new AWSFiscalizacaoUpload(getApplicationContext(), this, fiscalizacao,0);
+						Thread t = new Thread(awsFiscalizacaoUpload.getUploadRunnable());
+						t.start();
 					}
 				}
 			}
@@ -132,42 +122,33 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 	}
 
 	private void startUploadingFiscalizacao(Fiscalizacao fiscalizacao) 
-	{
-		boolean isOnWiFi = CommunicationUtils.isWifi(getApplicationContext());
+	{													
+		ArrayList<String> picturePathList = fiscalizacao.getPicturePathList();
 
-		if(isOnWiFi || (fiscalizacao.getPodeEnviarRedeDados()!=null&&fiscalizacao.getPodeEnviarRedeDados().equals(1)))
-		{														
-			ArrayList<String> picturePathList = fiscalizacao.getPicturePathList();
+		if(picturePathList!=null&&picturePathList.size()>0)
+		{		
+			int quantidadeDeFotosUploaded = 0;
+			ArrayList<String> pictureURLList = fiscalizacao.getPictureURLList(); 
 
-			if(picturePathList!=null&&picturePathList.size()>0)
+			if(pictureURLList!=null)
+				quantidadeDeFotosUploaded = pictureURLList.size();
+
+			if(quantidadeDeFotosUploaded<picturePathList.size())
+			{														
+				AWSPictureUpload model = new AWSPictureUpload(getApplicationContext(), this, picturePathList.get(quantidadeDeFotosUploaded), municipalites.getMunicipalitySlug(fiscalizacao.getEstado(),fiscalizacao.getMunicipio()), fiscalizacao.getZonaEleitoral(), fiscalizacao.getIdFiscalizacao(), quantidadeDeFotosUploaded,fiscalizacao.getPodeEnviarRedeDados(),0);
+				Thread t = new Thread(model.getUploadRunnable());
+				t.start();
+			}else
 			{		
-				int quantidadeDeFotosUploaded = 0;
-				ArrayList<String> pictureURLList = fiscalizacao.getPictureURLList(); 
+				fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO_PICTURES.ordinal());
+				if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
+					voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO_PICTURES.ordinal());	
 
-				if(pictureURLList!=null)
-					quantidadeDeFotosUploaded = pictureURLList.size();
-
-				if(quantidadeDeFotosUploaded<picturePathList.size())
-				{														
-					AWSPictureUpload model = new AWSPictureUpload(getApplicationContext(), this, picturePathList.get(quantidadeDeFotosUploaded), municipalites.getMunicipalitySlug(fiscalizacao.getEstado(),fiscalizacao.getMunicipio()), fiscalizacao.getZonaEleitoral(), fiscalizacao.getIdFiscalizacao(), quantidadeDeFotosUploaded,0);
-					Thread t = new Thread(model.getUploadRunnable());
-					t.start();
-				}else
-				{		
-					fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO_PICTURES.ordinal());
-					if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-						voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO_PICTURES.ordinal());
-
-					// redundância de envio por email. Não tem garantia que vai chegar, apesar de ter backoff
-					SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
-					sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
-
-					AWSFiscalizacaoUpload awsFiscalizacaoUpload = new AWSFiscalizacaoUpload(getApplicationContext(), this, fiscalizacao,0);
-					Thread t = new Thread(awsFiscalizacaoUpload.getUploadRunnable());
-					t.start();
-				}
+				AWSFiscalizacaoUpload awsFiscalizacaoUpload = new AWSFiscalizacaoUpload(getApplicationContext(), this, fiscalizacao,0);
+				Thread t = new Thread(awsFiscalizacaoUpload.getUploadRunnable());
+				t.start();
 			}
-		}
+		}	
 	}
 
 	/* (non-Javadoc)
@@ -215,13 +196,12 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 			backoffEmail = 0;
 		}else
 		{
-
+			backoffEmail++;
+			
 			Fiscalizacao fiscalizacao = getFiscalizacaoById(idFiscalizacao);
 
 			if(fiscalizacao!=null)
-			{
-				backoffEmail++;
-
+			{				
 				SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,CommunicationConstants.WAIT_RETRY*backoffEmail);
 				sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
 			}			
@@ -253,35 +233,26 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 
 			if(fiscalizacao.getStatusDoEnvio()!=null&&fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()))
 			{				
-				boolean isOnWiFi = CommunicationUtils.isWifi(getApplicationContext());	
+				ArrayList<String> picturePathList = fiscalizacao.getPicturePathList();
 
-				if(isOnWiFi || (fiscalizacao.getPodeEnviarRedeDados()!=null&&fiscalizacao.getPodeEnviarRedeDados().equals(1)))
-				{
-					ArrayList<String> picturePathList = fiscalizacao.getPicturePathList();
+				String slugFiscalizacao = resultado.getSlugFiscalizacao();
+				String zonaFiscalizacao = resultado.getZonaFiscalizacao();
+				Integer posicaoFoto = resultado.getPosicaoFoto();
+				posicaoFoto++;
+				if(posicaoFoto<picturePathList.size())
+				{						
+					AWSPictureUpload model = new AWSPictureUpload(getApplicationContext(), this,picturePathList.get(posicaoFoto), slugFiscalizacao,zonaFiscalizacao, idFiscalizacao, posicaoFoto,fiscalizacao.getPodeEnviarRedeDados(),0);
+					Thread t = new Thread(model.getUploadRunnable());
+					t.start();
+				}else
+				{		
+					fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO_PICTURES.ordinal());
+					if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
+						voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO_PICTURES.ordinal());						
 
-					String slugFiscalizacao = resultado.getSlugFiscalizacao();
-					String zonaFiscalizacao = resultado.getZonaFiscalizacao();
-					Integer posicaoFoto = resultado.getPosicaoFoto();
-					posicaoFoto++;
-					if(posicaoFoto<picturePathList.size())
-					{						
-						AWSPictureUpload model = new AWSPictureUpload(getApplicationContext(), this,picturePathList.get(posicaoFoto), slugFiscalizacao,zonaFiscalizacao, idFiscalizacao, posicaoFoto,0);
-						Thread t = new Thread(model.getUploadRunnable());
-						t.start();
-					}else
-					{		
-						fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIADO_PICTURES.ordinal());
-						if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-							voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.ENVIADO_PICTURES.ordinal());
-
-						// redundância de envio por email. Não tem garantia que vai chegar, apesar de ter backoff
-						SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
-						sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
-
-						AWSFiscalizacaoUpload awsFiscalizacaoUpload = new AWSFiscalizacaoUpload(getApplicationContext(), this, fiscalizacao,0);
-						Thread t = new Thread(awsFiscalizacaoUpload.getUploadRunnable());
-						t.start();
-					}
+					AWSFiscalizacaoUpload awsFiscalizacaoUpload = new AWSFiscalizacaoUpload(getApplicationContext(), this, fiscalizacao,0);
+					Thread t = new Thread(awsFiscalizacaoUpload.getUploadRunnable());
+					t.start();
 				}
 			}
 		}	
@@ -291,15 +262,15 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 	@Override
 	public void finishedPictureUploadS3ComError(String slugFiscalizacao, String zonaFiscalizacao, Long idFiscalizacao,Integer posicaoFoto) 
 	{
+		backoffPictures++;	
+		
 		Fiscalizacao fiscalizacao = getFiscalizacaoById(idFiscalizacao);
 
 		if(fiscalizacao!=null)
-		{
-			backoffPictures++;	
-
+		{			
 			ArrayList<String> picturePathList = fiscalizacao.getPicturePathList();
 
-			AWSPictureUpload model = new AWSPictureUpload(getApplicationContext(), this,picturePathList.get(posicaoFoto), slugFiscalizacao,zonaFiscalizacao,idFiscalizacao, posicaoFoto,CommunicationConstants.WAIT_RETRY*backoffPictures);
+			AWSPictureUpload model = new AWSPictureUpload(getApplicationContext(), this,picturePathList.get(posicaoFoto), slugFiscalizacao,zonaFiscalizacao,idFiscalizacao, posicaoFoto, fiscalizacao.getPodeEnviarRedeDados(), CommunicationConstants.WAIT_RETRY*backoffPictures);
 			Thread t = new Thread(model.getUploadRunnable());
 			t.start();
 		}	
@@ -314,22 +285,28 @@ public class UploadManagerService extends Service implements OnPictureUploadS3Po
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 			voceFiscalDatabase.updateStatusEnvio(idFiscalizacao,StatusEnvioEnum.ENVIADO_TOTAL.ordinal());
 		
+		Fiscalizacao fiscalizacao = getFiscalizacaoById(idFiscalizacao);
+
+		if(fiscalizacao!=null)
+		{
+			// redundância de envio por email. Não tem garantia que vai chegar, apesar de ter backoff
+			SendEmailAsyncTask sendEmailAsyncTask = new SendEmailAsyncTask(this,this,fiscalizacao,0);
+			sendEmailAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);	
+		}			
 	}
 
 	@Override
 	public void finishedFiscalizacaoUploadS3ComError(Long idFiscalizacao)
 	{
+		backoffFiscalizacao++;	
+
 		Fiscalizacao fiscalizacao = getFiscalizacaoById(idFiscalizacao);
 
 		if(fiscalizacao!=null)
-		{
-			backoffFiscalizacao++;	
-			
+		{		
 			AWSFiscalizacaoUpload awsFiscalizacaoUpload = new AWSFiscalizacaoUpload(getApplicationContext(), this, fiscalizacao,CommunicationConstants.WAIT_RETRY*backoffFiscalizacao);
 			Thread t = new Thread(awsFiscalizacaoUpload.getUploadRunnable());
-			t.start();
-		}
-		
+			t.start();					
+		}		
 	}
-
 }

@@ -6,6 +6,7 @@ package org.vocefiscal.models;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -19,6 +20,7 @@ public class Fiscalizacao implements Serializable
 {
 	private static final long serialVersionUID = 2048054520603455140L;
 
+	@JsonIgnore
 	private Long idFiscalizacao;
 	
 	private String municipio;
@@ -31,14 +33,18 @@ public class Fiscalizacao implements Serializable
 	
 	private String secaoEleitoral;
 	
+	@JsonIgnore
 	private Integer podeEnviarRedeDados;
 	
+	@JsonIgnore
 	private Integer statusDoEnvio;
 	
 	private Long data;
 
+	@JsonIgnore
 	private ArrayList<String> picturePathList;
 
+	@JsonIgnore
 	private ArrayList<String> picture30PCPathList;
 	
 	private ArrayList<String> pictureURLList;

@@ -12,6 +12,7 @@ import java.util.Date;
 
 import org.vocefiscal.bitmaps.ImageHandler;
 import org.vocefiscal.communications.CommunicationConstants;
+import org.vocefiscal.communications.CommunicationUtils;
 import org.vocefiscal.communications.JsonHandler;
 import org.vocefiscal.models.Fiscalizacao;
 import org.vocefiscal.utils.Municipalities;
@@ -76,6 +77,11 @@ public class AWSFiscalizacaoUpload extends AWSTransferModel
 				}else if(event.getEventCode() == ProgressEvent.FAILED_EVENT_CODE) 
 				{
 					mStatus = Status.CANCELED;
+					
+					if(mUpload != null) 
+					{
+						mUpload.abort();
+					}
 
 					AWSFiscalizacaoUpload.this.listener.finishedFiscalizacaoUploadS3ComError(AWSFiscalizacaoUpload.this.fiscalizacao.getIdFiscalizacao());
 				}
@@ -181,42 +187,82 @@ public class AWSFiscalizacaoUpload extends AWSTransferModel
 			{
 			}
 		}
+		
+		boolean hasInternet = CommunicationUtils.verifyConnectivity(getContext());
 
-		JsonHandler jsonHandler = new JsonHandler();
-
-		try 
+		if(hasInternet)
 		{
-			String fiscalizacaoJSON = jsonHandler.fromObjectToJsonData(fiscalizacao);
+			boolean isOnWiFi = CommunicationUtils.isWifi(getContext());
 
-			fiscalizacaoJSONFile = getOutputMediaFile();
-			
-			Writer writer = new BufferedWriter(new FileWriter(fiscalizacaoJSONFile));
-			writer.write(fiscalizacaoJSON);
-			writer.close();
-			
-			fiscalizacaoJSONFileName= ImageHandler.nomeDaMidia(fiscalizacaoJSONFile) + ".json";		
-
-			if(fiscalizacaoJSONFile != null)
+			if(isOnWiFi || (fiscalizacao.getPodeEnviarRedeDados()!=null&&fiscalizacao.getPodeEnviarRedeDados().equals(1)))
 			{
-				try 
-				{				
-					TransferManager mTransferManager = getTransferManager();				
+				JsonHandler jsonHandler = new JsonHandler();
 
-					mUpload = mTransferManager.upload(CommunicationConstants.JSON_BUCKET_NAME, AWSUtil.getPrefix(getContext())+ municipalities.getMunicipalitySlug(fiscalizacao.getEstado(), fiscalizacao.getMunicipio()) + "/zona-" + fiscalizacao.getZonaEleitoral() + "/"+ fiscalizacaoJSONFileName, fiscalizacaoJSONFile);
-					mUpload.addProgressListener(progressListener);
-				} catch(Exception e) 
+				try 
+				{
+					String fiscalizacaoJSON = jsonHandler.fromObjectToJsonData(fiscalizacao);
+
+					fiscalizacaoJSONFile = getOutputMediaFile();
+					
+					Writer writer = new BufferedWriter(new FileWriter(fiscalizacaoJSONFile));
+					writer.write(fiscalizacaoJSON);
+					writer.close();
+					
+					fiscalizacaoJSONFileName= ImageHandler.nomeDaMidia(fiscalizacaoJSONFile) + ".json";		
+
+					if(fiscalizacaoJSONFile != null)
+					{
+						try 
+						{				
+							TransferManager mTransferManager = getTransferManager();				
+
+							mUpload = mTransferManager.upload(CommunicationConstants.JSON_BUCKET_NAME, AWSUtil.getPrefix(getContext())+ municipalities.getMunicipalitySlug(fiscalizacao.getEstado(), fiscalizacao.getMunicipio()) + "/zona-" + fiscalizacao.getZonaEleitoral() + "/"+ fiscalizacaoJSONFileName, fiscalizacaoJSONFile);
+							mUpload.addProgressListener(progressListener);
+						} catch(Exception e) 
+						{
+							mStatus = Status.CANCELED;
+							
+							if(mUpload != null) 
+							{
+								mUpload.abort();
+							}
+
+							listener.finishedFiscalizacaoUploadS3ComError(fiscalizacao.getIdFiscalizacao());
+						}
+					}
+				} catch (Exception e) 
 				{
 					mStatus = Status.CANCELED;
+					
+					if(mUpload != null) 
+					{
+						mUpload.abort();
+					}
 
 					listener.finishedFiscalizacaoUploadS3ComError(fiscalizacao.getIdFiscalizacao());
 				}
+			}else
+			{
+				mStatus = Status.CANCELED;
+				
+				if(mUpload != null) 
+				{
+					mUpload.abort();
+				}
+
+				listener.finishedFiscalizacaoUploadS3ComError(fiscalizacao.getIdFiscalizacao());
 			}
-		} catch (Exception e) 
+		}else
 		{
 			mStatus = Status.CANCELED;
+			
+			if(mUpload != null) 
+			{
+				mUpload.abort();
+			}
 
 			listener.finishedFiscalizacaoUploadS3ComError(fiscalizacao.getIdFiscalizacao());
-		}
+		}			
 	}
 
 	/** Create a File for saving */
