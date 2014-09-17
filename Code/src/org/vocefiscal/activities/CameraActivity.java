@@ -232,6 +232,23 @@ public class CameraActivity extends AnalyticsActivity
 		trinta_por_cento = (RecyclingImageView) findViewById(R.id.trinta_por_cento);
 		trinta_por_cento.setVisibility(View.GONE);
 		setAlpha(trinta_por_cento, 0.5f);
+		trinta_por_cento.setOnClickListener(new OnClickListener() 
+		{
+
+			@Override
+			public void onClick(View v) 
+			{
+				Intent intent = new Intent(getApplicationContext(), EditarFotoActivity.class);
+
+				Bundle bundle = new Bundle();
+				bundle.putString(PICTURE_PREVIEW_PATH, picturePathList.get(picturePathList.size()-1));
+
+				intent.putExtras(bundle);
+
+				startActivityForResult(intent, PICTURE_PREVIEW_REQUEST_CODE);
+			}
+		});
+		
 
 		photo_concluido =  (TextView) findViewById(R.id.photo_concluido);
 		photo_concluido.setTypeface(unisansheavy);
