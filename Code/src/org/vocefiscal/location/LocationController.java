@@ -3,6 +3,8 @@
  */
 package org.vocefiscal.location;
 
+import org.vocefiscal.R;
+
 import android.location.Location;
 
 import com.google.android.gms.location.LocationClient;
@@ -10,7 +12,9 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * @author andre
@@ -47,13 +51,13 @@ public class LocationController implements LocationListener
 		/*
 		 * Set the update interval
 		 */
-		mLocationRequest.setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS);
+		mLocationRequest.setInterval(LocationUtils.UPDATE_INTERVAL_IN_SECONDS);
 
 		// Use high accuracy
-		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+		mLocationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
 
 		// Set the interval ceiling to one minute
-		mLocationRequest.setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
+		mLocationRequest.setFastestInterval(LocationUtils.UPDATE_INTERVAL_IN_SECONDS);
 	}
 	
 	public void start()
@@ -100,7 +104,14 @@ public class LocationController implements LocationListener
 		if(currentLocation!=null)
 		{
 			LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-			map.moveCamera(CameraUpdateFactory.newLatLng(latLng));	
+			map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+			
+			// create marker
+			MarkerOptions marker = new MarkerOptions().position(latLng).title("Você"); 
+			// RED color icon
+			marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.indicador));
+			// adding marker
+			map.addMarker(marker);
 		}   		
 	}
 
@@ -110,7 +121,7 @@ public class LocationController implements LocationListener
 		if(currentLocation!=null)
 		{
 			LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));	
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5));	
 		}    	
 	}
 	

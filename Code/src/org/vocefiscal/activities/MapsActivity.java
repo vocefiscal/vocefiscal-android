@@ -19,13 +19,14 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.UiSettings;
 
 
 public class MapsActivity extends FragmentActivity  implements GooglePlayServicesClient.ConnectionCallbacks,GooglePlayServicesClient.OnConnectionFailedListener
 {	
 	private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	
-	private GoogleMap mapa;
+    private GoogleMap mapa;
 	
 	private LocationController locationController;
 
@@ -34,6 +35,8 @@ public class MapsActivity extends FragmentActivity  implements GooglePlayService
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_maps);
+		
+		
 		
 		/*
 		 * *************************************************************************************
@@ -60,6 +63,15 @@ public class MapsActivity extends FragmentActivity  implements GooglePlayService
 				finish();		
 			}
 		} 
+		
+		//Configura o mapa para não dar zoom, sem gestos
+		// e sem o botão de localização e compass
+		UiSettings uiSettings = mapa.getUiSettings();
+        uiSettings.setCompassEnabled(false);
+        uiSettings.setZoomControlsEnabled(false);
+        uiSettings.setScrollGesturesEnabled(false);
+        uiSettings.setZoomGesturesEnabled(false);
+        uiSettings.setMyLocationButtonEnabled(false);
 	
 		/*
 		 * *************************************************
@@ -91,6 +103,8 @@ public class MapsActivity extends FragmentActivity  implements GooglePlayService
 		}
 		return true;
 	}
+	
+//----------------------------------------------------------------------------------------------------------------		
 
 
 	/*
@@ -129,6 +143,8 @@ public class MapsActivity extends FragmentActivity  implements GooglePlayService
 					break;
 				}
 	}
+	
+//----------------------------------------------------------------------------------------------------------------		
 
 	/*
 	 * Called by Location Services when the request to connect the
@@ -149,10 +165,10 @@ public class MapsActivity extends FragmentActivity  implements GooglePlayService
 	@Override
 	public void onDisconnected() 
 	{
-		//do nothing
+		locationController.stop();
 
 	}
-
+	
 	/**
 	 * Ao ser clicado, retorna da Acvitity
 	 * @param view
