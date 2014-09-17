@@ -254,14 +254,8 @@ public class CameraActivity extends AnalyticsActivity
 
 				startActivity(intent);
 
-				handler.postDelayed(new Runnable() 
-				{
-					@Override
-					public void run() 
-					{
-						CameraActivity.this.finish();					
-					}
-				}, 1000);
+				finish();
+				
 			}
 		});
 

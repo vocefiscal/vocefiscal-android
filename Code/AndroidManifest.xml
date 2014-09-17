@@ -142,6 +142,7 @@
         </activity>
         <activity
             android:name="org.vocefiscal.activities.MapsActivity"
+            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
