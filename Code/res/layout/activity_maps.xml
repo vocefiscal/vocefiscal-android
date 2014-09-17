@@ -38,5 +38,15 @@
           android:layout_height="match_parent"
           android:name="com.google.android.gms.maps.MapFragment"
           />
+    
+     <TextView
+         android:id="@+id/text_view_polls_count"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:background="@drawable/indicador"
+         android:gravity="center"
+         android:text="14"
+         android:textColor="@color/branco_vocefiscal"
+         android:textSize="18dp" />
 
 </LinearLayout>

@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.android.gms.maps.model.LatLng;
 
 /**
  * @author andre
@@ -16,11 +17,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_EMPTY)
 public class StateStats implements Serializable
 {
+
+
 	private static final long serialVersionUID = -6680411984767337439L;
 	
 	private String stateCode;
 	
 	private Integer pollTapesCount;
+	
 
 	/**
 	 * @return the stateCode
