@@ -143,18 +143,20 @@ public class ConferirImagensActivity extends AnalyticsActivity
 		fotoAdapter.notifyDataSetChanged();
 
 		ImageView up_logo = (ImageView) findViewById(R.id.up_logo);
-		up_logo.setOnClickListener(new OnClickListener() 
-		{			
-			@Override
-			public void onClick(View v) 
-			{
-				if(!isModoHistorico)
-					voltarParaCamera();
-				else
-					finish();
-			}
-		});
-
+		if(isModoHistorico)
+		{
+			up_logo.setImageResource(R.drawable.selector_up_logo);
+			up_logo.setOnClickListener(new OnClickListener() 
+			{			
+				@Override
+				public void onClick(View v) 
+				{
+					if(isModoHistorico)
+						finish();
+				}
+			});	
+		}
+			
 		ImageView ruim = (ImageView) findViewById(R.id.ruim);
 		ruim.setOnClickListener(new OnClickListener() 
 		{
@@ -182,14 +184,7 @@ public class ConferirImagensActivity extends AnalyticsActivity
 
 				startActivity(intent);
 
-				handler.postDelayed(new Runnable() 
-				{
-					@Override
-					public void run() 
-					{
-						ConferirImagensActivity.this.finish();					
-					}
-				}, 1000);
+				finish();					
 			}
 		});
 	}	
@@ -240,14 +235,6 @@ public class ConferirImagensActivity extends AnalyticsActivity
 
 		startActivity(intent);
 
-		handler.postDelayed(new Runnable() 
-		{
-
-			@Override
-			public void run() 
-			{
-				ConferirImagensActivity.this.finish();
-			}
-		}, 1000);		
+		finish();	
 	}
 }
