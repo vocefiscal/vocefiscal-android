@@ -33,7 +33,6 @@ public class ConferirFragment extends Fragment
 
 	public ConferirFragment(ImageFetcher imageFetcher,ArrayList<Fiscalizacao> listaDeFiscalizacoes,VoceFiscalDatabase voceFiscalDatabase) 
 	{
-		super();
 		this.imageFetcher = imageFetcher;
 		this.listaDeFiscalizacoes = listaDeFiscalizacoes;
 		this.voceFiscalDatabase = voceFiscalDatabase;
