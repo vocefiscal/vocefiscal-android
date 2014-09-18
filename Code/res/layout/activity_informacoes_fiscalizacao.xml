@@ -29,105 +29,118 @@
             android:textStyle="bold" />
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/layout_capa"
+    <ScrollView
+        android:id="@+id/contents"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/header" >
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/btn_enviar"
+        android:layout_below="@+id/header"
+        android:fillViewport="true" >
 
-        <org.vocefiscal.bitmaps.RecyclingImageView
-            android:id="@+id/capa"
+        <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="109dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/capa_conferir" />
+            android:layout_height="fill_parent" >
 
-        <ProgressBar
-            android:id="@+id/progress_bar_capa"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="gone" />
-    </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/layout_capa"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_capa"
-        android:orientation="vertical"
-        android:padding="20dp" >
+                <org.vocefiscal.bitmaps.RecyclingImageView
+                    android:id="@+id/capa"
+                    android:layout_width="fill_parent"
+                    android:layout_height="109dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/capa_conferir" />
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="1" >
-            
-            <Spinner
-                android:id="@+id/estado_et"
-                android:layout_width="match_parent"
+                <ProgressBar
+                    android:id="@+id/progress_bar_capa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                android:layout_weight="0.725"
-                android:background="@drawable/bg_input"               
-                android:paddingLeft="10dp"
-                android:textColor="@color/preto"
-                android:textSize="16sp" />
+                android:layout_below="@+id/layout_capa"
+                android:orientation="vertical"
+                android:padding="20dp" >
 
-            <Spinner
-                android:id="@+id/municipio_et"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_weight="0.275"
-                android:background="@drawable/bg_input"
-                android:paddingLeft="10dp"
-                android:textColor="@color/preto"
-                android:textSize="16sp" />
-        </LinearLayout>
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1" >
 
-        <EditText
-            android:id="@+id/zona_eleitoral_et"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:background="@drawable/bg_input"
-            android:hint="Zona eleitoral"
-            android:inputType="number"
-            android:maxLength="4"
-            android:paddingLeft="10dp"
-            android:textColor="@color/preto"
-            android:textColorHint="@color/preto"
-            android:textSize="16sp" />
+                    <Spinner
+                        android:id="@+id/estado_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="0.725"
+                        android:background="@drawable/bg_input"
+                        android:paddingLeft="10dp"
+                        android:textColor="@color/preto"
+                        android:textSize="16sp" />
 
-        <EditText
-            android:id="@+id/local_votacao_et"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:background="@drawable/bg_input"
-            android:hint="Local da votação"
-            android:inputType="number"
-            android:maxLength="4"
-            android:paddingLeft="10dp"
-            android:textColor="@color/preto"
-            android:textColorHint="@color/preto"
-            android:textSize="16sp" />
+                    <Spinner
+                        android:id="@+id/municipio_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_weight="0.275"
+                        android:background="@drawable/bg_input"
+                        android:paddingLeft="10dp"
+                        android:textColor="@color/preto"
+                        android:textSize="16sp" />
+                </LinearLayout>
 
-        <EditText
-            android:id="@+id/secao_eleitoral_et"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:background="@drawable/bg_input"
-            android:hint="Seção eleitoral"
-            android:inputType="number"
-            android:maxLength="4"
-            android:paddingLeft="10dp"
-            android:textColor="@color/preto"
-            android:textColorHint="@color/preto"
-            android:textSize="16sp" />
-    </LinearLayout>
+                <EditText
+                    android:id="@+id/zona_eleitoral_et"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:background="@drawable/bg_input"
+                    android:hint="Zona eleitoral"
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/preto"
+                    android:textColorHint="@color/preto"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/local_votacao_et"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:background="@drawable/bg_input"
+                    android:hint="Local da votação (opcional)"
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/preto"
+                    android:textColorHint="@color/preto"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/secao_eleitoral_et"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:background="@drawable/bg_input"
+                    android:hint="Seção eleitoral"
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/preto"
+                    android:textColorHint="@color/preto"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </RelativeLayout>
+    </ScrollView>
 
     <ImageView
         android:id="@+id/btn_enviar"

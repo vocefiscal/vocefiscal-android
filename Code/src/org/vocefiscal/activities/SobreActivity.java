@@ -3,20 +3,11 @@
  */
 package org.vocefiscal.activities;
 
-import java.util.ArrayList;
-
 import org.vocefiscal.R;
-import org.vocefiscal.asynctasks.AsyncTask;
-import org.vocefiscal.asynctasks.GetStateStatsAsyncTask;
-import org.vocefiscal.asynctasks.GetStateStatsAsyncTask.OnGetStateStatsPostExecuteListener;
-import org.vocefiscal.communications.CommunicationConstants;
-import org.vocefiscal.models.StateStats;
-import org.vocefiscal.models.enums.BrazilStateCodesEnum;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 
 /**

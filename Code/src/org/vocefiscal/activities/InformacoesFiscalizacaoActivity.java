@@ -46,7 +46,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 	private ArrayList<String> picturePathList;
 
 	private ArrayList<String> picture30PCPathList;
-	
+
 	private ImageFetcher imageFetcher;
 
 	private int fotoWidth = -1;
@@ -64,31 +64,31 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 	public static final String MUNICIPIO = "municipio";
 
 	private Handler handler;
-	
+
 	private VoceFiscalDatabase voceFiscalDatabase;
-	
+
 	private CustomDialogClass envio;
-	
+
 	private Spinner municipio_spinner;
-	
+
 	private Spinner estado_spinner;
-	
+
 	private EditText zona_eleitoral_et;
-	
+
 	private EditText local_votacao_et;
-	
+
 	private EditText secao_eleitoral_et;
-	
+
 	private Fiscalizacao fiscalizacao;
-	
+
 	private Municipalities municipalities;	
-	
+
 	private String estadoSelecionado;
-	
+
 	private String municipioSelecionado;
-	
+
 	private ArrayAdapter<String> municipioAdapter;
-	
+
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
@@ -97,13 +97,13 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_informacoes_fiscalizacao);
-		
+
 		voceFiscalDatabase = new VoceFiscalDatabase(this);
-		
+
 		fiscalizacao = new Fiscalizacao();
-		
+
 		municipalities = Municipalities.getInstance(this);
-		
+
 		/*
 		 * Customização de tamanhos para as diferentes telas dos dispositivos Android
 		 */
@@ -116,7 +116,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 
 		fotoWidth = (int) (FOTO_SIZE_REF_WIDTH*deltaDisplay);	
 		fotoHeight = (int) (FOTO_SIZE_REF_HEIGHT*deltaDisplay);
-		
+
 		/*
 		 * Captando a missão
 		 */
@@ -130,7 +130,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 				picture30PCPathList = bundle.getStringArrayList(CameraActivity.PICTURE_30PC_PATH_LIST);
 			}
 		}
-		
+
 		/* 
 		 * ImageFetcher e Cache 
 		 */
@@ -147,7 +147,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 		 */
 
 		handler = new Handler();
-		
+
 		ImageView up_logo = (ImageView) findViewById(R.id.up_logo);
 		up_logo.setOnClickListener(new OnClickListener() 
 		{			
@@ -157,20 +157,20 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 				voltarParaConferir();
 			}
 		});
-		
+
 		Typeface unisansheavy = Typeface.createFromAsset(this.getAssets(),"fonts/unisansheavy.otf");
-		
+
 		TextView dados_secao = (TextView) findViewById(R.id.dados_secao);
 		dados_secao.setTypeface(unisansheavy);
-		
+
 		ProgressBar progress_bar_capa = (ProgressBar) findViewById(R.id.progress_bar_capa);
-		
+
 		RecyclingImageView capa = (RecyclingImageView) findViewById(R.id.capa);
 		if(picturePathList!=null&&picturePathList.size()>0)
 		{
 			imageFetcher.loadImage(picturePathList.get(0), capa, progress_bar_capa);
 		}
-		
+
 		BtnsControl btnsControlTimeout = new BtnsControl() 
 		{
 
@@ -190,10 +190,10 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 				gravarNaBaseLocalESeguir();
 			}
 		};
-		
+
 		envio = new CustomDialogClass(InformacoesFiscalizacaoActivity.this, "Enviar a fiscalização", "Deseja enviar a fiscalização também usando rede de dados (3G) ou somente quando estiver em uma rede Wi-Fi?");
 		envio.setBtnsControl(btnsControlTimeout, "Dados (3G)", "Wi-Fi");
-		
+
 		estado_spinner = (Spinner) findViewById(R.id.estado_et);
 		ArrayAdapter<String> estadoAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 		estadoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -207,7 +207,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) 
 			{
 				estadoSelecionado = (String) parent.getItemAtPosition(position);	
-				
+
 				ArrayList<String> nomesMunicipiosEstadoSelecionado = municipalities.getNomesMunicipiosPorEstado().get(estadoSelecionado);
 				municipioAdapter.clear();  
 				municipioAdapter.addAll(nomesMunicipiosEstadoSelecionado);
@@ -220,9 +220,9 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 			{
 				// do nothing		
 			}
-			
+
 		});
-		
+
 		municipio_spinner = (Spinner) findViewById(R.id.municipio_et);
 		municipioAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 		municipioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -241,13 +241,13 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 			{
 				// do nothing		
 			}
-			
+
 		});
-		
-		
+
+
 		int posicaoSP = 25;
 		estado_spinner.setSelection(posicaoSP);
-		
+
 		handler.postDelayed(new Runnable() 
 		{			
 			@Override
@@ -257,14 +257,14 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 				municipio_spinner.setSelection(posicaoCPS);				
 			}
 		}, 300);
-		
-		
+
+
 		zona_eleitoral_et = (EditText) findViewById(R.id.zona_eleitoral_et);
-		
+
 		local_votacao_et = (EditText) findViewById(R.id.local_votacao_et);
-		
+
 		secao_eleitoral_et = (EditText) findViewById(R.id.secao_eleitoral_et);
-		
+
 		ImageView btn_enviar = (ImageView) findViewById(R.id.btn_enviar);
 		btn_enviar.setOnClickListener(new OnClickListener() 
 		{		
@@ -274,7 +274,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 				String zona_eleitoral = null;
 				String local_votacao = null;
 				String secao_eleitoral = null;
-				
+
 				if(estadoSelecionado!=null&&estadoSelecionado.length()>0)
 				{										
 					if(municipioSelecionado!=null&&municipioSelecionado.length()>0)
@@ -282,64 +282,54 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 						if(zona_eleitoral_et!=null&&zona_eleitoral_et.getText()!=null&&zona_eleitoral_et.getText().length()>0)
 						{
 							zona_eleitoral = zona_eleitoral_et.getText().toString();
-							
+
 							if(zona_eleitoral.length()==4)
 							{
 								if(local_votacao_et!=null&&local_votacao_et.getText()!=null&&local_votacao_et.getText().length()>0)
-								{
 									local_votacao = local_votacao_et.getText().toString();
-									
-									if(local_votacao.length()==4)
+								
+								if(secao_eleitoral_et!=null&&secao_eleitoral_et.getText()!=null&&secao_eleitoral_et.getText().length()>0)
+								{
+									secao_eleitoral= secao_eleitoral_et.getText().toString();
+
+									if(secao_eleitoral.length()==4)
 									{
-										if(secao_eleitoral_et!=null&&secao_eleitoral_et.getText()!=null&&secao_eleitoral_et.getText().length()>0)
-										{
-											secao_eleitoral= secao_eleitoral_et.getText().toString();
-											
-											if(secao_eleitoral.length()==4)
-											{
-												fiscalizacao.setMunicipio(municipioSelecionado);
-												fiscalizacao.setEstado(estadoSelecionado);
-												fiscalizacao.setZonaEleitoral(zona_eleitoral);
-												fiscalizacao.setLocalDaVotacao(local_votacao);
-												fiscalizacao.setSecaoEleitoral(secao_eleitoral);
-												fiscalizacao.setPicturePathList(picturePathList);
-												fiscalizacao.setPicture30PCPathList(picture30PCPathList);
-												fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIANDO.ordinal());
-												fiscalizacao.setData(System.currentTimeMillis());
-												
-												if(envio!=null&&!envio.isShowing())
-													envio.show();
-											}else
-											{
-												Toast.makeText(getApplicationContext(), "Número da Seção Eleitoral incompleto.", Toast.LENGTH_SHORT).show();
-											}																																		
-										}else
-										{
-											Toast.makeText(getApplicationContext(), "Seção eleitoral é obrigatória.", Toast.LENGTH_SHORT).show();
-										}	
+										fiscalizacao.setMunicipio(municipioSelecionado);
+										fiscalizacao.setEstado(estadoSelecionado);
+										fiscalizacao.setZonaEleitoral(zona_eleitoral);
+										if(local_votacao!=null)
+											fiscalizacao.setLocalDaVotacao(local_votacao);
+										fiscalizacao.setSecaoEleitoral(secao_eleitoral);
+										fiscalizacao.setPicturePathList(picturePathList);
+										fiscalizacao.setPicture30PCPathList(picture30PCPathList);
+										fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIANDO.ordinal());
+										fiscalizacao.setData(System.currentTimeMillis());
+
+										if(envio!=null&&!envio.isShowing())
+											envio.show();
 									}else
 									{
-										Toast.makeText(getApplicationContext(), "Número do Local de Votação incompleto.", Toast.LENGTH_SHORT).show();
-									}																			
+										Toast.makeText(getApplicationContext(), "Número da Seção Eleitoral incompleto.", Toast.LENGTH_SHORT).show();
+									}																																		
 								}else
 								{
-									Toast.makeText(getApplicationContext(), "Local de votação é obrigatório.", Toast.LENGTH_SHORT).show();
-								}	
+									Toast.makeText(getApplicationContext(), "Seção eleitoral é obrigatória.", Toast.LENGTH_SHORT).show();
+								}																			
 							}else
 							{
 								Toast.makeText(getApplicationContext(), "Número da Zona Eleitoral incompleto.", Toast.LENGTH_SHORT).show();
 							}	
-														
+
 						}else
 						{
 							Toast.makeText(getApplicationContext(), "Zona eleitoral é obrigatória.", Toast.LENGTH_SHORT).show();
 						}	
-						
+
 					}else
 					{
 						Toast.makeText(getApplicationContext(), "Município é obrigatório.", Toast.LENGTH_SHORT).show();
 					}	
-					
+
 				}else
 				{
 					Toast.makeText(getApplicationContext(), "Estado é obrigatório.", Toast.LENGTH_SHORT).show();
@@ -352,18 +342,18 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 	{
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 			voceFiscalDatabase.addFiscalizacao(fiscalizacao);
-		
+
 		FlurryAgent.logEvent("Fiscalizou");
-		
+
 		Intent intentService = new Intent(getApplicationContext(), UploadManagerService.class);
-		
+
 		Bundle bundle = new Bundle();
 		bundle.putLong(UploadManagerService.ID_FISCALIZACAO,fiscalizacao.getIdFiscalizacao());
-		
+
 		intentService.putExtras(bundle);
-		
+
 		startService(intentService);
-		
+
 		Intent intent = new Intent(getApplicationContext(), FiscalizacaoConcluidaActivity.class);
 		Bundle bundleActivity = new Bundle();
 		bundleActivity.putString(SECAO, fiscalizacao.getSecaoEleitoral());
@@ -375,7 +365,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 		startActivity(intent);
 
 		finish();					
-		
+
 	}
 
 	protected void voltarParaConferir() 
@@ -391,7 +381,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 		startActivity(intent);
 
 		finish();					
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -401,7 +391,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 	protected void onResume() 
 	{		
 		super.onResume();
-		
+
 		if(imageFetcher!=null)
 			imageFetcher.setExitTasksEarly(false);
 	}
@@ -413,7 +403,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 	protected void onPause() 
 	{		
 		super.onPause();
-		
+
 		if(imageFetcher!=null)
 		{
 			imageFetcher.setPauseWork(false);
@@ -429,7 +419,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 	protected void onDestroy() 
 	{		
 		super.onDestroy();
-		
+
 		if(imageFetcher!=null)
 			imageFetcher.closeCache();
 	}
