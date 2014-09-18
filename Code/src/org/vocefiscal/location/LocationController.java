@@ -3,18 +3,18 @@
  */
 package org.vocefiscal.location;
 
-import org.vocefiscal.R;
+
 
 import android.location.Location;
+import android.widget.TextView;
 
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+
 
 /**
  * @author andre
@@ -23,12 +23,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class LocationController implements LocationListener
 {	
 	private LocationClient mLocationClient;
-	
+
 	private LocationRequest mLocationRequest;
-	
+
 	private Location currentLocation;
-	
+
 	private GoogleMap map;
+	
 	
 	/**
 	 * @param context
@@ -36,36 +37,39 @@ public class LocationController implements LocationListener
 	public LocationController(LocationClient mLocationClient, GoogleMap map) 
 	{
 		super();
+
 		this.mLocationClient = mLocationClient;
 		this.map = map;
-		
+
 		initLocationController();
 	}
-	
+
 	private void initLocationController()
 	{
 
 		// Create a new global location parameters object
 		mLocationRequest = LocationRequest.create();
-		
+
 		/*
 		 * Set the update interval
 		 */
-		mLocationRequest.setInterval(LocationUtils.UPDATE_INTERVAL_IN_SECONDS);
+		mLocationRequest.setInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
 
 		// Use high accuracy
-		mLocationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
+		mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
 		// Set the interval ceiling to one minute
-		mLocationRequest.setFastestInterval(LocationUtils.UPDATE_INTERVAL_IN_SECONDS);
-	}
 	
+		mLocationRequest.setFastestInterval(LocationUtils.FAST_CEILING_IN_SECONDS);
+
+	}
+
 	public void start()
 	{
 		// Connect the location client.
 		mLocationClient.connect();
 	}
-	
+
 	public void stop()
 	{
 		// If the client is connected
@@ -77,13 +81,12 @@ public class LocationController implements LocationListener
 		// Disconnecting the location client invalidates it.
 		mLocationClient.disconnect();
 	}
-	
+
 	public void onConnected()
 	{
 		// Get the current location
-		currentLocation = mLocationClient.getLastLocation();      
+		currentLocation = mLocationClient.getLastLocation(); 
 		centerMapOnLocationWithInitialZoom();
-
 		startPeriodicUpdates();
 	}
 
@@ -96,26 +99,9 @@ public class LocationController implements LocationListener
 	public void onLocationChanged(Location location) 
 	{
 		currentLocation = location;
-		centerMapOnLocation();
-	}
-	
-	private void centerMapOnLocation() 
-	{
-		if(currentLocation!=null)
-		{
-			LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-			map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-			
-			// create marker
-			MarkerOptions marker = new MarkerOptions().position(latLng).title("Você"); 
-			// RED color icon
-			marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.indicador));
-			// adding marker
-			map.addMarker(marker);
-		}   		
+		centerMapOnLocationWithInitialZoom();
 	}
 
-	
 	private void centerMapOnLocationWithInitialZoom() 
 	{
 		if(currentLocation!=null)
@@ -124,7 +110,7 @@ public class LocationController implements LocationListener
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5));	
 		}    	
 	}
-	
+
 	/**
 	 * In response to a request to start updates, send a request
 	 * to Location Services
@@ -143,12 +129,12 @@ public class LocationController implements LocationListener
 	{
 		mLocationClient.removeLocationUpdates(this);
 	}
-	
+
 	/**
 	 * @return the currentLocation
 	 */
-	public Location getCurrentLocation() {
+	public Location getCurrentLocation()
+	{
 		return currentLocation;
 	}
-
 }
