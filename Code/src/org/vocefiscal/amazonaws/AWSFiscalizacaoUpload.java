@@ -273,7 +273,7 @@ public class AWSFiscalizacaoUpload extends AWSTransferModel
 
 		String filePath = "BU_JSON_"+ timeStamp + ".json";
 
-		File mediaFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), filePath);		
+		File mediaFile = new File(Environment.getExternalStorageDirectory(), filePath);		
 
 		return mediaFile;
 	}

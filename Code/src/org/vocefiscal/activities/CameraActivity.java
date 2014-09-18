@@ -493,16 +493,18 @@ public class CameraActivity extends AnalyticsActivity
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
 		String filePath = null;
+		
+		File mediaFile = null;
 
 		if(isLastThird)
 		{
 			filePath = "IMG_LT"+ timeStamp + ".jpg";
+			mediaFile = new File(Environment.getExternalStorageDirectory(), filePath);	
 		}else
 		{
 			filePath = "IMG_"+ timeStamp + ".jpg";
-		}
-
-		File mediaFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), filePath);		
+			mediaFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), filePath);	
+		}			
 
 		return mediaFile;
 	}
