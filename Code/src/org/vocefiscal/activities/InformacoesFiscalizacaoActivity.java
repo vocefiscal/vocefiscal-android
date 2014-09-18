@@ -19,6 +19,7 @@ import org.vocefiscal.services.UploadManagerService;
 import org.vocefiscal.utils.Municipalities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -62,6 +63,10 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 	public static final String ZONA = "zona";
 
 	public static final String MUNICIPIO = "municipio";
+
+	private static final String POSICAO_INICIAL_ESTADO = "ini_estado";
+
+	private static final String POSICAO_INICIAL_MUNICIPIO = "ini_municipio";
 
 	private Handler handler;
 
@@ -246,21 +251,24 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 
 		});
 
+		SharedPreferences prefs = getSharedPreferences("vocefiscal", 0);
+		if(prefs!=null)
+		{
+			int posicaoInicialEstado = prefs.getInt(POSICAO_INICIAL_ESTADO, 25);
+			final int posicaoInicialMunicipio = prefs.getInt(POSICAO_INICIAL_MUNICIPIO, 38);
+			
+			estado_spinner.setSelection(posicaoInicialEstado);
 
-		int posicaoSP = 25;
-		estado_spinner.setSelection(posicaoSP);
-
-		handler.postDelayed(new Runnable() 
-		{			
-			@Override
-			public void run() 
-			{
-				int posicaoCPS = 38;
-				municipio_spinner.setSelection(posicaoCPS);				
-			}
-		}, 300);
-
-
+			handler.postDelayed(new Runnable() 
+			{			
+				@Override
+				public void run() 
+				{			
+					municipio_spinner.setSelection(posicaoInicialMunicipio);				
+				}
+			}, 300);
+		}
+		
 		zona_eleitoral_et = (EditText) findViewById(R.id.zona_eleitoral_et);
 
 		local_votacao_et = (EditText) findViewById(R.id.local_votacao_et);
@@ -367,7 +375,21 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 			voceFiscalDatabase.addFiscalizacao(fiscalizacao);
 
 		FlurryAgent.logEvent("Fiscalizou");
-
+		
+		SharedPreferences prefs = getSharedPreferences("vocefiscal", 0);
+		if(prefs!=null)
+		{
+			SharedPreferences.Editor editor = prefs.edit();
+			if(editor!=null)
+			{
+				if(estado_spinner!=null)
+					editor.putInt(POSICAO_INICIAL_ESTADO, estado_spinner.getSelectedItemPosition());
+				if(municipio_spinner!=null)
+					editor.putInt(POSICAO_INICIAL_MUNICIPIO, municipio_spinner.getSelectedItemPosition());
+				editor.commit();
+			}		
+		}
+		
 		Intent intentService = new Intent(getApplicationContext(), UploadManagerService.class);
 
 		Bundle bundle = new Bundle();
