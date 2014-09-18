@@ -251,10 +251,10 @@ public class FiscalizacaoAdapter extends BaseAdapter
 
 			if(fiscalizacao.getStatusDoEnvio()!=null)
 			{
-				if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()) || fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_PICTURES.ordinal()))
+				if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIANDO.ordinal()) || fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_PICTURES.ordinal()) || fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.PAUSADO.ordinal()))
 				{				
 					refreshItemParaEnvioInProgress(fiscalizacao,upload_progress, status_envio, porcentagem_envio);
-				}else
+				}else if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.ENVIADO_TOTAL.ordinal()))
 				{
 					status_envio.setImageResource(StatusEnvioEnum.getImageResource(fiscalizacao.getStatusDoEnvio()));
 					porcentagem_envio.setVisibility(View.INVISIBLE);
@@ -309,8 +309,10 @@ public class FiscalizacaoAdapter extends BaseAdapter
 							voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.PAUSADO.ordinal());
 
 						status_envio.setImageResource(StatusEnvioEnum.getImageResource(fiscalizacao.getStatusDoEnvio()));
-						porcentagem_envio.setVisibility(View.INVISIBLE);
-						upload_progress.setVisibility(View.INVISIBLE);		
+						porcentagem_envio.setTextColor(mContext.getResources().getColor(R.color.azul_vocefiscal));
+						upload_progress.setProgressDrawable(mContext.getResources().getDrawable(R.drawable.progress_horizontal_vocefical));
+						porcentagem_envio.setVisibility(View.VISIBLE);
+						upload_progress.setVisibility(View.VISIBLE);	
 
 					}else if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.PAUSADO.ordinal()))										
 					{		
@@ -382,6 +384,16 @@ public class FiscalizacaoAdapter extends BaseAdapter
 		porcentagem_envio.setText(porcentagemEnviado+"%");
 		upload_progress.setProgress(porcentagemEnviado);
 
+		if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.PAUSADO.ordinal()))
+		{
+			porcentagem_envio.setTextColor(mContext.getResources().getColor(R.color.azul_vocefiscal));
+			upload_progress.setProgressDrawable(mContext.getResources().getDrawable(R.drawable.progress_horizontal_vocefical));
+		}else
+		{
+			porcentagem_envio.setTextColor(mContext.getResources().getColor(R.color.amarelo_envio));
+			upload_progress.setProgressDrawable(mContext.getResources().getDrawable(R.drawable.progress_horizontal_upload_vocefical));
+		}
+			
 		porcentagem_envio.setVisibility(View.VISIBLE);
 		upload_progress.setVisibility(View.VISIBLE);
 	}
