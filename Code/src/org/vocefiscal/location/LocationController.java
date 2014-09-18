@@ -3,31 +3,18 @@
  */
 package org.vocefiscal.location;
 
-import java.util.ArrayList;
 
-import org.vocefiscal.R;
-import org.vocefiscal.activities.MapsActivity;
-import org.vocefiscal.asynctasks.AsyncTask;
-import org.vocefiscal.asynctasks.GetStateStatsAsyncTask;
-import org.vocefiscal.asynctasks.GetStateStatsAsyncTask.OnGetStateStatsPostExecuteListener;
-import org.vocefiscal.communications.CommunicationConstants;
-import org.vocefiscal.models.StateStats;
-import org.vocefiscal.models.enums.BrazilStateCodesEnum;
 
-import android.content.Context;
 import android.location.Location;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.MarkerOptionsCreator;
+
 
 /**
  * @author andre
@@ -43,19 +30,16 @@ public class LocationController implements LocationListener
 
 	private GoogleMap map;
 	
-	private Context contexto;
-	
 	
 	/**
 	 * @param context
 	 */
-	public LocationController(LocationClient mLocationClient, GoogleMap map, Context contexto, TextView textViewController) 
+	public LocationController(LocationClient mLocationClient, GoogleMap map) 
 	{
 		super();
-		this.contexto = contexto;
+
 		this.mLocationClient = mLocationClient;
 		this.map = map;
-		//textoMarker = textViewController;
 
 		initLocationController();
 	}
@@ -69,13 +53,15 @@ public class LocationController implements LocationListener
 		/*
 		 * Set the update interval
 		 */
-		mLocationRequest.setInterval(60000);
+		mLocationRequest.setInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
 
 		// Use high accuracy
-		mLocationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
+		mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
 		// Set the interval ceiling to one minute
-		mLocationRequest.setFastestInterval(60000);
+	
+		mLocationRequest.setFastestInterval(LocationUtils.FAST_CEILING_IN_SECONDS);
+
 	}
 
 	public void start()
@@ -101,7 +87,7 @@ public class LocationController implements LocationListener
 		// Get the current location
 		currentLocation = mLocationClient.getLastLocation(); 
 		centerMapOnLocationWithInitialZoom();
-		//startPeriodicUpdates();
+		startPeriodicUpdates();
 	}
 
 	/**
@@ -113,27 +99,8 @@ public class LocationController implements LocationListener
 	public void onLocationChanged(Location location) 
 	{
 		currentLocation = location;
-		centerMapOnLocation();
+		centerMapOnLocationWithInitialZoom();
 	}
-
-
-	private void centerMapOnLocation() 
-	{
-		if(currentLocation!=null)
-		{
-			
-			LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-			map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-			// create marker
-			MarkerOptions marker = new MarkerOptions().position(latLng).title("Você"); 
-			// RED color icon
-			marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.indicador));
-			// adding marker
-			map.addMarker(marker);
-		}   		
-	}
-
 
 	private void centerMapOnLocationWithInitialZoom() 
 	{
@@ -166,10 +133,8 @@ public class LocationController implements LocationListener
 	/**
 	 * @return the currentLocation
 	 */
-	public Location getCurrentLocation() {
+	public Location getCurrentLocation()
+	{
 		return currentLocation;
 	}
-
-
-
 }

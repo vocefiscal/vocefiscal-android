@@ -24,8 +24,12 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -59,7 +63,16 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 	ArrayList<String> listaDeEstados;
 
 	private TextView textoMarker;
-	
+
+	private Location mPreviousLocation;
+
+	private Location mLocation;
+
+	private Handler handler;
+
+	Marker lastOpenned = null;
+
+	private Runnable atualizarMapa;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -67,6 +80,53 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_maps);
 
+		handler = new Handler();
+
+		atualizarMapa = new Runnable()
+		{	
+			@Override
+			public void run() 
+			{
+				mPreviousLocation = mLocation;
+				mLocation = locationController.getCurrentLocation();
+				if(mLocation != null)
+				{
+
+					mapa.clear();
+
+					//Compara a latitude e longitude da minha localização, em módulo, 
+					//com as capitais dos estados se for menor, cria e preenche o Marker
+					for(String estados : listaDeEstados)
+					{
+						try
+						{
+							if ( (Math.abs( (Math.abs(mLocation.getLatitude()) - Math.abs(getStateLocation(estados).latitude))) < 25) &&
+									(Math.abs( (Math.abs(mLocation.getLongitude()) - Math.abs(getStateLocation(estados).longitude))) < 8))
+							{
+								GetStateStatsAsyncTask getStateStatsAsyncTask = new GetStateStatsAsyncTask(getApplicationContext(), MapsActivity.this, estados, 0);
+								//GetStateStatsAsyncTask getStateStatsAsyncTask = new GetStateStatsAsyncTask(getApplicationContext(), this, BrazilStateCodesEnum.getStateCode(SP), 0);
+								getStateStatsAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+							}
+						}catch(Exception e)
+						{
+
+						}
+					}
+
+					if(mLocation!=null && mPreviousLocation!= null && mLocation.getAccuracy() >= mPreviousLocation.getAccuracy())
+					{
+						locationController.stop();
+					}else 
+					{
+						handler.postDelayed(atualizarMapa, LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
+					}
+
+				}else
+				{
+					handler.postDelayed(atualizarMapa, LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
+				}
+			}
+		};
 
 		/*
 		 * *************************************************************************************
@@ -84,10 +144,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 
 			// Get a handle to the Map Fragment
 			mapa = ((MapFragment) getFragmentManager().findFragmentById(R.id.mapa)).getMap();
-			if(mapa!=null)
-			{
-				mapa.setMyLocationEnabled(true);
-			}else
+			if(mapa==null)
 			{
 				Toast.makeText(getApplicationContext(), "Problemas para apresentar o mapa. Atualize a versão do Google Maps no cel e tente novamente depois.", 
 						Toast.LENGTH_LONG).show();
@@ -118,7 +175,10 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 		 * *************************************************
 		 */
 		LocationClient mLocationClient = new LocationClient(this, this, this);		
-		locationController = new LocationController(mLocationClient, mapa, getApplicationContext(), null);
+		locationController = new LocationController(mLocationClient, mapa);
+
+		criaListaDeEstados();
+
 	}
 
 	/**
@@ -194,8 +254,6 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 	public void onConnected(Bundle dataBundle)
 	{
 		locationController.onConnected();
-		getStateStats();
-
 	}
 
 	//----------------------------------------------------------------------------------------------------------------		
@@ -290,38 +348,61 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 		locationController.start();
 	}
 
+	//Cria os marcadores no mapa e adiciona as informações dentro dos Markers
 	private void fillStateStats(String stateCode, int pollTapesCount) 
 	{
+
+		//Tira a opção do usuário clicar no Market e mudar a posição do mapa
+		mapa.setOnMarkerClickListener(new OnMarkerClickListener() {
+			public boolean onMarkerClick(Marker marker) {
+				// Check if there is an open info window
+				if (lastOpenned != null) {
+					// Close the info window
+					((Marker) lastOpenned).hideInfoWindow();
+
+					// Is the marker the same marker that was already open
+					if (lastOpenned.equals(marker)) {
+						// Nullify the lastOpenned object
+						lastOpenned = null;
+						// Return so that the info window isn't openned again
+						return true;
+					} 
+				}
+
+				// Open the info window for the marker
+				marker.showInfoWindow();
+				// Re-assign the last openned such that we can close it later
+				lastOpenned = marker;
+
+				// Event was handled by our code do not launch default behaviour.
+				return true;
+			}
+		});
 
 
 		LatLng latLng = getStateLocation(stateCode);
 
 		// create marker
 		MarkerOptions marker = new MarkerOptions().position(latLng);
-
-		//mapa.addMarker(new MarkerOptions().position(latLng).title(stateCode).snippet(String.valueOf(pollTapesCount))
-		//		.icon(BitmapDescriptorFactory.fromResource(R.drawable.indicador))).showInfoWindow();
-
-
+		marker.draggable(false);
 		marker.icon(BitmapDescriptorFactory.fromBitmap(writeTextOnDrawable(R.drawable.indicador,String.valueOf(pollTapesCount))));
 		marker.visible(true);
 
+		//Adiciona os contadores de cada estado dentro do Marker
 		textoMarker = (TextView) findViewById(R.id.text_view_polls_count);
-
 		textoMarker.setText(String.valueOf(pollTapesCount));
 
 		// adding marker
 		mapa.addMarker(marker);
-
-		//map.notifyAll();
 
 	}
 
 	//----------------------------------------------------------------------------------------------------------------	
 
 	//Adiciona as siglas dos estados num vetor de Strings
-	private void getStateStats() 
+	private void criaListaDeEstados() 
 	{
+
 		listaDeEstados = new ArrayList<String>();
 
 		//		listaDeEstados.add("AC");
@@ -352,23 +433,9 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 		//		listaDeEstados.add("SE");
 		//		listaDeEstados.add("TO");
 
-		//Compara a latitude e longitude da minha localização, em módulo, 
-		//com as capitais dos estados se for menor, cria e preenche o Marker
-		for(String estados : listaDeEstados)
-		{
-
-			if ( (Math.abs( (Math.abs(locationController.getCurrentLocation().getLatitude()) - Math.abs(getStateLocation(estados).latitude))) < 25) &&
-					(Math.abs( (Math.abs(locationController.getCurrentLocation().getLongitude()) - Math.abs(getStateLocation(estados).longitude))) < 8))
-			{
-				GetStateStatsAsyncTask getStateStatsAsyncTask = new GetStateStatsAsyncTask(getApplicationContext(), this, estados, 0);
-				//GetStateStatsAsyncTask getStateStatsAsyncTask = new GetStateStatsAsyncTask(getApplicationContext(), this, BrazilStateCodesEnum.getStateCode(SP), 0);
-				getStateStatsAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-			}
-
-
-		}
-
 	}
+
+
 
 	//----------------------------------------------------------------------------------------------------------------	
 
@@ -470,11 +537,6 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 		backoffStats = 0;
 
 		fillStateStats(stateStats.getStateCode(), stateStats.getPollTapesCount());
-
-
-		//Do whatever you need with the stats
-		//Toast.makeText(getApplicationContext(), stateStats.getStateCode()+": "+stateStats.getPollTapesCount(), Toast.LENGTH_LONG).show();
-
 	}
 
 	//----------------------------------------------------------------------------------------------------------------	
@@ -528,7 +590,7 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 	}
 
 	//----------------------------------------------------------------------------------------------------------------	
-	
+
 	public static int convertToPixels(Context context, int nDP)
 	{
 		final float conversionScale = context.getResources().getDisplayMetrics().density;
@@ -536,5 +598,47 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 		return (int) ((nDP * conversionScale) + 0.5f) ;
 
 	}
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onResume()
+	 */
+	@Override
+	protected void onResume() 
+	{
+		super.onResume();
+
+		// Acquire a reference to the system Location Manager
+		LocationManager locationManager = (LocationManager) MapsActivity.this.getSystemService(Context.LOCATION_SERVICE);
+		if (!locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
+		{
+			Toast.makeText(getApplicationContext(), "Habilite o seu GPS para melhores resultados de posicionamento.", Toast.LENGTH_LONG).show();
+		}
+		handler.post(atualizarMapa);
+	}
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onPause()
+	 */
+	@Override
+	protected void onPause() 
+	{
+		super.onPause();
+
+		handler.removeCallbacks(atualizarMapa);
+	}
+
+
+
+	//	mapa.setOnMarkerClickListener(
+	//		    new OnMarkerClickListener() 
+	//		    {
+	//		        boolean doNotMoveCameraToCenterMarker = true;
+	//		        public boolean onMarkerClick(Marker marker) 
+	//		        {
+	//		            //Do whatever you need to do here ....
+	//		            return doNotMoveCameraToCenterMarker;
+	//		        }
+	//		    });
+	//	
 
 }
