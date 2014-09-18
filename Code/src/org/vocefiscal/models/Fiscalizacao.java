@@ -40,6 +40,8 @@ public class Fiscalizacao implements Serializable
 	private Integer statusDoEnvio;
 	
 	private Long data;
+	
+	private String email;
 
 	@JsonIgnore
 	private ArrayList<String> picturePathList;
@@ -326,6 +328,20 @@ public class Fiscalizacao implements Serializable
 		} else if (!zonaEleitoral.equals(other.zonaEleitoral))
 			return false;
 		return true;
+	}
+
+	/**
+	 * @return the email
+	 */
+	public String getEmail() {
+		return email;
+	}
+
+	/**
+	 * @param email the email to set
+	 */
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	

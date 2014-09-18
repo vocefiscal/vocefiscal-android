@@ -138,6 +138,20 @@
                     android:textColor="@color/preto"
                     android:textColorHint="@color/preto"
                     android:textSize="16sp" />
+                
+                <EditText
+                    android:id="@+id/email_et"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:background="@drawable/bg_input"
+                    android:hint="Seu email (opcional)"
+                    android:inputType="textEmailAddress"
+                    android:maxLength="60"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/preto"
+                    android:textColorHint="@color/preto"
+                    android:textSize="16sp" />
             </LinearLayout>
         </RelativeLayout>
     </ScrollView>

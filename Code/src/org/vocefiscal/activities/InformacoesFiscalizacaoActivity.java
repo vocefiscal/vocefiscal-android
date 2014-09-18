@@ -79,6 +79,8 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 
 	private EditText secao_eleitoral_et;
 
+	private EditText emailET;
+
 	private Fiscalizacao fiscalizacao;
 
 	private Municipalities municipalities;	
@@ -265,6 +267,8 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 
 		secao_eleitoral_et = (EditText) findViewById(R.id.secao_eleitoral_et);
 
+		emailET = (EditText) findViewById(R.id.email_et);
+
 		ImageView btn_enviar = (ImageView) findViewById(R.id.btn_enviar);
 		btn_enviar.setOnClickListener(new OnClickListener() 
 		{		
@@ -274,6 +278,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 				String zona_eleitoral = null;
 				String local_votacao = null;
 				String secao_eleitoral = null;
+				String email = null;
 
 				if(estadoSelecionado!=null&&estadoSelecionado.length()>0)
 				{										
@@ -287,37 +292,55 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 							{
 								if(local_votacao_et!=null&&local_votacao_et.getText()!=null&&local_votacao_et.getText().length()>0)
 									local_votacao = local_votacao_et.getText().toString();
-								
-								if(secao_eleitoral_et!=null&&secao_eleitoral_et.getText()!=null&&secao_eleitoral_et.getText().length()>0)
+
+								if(local_votacao==null || local_votacao.length()==4)
 								{
-									secao_eleitoral= secao_eleitoral_et.getText().toString();
-
-									if(secao_eleitoral.length()==4)
+									if(secao_eleitoral_et!=null&&secao_eleitoral_et.getText()!=null&&secao_eleitoral_et.getText().length()>0)
 									{
-										fiscalizacao.setMunicipio(municipioSelecionado);
-										fiscalizacao.setEstado(estadoSelecionado);
-										fiscalizacao.setZonaEleitoral(zona_eleitoral);
-										if(local_votacao!=null)
-											fiscalizacao.setLocalDaVotacao(local_votacao);
-										fiscalizacao.setSecaoEleitoral(secao_eleitoral);
-										fiscalizacao.setPicturePathList(picturePathList);
-										fiscalizacao.setPicture30PCPathList(picture30PCPathList);
-										fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIANDO.ordinal());
-										fiscalizacao.setData(System.currentTimeMillis());
+										secao_eleitoral= secao_eleitoral_et.getText().toString();
 
-										if(envio!=null&&!envio.isShowing())
-											envio.show();
+										if(secao_eleitoral.length()==4)
+										{
+
+											if(emailET!=null&&emailET.getText()!=null&&emailET.getText().length()>0)
+												email = emailET.getText().toString();
+
+											if(email==null || android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches())
+											{
+												fiscalizacao.setMunicipio(municipioSelecionado);
+												fiscalizacao.setEstado(estadoSelecionado);
+												fiscalizacao.setZonaEleitoral(zona_eleitoral);
+												if(local_votacao!=null)
+													fiscalizacao.setLocalDaVotacao(local_votacao);
+												fiscalizacao.setSecaoEleitoral(secao_eleitoral);
+												if(email!=null)
+													fiscalizacao.setEmail(email);
+												fiscalizacao.setPicturePathList(picturePathList);
+												fiscalizacao.setPicture30PCPathList(picture30PCPathList);
+												fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.ENVIANDO.ordinal());
+												fiscalizacao.setData(System.currentTimeMillis());
+
+												if(envio!=null&&!envio.isShowing())
+													envio.show();
+											}else
+											{
+												Toast.makeText(getApplicationContext(), "Endereço de email inválido.", Toast.LENGTH_SHORT).show();
+											}
+										}else
+										{
+											Toast.makeText(getApplicationContext(), "Número da Seção Eleitoral incompleto - são 4 dígitos.", Toast.LENGTH_SHORT).show();
+										}																																		
 									}else
 									{
-										Toast.makeText(getApplicationContext(), "Número da Seção Eleitoral incompleto.", Toast.LENGTH_SHORT).show();
-									}																																		
+										Toast.makeText(getApplicationContext(), "Seção eleitoral é obrigatória.", Toast.LENGTH_SHORT).show();
+									}
 								}else
 								{
-									Toast.makeText(getApplicationContext(), "Seção eleitoral é obrigatória.", Toast.LENGTH_SHORT).show();
-								}																			
+									Toast.makeText(getApplicationContext(), "Número do Local de Votação incompleto - são 4 dígitos.", Toast.LENGTH_SHORT).show();
+								}																											
 							}else
 							{
-								Toast.makeText(getApplicationContext(), "Número da Zona Eleitoral incompleto.", Toast.LENGTH_SHORT).show();
+								Toast.makeText(getApplicationContext(), "Número da Zona Eleitoral incompleto - são 4 dígitos.", Toast.LENGTH_SHORT).show();
 							}	
 
 						}else

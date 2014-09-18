@@ -41,7 +41,8 @@ public class VoceFiscalDatabase
 	private static final String FISCALIZACAO_SECAOELEITORAL  = "secaoeleitoral";	
 	private static final String FISCALIZACAO_PODEENVIARREDEDADOS  = "podeenviarrededados";
 	private static final String FISCALIZACAO_STATUSDOENVIO  = "statusdoenvio";	
-	private static final String FISCALIZACAO_DATA  = "data";	
+	private static final String FISCALIZACAO_DATA  = "data";
+	private static final String FISCALIZACAO_EMAIL  = "email";
 
 	/**Picture path*/
 	private static final String TABELA_PICTUREPATH = "picturepath";
@@ -163,6 +164,13 @@ public class VoceFiscalDatabase
 						fiscalizacao.setData(data);
 					}
 					
+					index = fiscalizacoesCursor.getColumnIndex(FISCALIZACAO_EMAIL);
+					if(!fiscalizacoesCursor.isNull(index))
+					{
+						String email = fiscalizacoesCursor.getString(index);
+						fiscalizacao.setEmail(email);
+					}
+					
 					fiscalizacao.setPicturePathList(getPicturePathList(fiscalizacao.getIdFiscalizacao()));
 					
 					fiscalizacao.setPicture30PCPathList(getPicture30pcPathList(fiscalizacao.getIdFiscalizacao()));
@@ -257,6 +265,13 @@ public class VoceFiscalDatabase
 					{
 						Long data = fiscalizacaoCursor.getLong(index);
 						fiscalizacao.setData(data);
+					}
+					
+					index = fiscalizacaoCursor.getColumnIndex(FISCALIZACAO_EMAIL);
+					if(!fiscalizacaoCursor.isNull(index))
+					{
+						String email = fiscalizacaoCursor.getString(index);
+						fiscalizacao.setEmail(email);						
 					}
 
 					fiscalizacao.setPicturePathList(getPicturePathList(idFiscalizacao));
@@ -494,6 +509,8 @@ public class VoceFiscalDatabase
 					initialValues.put(FISCALIZACAO_STATUSDOENVIO, fiscalizacao.getStatusDoEnvio());
 				if(fiscalizacao.getData()!=null)
 					initialValues.put(FISCALIZACAO_DATA, fiscalizacao.getData());
+				if(fiscalizacao.getEmail()!=null)
+					initialValues.put(FISCALIZACAO_EMAIL, fiscalizacao.getEmail());
 
 				if(mDatabase!=null)
 				{
