@@ -1,19 +1,21 @@
-package org.vocefiscal.twitter;
-
-import java.io.File;
-
-
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.Toast;
-
-import org.vocefiscal.twitter.Twitter_Handler;
-
-
-public class Twitt_Sharing {
-
+//package org.vocefiscal.twitter;
+//
+//import java.io.File;
+//
+//import org.vocefiscal.twitter.Twitter_Handler.TwDialogListener;
+//
+//import twitter4j.StatusUpdate;
+//import twitter4j.Twitter;
+//import twitter4j.TwitterException;
+//import android.app.Activity;
+//import android.app.ProgressDialog;
+//import android.os.AsyncTask;
+//import android.util.Log;
+//import android.widget.Toast;
+//
+//
+//public class Twitt_Sharing {
+//
 //	private final Twitter_Handler mTwitter;
 //	private final Activity activity;
 //	private String twitt_msg;
@@ -166,4 +168,4 @@ public class Twitt_Sharing {
 //	public void Authorize_UserDetail() {
 //
 //	}
-}
+//}
