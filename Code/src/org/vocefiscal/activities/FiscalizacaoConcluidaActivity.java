@@ -130,46 +130,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 					uiHelper.trackPendingDialogCall(shareDialog.present());
 				}else
 				{
-					 Bundle params = new Bundle();
-					    params.putString("name", "Você Fiscal");
-					    params.putString("caption", "Obrigado por contribuir com a democracia!");
-					    params.putString("description", "Eu fiscalizei a seção: "+ FiscalizacaoConcluidaActivity.this.secao +"\nNa zona eleitoral: " + FiscalizacaoConcluidaActivity.this.zonaEleitoral + "\nNo município de: " + FiscalizacaoConcluidaActivity.this.municipio);
-					    params.putString("link", "http://www.vocefiscal.org");
-					    params.putString("picture", "http://imagizer.imageshack.us/v2/150x100q90/913/bAwPgx.png");
-
-					    WebDialog feedDialog = (
-					        new WebDialog.FeedDialogBuilder(FiscalizacaoConcluidaActivity.this, Session.getActiveSession(),  params))
-					        .setOnCompleteListener(new OnCompleteListener() 
-					        {
-					            @Override
-					            public void onComplete(Bundle values, FacebookException error) 
-					            {
-					                if (error == null) 
-					                {
-					                    // When the story is posted, echo the success
-					                    // and the post Id.
-					                    final String postId = values.getString("post_id");
-					                    if (postId != null) 
-					                    {
-					                        Toast.makeText(FiscalizacaoConcluidaActivity.this, "Compartilhado com sucesso!",  Toast.LENGTH_SHORT).show();
-					                    } else 
-					                    {
-					                        // User clicked the Cancel button
-					                        Toast.makeText(FiscalizacaoConcluidaActivity.this, "Publicação cancelada",  Toast.LENGTH_SHORT).show();
-					                    }
-					                } else if (error instanceof FacebookOperationCanceledException) 
-					                {
-					                    // User clicked the "x" button
-					                    Toast.makeText(FiscalizacaoConcluidaActivity.this.getApplicationContext(),  "Publicação canceladad",   Toast.LENGTH_SHORT).show();
-					                } else {
-					                    // Generic, ex: network error
-					                    Toast.makeText(FiscalizacaoConcluidaActivity.this.getApplicationContext(), "Erro na publicação com Facebook",  Toast.LENGTH_SHORT).show();
-					                }
-					            }
-
-					        })
-					        .build();
-					    feedDialog.show();
+					Toast.makeText(FiscalizacaoConcluidaActivity.this,"Para compartilhar, é preciso ter o Facebook Android instalado.",Toast.LENGTH_SHORT).show();
 				}				
 			}
 		});
