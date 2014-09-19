@@ -1,11 +1,12 @@
-package org.vocefiscal.twitter;
-
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-
-public class TwitterSession {
+//package org.vocefiscal.twitter;
+//
+//
+//import twitter4j.auth.AccessToken;
+//import android.content.Context;
+//import android.content.SharedPreferences;
+//import android.content.SharedPreferences.Editor;
+//
+//public class TwitterSession {
 //    private final SharedPreferences sharedPref;
 //    private final Editor editor;
 //
@@ -52,4 +53,4 @@ public class TwitterSession {
 //	else
 //	    return null;
 //    }
-}
+//}

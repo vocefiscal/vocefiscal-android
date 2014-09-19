@@ -1,27 +1,29 @@
-package org.vocefiscal.twitter;
-
-import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.view.Display;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import org.vocefiscal.R;
-
-public class TwitterDialog /*extends Dialog */
-{
+//package org.vocefiscal.twitter;
+//
+//import org.vocefiscal.R;
+//import org.vocefiscal.twitter.Twitter_Handler.TwDialogListener;
+//
+//import android.annotation.SuppressLint;
+//import android.app.Dialog;
+//import android.app.ProgressDialog;
+//import android.content.Context;
+//import android.graphics.Bitmap;
+//import android.graphics.Color;
+//import android.graphics.Typeface;
+//import android.graphics.drawable.Drawable;
+//import android.os.Bundle;
+//import android.view.Display;
+//import android.view.ViewGroup;
+//import android.view.Window;
+//import android.webkit.WebView;
+//import android.webkit.WebViewClient;
+//import android.widget.FrameLayout;
+//import android.widget.LinearLayout;
+//import android.widget.TextView;
+//
+//public class TwitterDialog extends Dialog 
+//{
+//
 //
 //    static final float[] DIMENSIONS_LANDSCAPE = { 460, 260 };
 //    static final float[] DIMENSIONS_PORTRAIT = { 280, 420 };
@@ -159,4 +161,4 @@ public class TwitterDialog /*extends Dialog */
 //	    TwitterDialog.this.dismiss();
 //	}
 //    }
-}
+//}

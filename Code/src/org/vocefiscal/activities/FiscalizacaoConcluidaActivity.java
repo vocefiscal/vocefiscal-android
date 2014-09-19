@@ -8,24 +8,9 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.vocefiscal.R;
-
-
-
-
-import com.facebook.FacebookRequestError;
-import com.facebook.HttpMethod;
-import com.facebook.LoggingBehavior;
-import com.facebook.Request;
-import com.facebook.RequestAsyncTask;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.Settings;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -38,16 +23,25 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.facebook.FacebookRequestError;
+import com.facebook.HttpMethod;
+import com.facebook.LoggingBehavior;
+import com.facebook.Request;
+import com.facebook.RequestAsyncTask;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.Settings;
 
 public class FiscalizacaoConcluidaActivity extends AnalyticsActivity 
 {
 	// Chaves do Twitter
 	public final String consumer_key = "oK5OfonM29VXA5dOfiVam0mLl";
 	public final String secret_key = "TKLEgt3Zp5BHTq4NyMZKgH6GjHzfTBpNecVxy58cjdr07q0A8b";
-	
+
 	//public final String consumer_key = "trWwomp0b09ER2A8H1cQg";
 	//public final String secret_key = "PAC3E3CtcPcTuPl9VpCuzY6eDD8hPZPwp6gRDCviLs";
-	
+
 	File casted_image;
 
 	String string_img_url = null , string_msg = null;
@@ -66,7 +60,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	private String municipio;
 	public Boolean isStatusChanged = false;
 
-//	public static final String USER = "Fredsvv";
+	//	public static final String USER = "Fredsvv";
 
 	//Facebook Login
 	private Session.StatusCallback statusCallback;
@@ -74,12 +68,9 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	private ImageButton facebookLogin;	
 	private static final String TAG = "FiscalizacaoConcluidaActivity";
 
+
 	//Twitter Variables
 	ImageButton twitterButton;
-
-
-	// Instance of Facebook Class
-	//String FILENAME = "AndroidSSO_data";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -87,7 +78,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_fiscalizacao_concluida);
-	
+
 		/*
 		 * Captando a missão
 		 */
@@ -103,34 +94,40 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 
 			}
 		}
-
+		
+		
+		//--------------------------------------------------------------------------------------------------------
 		//Twitter Button Click
-//		try {
-//
-//			twitterButton = (ImageButton) findViewById(R.id.twitterButton);
-//			twitterButton.setOnClickListener(new View.OnClickListener() {
-//
-//				@Override
-//				public void onClick(View v) {
-//					// TODO Auto-generated method stub
-//					try {
-//						onClickTwitt();
-//					} catch (TwitterException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
-//			});
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//			runOnUiThread(new Runnable() {
-//				public void run() {
-//					showToast("View problem");
-//				}
-//			});
-//
-//		}
+		//		try {
+		//
+		//			twitterButton = (ImageButton) findViewById(R.id.twitterButton);
+		//			twitterButton.setOnClickListener(new View.OnClickListener() {
+		//
+		//				@Override
+		//				public void onClick(View v) {
+		//					// TODO Auto-generated method stub
+		//					try {
+		//						onClickTwitt();
+		//					} catch (TwitterException e) {
+		//						// TODO Auto-generated catch block
+		//						e.printStackTrace();
+		//					}
+		//				}
+		//			});
+		//		} catch (Exception e) {
+		//			// TODO: handle exception
+		//			runOnUiThread(new Runnable() {
+		//				public void run() {
+		//					showToast("View problem");
+		//				}
+		//			});
+		//
+		//		}
 
+
+		//--------------------------------------------------------------------------------------------------------
+		
+		
 		//Listener do botão Compartilhar no Facebook
 		facebookLogin = (ImageButton) findViewById(R.id.btn_facebook);
 		facebookLogin.setOnClickListener(new OnClickListener() 
@@ -241,9 +238,9 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 
 	}
 
-//	/**
-//	 * Publica no mural do Facebook
-//	 */
+	//	/**
+	//	 * Publica no mural do Facebook
+	//	 */
 	private void publishStory() 
 	{
 		Session session = Session.getActiveSession();
@@ -299,7 +296,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 		}
 
 	}
-//
+	//
 	private class SessionStatusCallback implements Session.StatusCallback
 	{ 
 
@@ -318,12 +315,12 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 					session.requestNewReadPermissions(newPermissionsRequest);
 					return;
 				}
-				
-//				if(isStatusChanged == false)
-//				{	
-//					publishStory();
-//					isStatusChanged = true;
-//				}
+
+				//				if(isStatusChanged == false)
+				//				{	
+				//					publishStory();
+				//					isStatusChanged = true;
+				//				}
 
 			}
 
@@ -350,7 +347,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 		super.onStart();
 		Session.getActiveSession().addCallback(statusCallback);
 	}
-//
+	//
 	@Override
 	public void onStop() 
 	{   
@@ -382,38 +379,41 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	 * MÉTODOS DO TWITTER 
 	 */
 
+	//------------------------------------------------------------------------------------------------
 
-//	// Here you can pass the string message & image path which you want to share
-//	// in Twitter.
-//	public void onClickTwitt() throws TwitterException {
-//		if (isNetworkAvailable()) {
-//			Twitt_Sharing twitt = new Twitt_Sharing(FiscalizacaoConcluidaActivity.this, consumer_key, secret_key);
-//			//string_img_url = "http://imagizer.imageshack.us/v2/150x100q90/913/bAwPgx.png";
-//			string_msg = "Você fiscalizou a seção: "+ this.secao +"\nNa zona eleitoral: " + this.zonaEleitoral + "\nNo município de: " + this.municipio;
-//			
-//			string_img_url = "http://www.bharatbpo.in/bbpo/images/AndroidLogo.jpg";
-//			//string_msg = "TESTE";
-//			
-//			// here we have web url image so we have to make it as file to
-//			// upload
-//			String_to_File(string_img_url);
-//			
-//			// Now share both message & image to sharing activity
-//			twitt.shareToTwitter(string_msg, casted_image);
-//			//twitt.shareToTwitter(string_img_url, casted_image);
-//
-//		} else {
-//			showToast("Sem conexão disponível!");
-//		}
-//	}
-
+	//	// Here you can pass the string message & image path which you want to share
+	//	// in Twitter.
+	//	public void onClickTwitt() throws TwitterException {
+	//		if (isNetworkAvailable()) {
+	//			Twitt_Sharing twitt = new Twitt_Sharing(FiscalizacaoConcluidaActivity.this, consumer_key, secret_key);
+	//			//string_img_url = "http://imagizer.imageshack.us/v2/150x100q90/913/bAwPgx.png";
+	//			string_msg = "Você fiscalizou a seção: "+ this.secao +"\nNa zona eleitoral: " + this.zonaEleitoral + "\nNo município de: " + this.municipio;
+	//			
+	//			string_img_url = "http://www.bharatbpo.in/bbpo/images/AndroidLogo.jpg";
+	//			//string_msg = "TESTE";
+	//			
+	//			// here we have web url image so we have to make it as file to
+	//			// upload
+	//			String_to_File(string_img_url);
+	//			
+	//			// Now share both message & image to sharing activity
+	//			twitt.shareToTwitter(string_msg, casted_image);
+	//			//twitt.shareToTwitter(string_img_url, casted_image);
+	//
+	//		} else {
+	//			showToast("Sem conexão disponível!");
+	//		}
+	//	}
+	//----------------------------------------------------------------------------------------------
+	
+	
 	private void showToast(String msg) {
 		Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
 
 	}
-//
-//	// when user will click on twitte then first that will check that is
-//	// internet exist or not
+
+	// when user will click on twitte then first that will check that is
+	// internet exist or not
 	public boolean isNetworkAvailable() {
 		ConnectivityManager connectivity = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (connectivity == null) {
@@ -430,7 +430,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Chama a sessão de Mapas da Activity
 	 * @param view
@@ -439,7 +439,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	{
 		Intent intent = new Intent(FiscalizacaoConcluidaActivity.this, MapsActivity.class);
 		startActivity(intent);
-			
+
 	}
 
 	// this function will make your image to file
