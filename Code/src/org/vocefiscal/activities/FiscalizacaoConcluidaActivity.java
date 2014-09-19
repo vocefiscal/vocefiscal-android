@@ -26,6 +26,8 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -76,6 +78,8 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	
 	private TwitterLoginHandler twitterLoginHandler;
 	
+	private Handler handler;
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -83,6 +87,8 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_fiscalizacao_concluida);
+		
+		handler = new Handler();
 
 		/*
 		 * Captando a missão
@@ -152,6 +158,8 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 			}
 		});
 		
+//------------------------------------------------------------------------------------------------------------------------
+		
 		twitterButton = (ImageButton) findViewById(R.id.twitterButton);
 		twitterButton.setOnClickListener(new View.OnClickListener() 
 		{
@@ -171,17 +179,40 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 							Twitter twitterPost = tf.getInstance();
 
 							String tweet = "Eu fiscalizei a seção "+ secao +", na zona eleitoral " +  zonaEleitoral + ", no município de: " +  municipio + " http://www.vocefiscal.org/";
-
+																			
 							try 
 							{
 								twitterPost.updateStatus(tweet);
+								
+								handler.post(new Runnable() 
+								{
+									
+									@Override
+									public void run() 
+									{
+										Toast.makeText(FiscalizacaoConcluidaActivity.this,"Tweet feito com sucesso!",Toast.LENGTH_SHORT).show();
+										
+									}
+								});
+								
+								
 							} catch (TwitterException e) 
 							{							
-								e.printStackTrace();
+								handler.post(new Runnable() 
+								{
+									
+									@Override
+									public void run() 
+									{
+										Toast.makeText(FiscalizacaoConcluidaActivity.this,"Não foi possível twittar!",Toast.LENGTH_SHORT).show();
+									}
+								});
+								
 							}
 						}
 					};
 					t.start();
+					
 					
 				}else
 				{
@@ -191,7 +222,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 					{
 						public void run() 
 						{
-							twitterLoginHandler = new TwitterLoginHandler();
+							twitterLoginHandler = new TwitterLoginHandler(handler);
 							twitterLoginHandler.startLogin(FiscalizacaoConcluidaActivity.this, callbackURL);
 						}
 					};
@@ -202,6 +233,8 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 			}
 		});
 
+//-----------------------------------------------------------------------------------------------------------------------		
+		
 		TextView secao = (TextView)findViewById(R.id.secaoEleitoral);
 		secao.setText(this.secao);
 
@@ -519,7 +552,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 		}
 		
 		if(twitterLoginHandler==null)
-			twitterLoginHandler = new TwitterLoginHandler();
+			twitterLoginHandler = new TwitterLoginHandler(handler);
 		
 		twitterLoginHandler.completeLogin(FiscalizacaoConcluidaActivity.this,secao,zonaEleitoral,municipio);
 	}
