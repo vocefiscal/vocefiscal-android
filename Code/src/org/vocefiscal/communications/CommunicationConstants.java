@@ -9,24 +9,24 @@ package org.vocefiscal.communications;
  */
 public interface CommunicationConstants
 {
-	public final int OK_WITHCONTENT = 200;
-	public final int OK_WITHOUTCONTENT = 204;	
-	public final int NOTFOUND = 404;
-	public final int FORBIDDEN = 403;
-	public final int TIME_OUT = 0;
-	public final int SEM_INTERNET = 1000;
-	public final int JSON_PARSE_ERROR = 1001;
-	public final int CANCELED = 1002;
+	public static final int OK_WITHCONTENT = 200;
+	public static final int OK_WITHOUTCONTENT = 204;	
+	public static final int NOTFOUND = 404;
+	public static final int FORBIDDEN = 403;
+	public static final int TIME_OUT = 0;
+	public static final int SEM_INTERNET = 1000;
+	public static final int JSON_PARSE_ERROR = 1001;
+	public static final int CANCELED = 1002;
 
-	public final String CONTENTTYPE_PARAM = "Content-Type";
-	public final String CONTENTTYPE_JSON = "application/json; charset=utf-8";
+	public static final String CONTENTTYPE_PARAM = "Content-Type";
+	public static final String CONTENTTYPE_JSON = "application/json; charset=utf-8";
 
-	public final Integer WAIT_RETRY = 1000;		
+	public static final Integer WAIT_RETRY = 1000;		
 
 	//GMAIL
-	public final String EMAIL_USER = "EMAIL_USER";  
-	public final String EMAIL_PASSWORD = "EMAIL_PASSWORD";
-	public final String[] EMAIL_TO = new String[]{"EMAIL_TO","EMAIL_TO","EMAIL_TO"};
+	public static final String EMAIL_USER = "EMAIL_USER";  
+	public static final String EMAIL_PASSWORD = "EMAIL_PASSWORD";
+	public static final String[] EMAIL_TO = new String[]{"EMAIL_TO","EMAIL_TO","EMAIL_TO"};
 	
 
 	//AWS COGNITO	
@@ -37,7 +37,10 @@ public interface CommunicationConstants
     //AWS S3
     public static final String PICTURE_BUCKET_NAME = "PICTURE_BUCKET_NAME";
     public static final String JSON_BUCKET_NAME = "JSON_BUCKET_NAME"; 
-  //public final String STATE_STATS_BASE_ADDRESS = "https://s3-sa-east-1.amazonaws.com/vocefiscal-poll-tape-stats/";  //TODO release address
-  	public final String STATE_STATS_BASE_ADDRESS = "https://s3-sa-east-1.amazonaws.com/ponga/"; 
-
+    public static final String STATE_STATS_BASE_ADDRESS = "STATE_STATS_BASE_ADDRESS";
+  	
+  	//Twitter
+    
+    public static final String TWITTER_API_KEY = "TWITTER_API_KEY";
+	public static final String TWITTER_API_SECRET = "TWITTER_API_SECRET ";
 }

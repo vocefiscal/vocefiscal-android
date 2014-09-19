@@ -293,14 +293,21 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 			if(bundle!=null)
 			{
 				final int tabToSelect = bundle.getInt(FiscalizacaoConcluidaActivity.TAB_TO_SELECT);
-				handler.postDelayed(new Runnable() 
-				{			
-					@Override
-					public void run() 
-					{
-						mViewPager.setCurrentItem(tabToSelect,true);
-					}
-				}, 500);				
+				if(tabToSelect==FiscalizacaoConcluidaActivity.CAMERA)
+				{
+					Intent cameraIntent = new Intent(HomeActivity.this, CameraActivity.class);
+					startActivity(cameraIntent);	
+				}else
+				{
+					handler.postDelayed(new Runnable() 
+					{			
+						@Override
+						public void run() 
+						{
+							mViewPager.setCurrentItem(tabToSelect,true);
+						}
+					}, 500);		
+				}			
 			}
 		}
 	}

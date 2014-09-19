@@ -1,10 +1,5 @@
 package org.vocefiscal.activities;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -12,24 +7,23 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.vocefiscal.R;
-import org.vocefiscal.twitter.TwitterLoginHandler;
+import org.vocefiscal.communications.CommunicationConstants;
 import org.vocefiscal.twitter.TwitterSession;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
 import twitter4j.conf.ConfigurationBuilder;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,49 +40,31 @@ import com.facebook.Settings;
 
 public class FiscalizacaoConcluidaActivity extends AnalyticsActivity 
 {
-	File casted_image;
-
-	String string_img_url = null , string_msg = null;
-	//TextView btn;
-	public static final String SECAO = "secao";
-	public static final String ZONA = "zona";
-	public static final String MUNICIPIO = "municipio";
-
 	//Variável de permissão do Facebook
 	public static final String TAB_TO_SELECT = "tab_to_select";
 	public static final int FISCALIZAR = 0;
 	public static final int CONFERIR = 1;
+	public static final int CAMERA = 2;
 
 	private String secao;
 	private String zonaEleitoral;
 	private String municipio;
-	public Boolean isStatusChanged = false;
-
-	//	public static final String USER = "Fredsvv";
 
 	//Facebook Login
 	private Session.StatusCallback statusCallback;
-	private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
 	private ImageButton facebookLogin;	
-	private static final String TAG = "FiscalizacaoConcluidaActivity";
-
 
 	//Twitter Variables
 	private ImageButton twitterButton;
-	
-	private TwitterLoginHandler twitterLoginHandler;
-	
-	private Handler handler;
-	
-	
+
+	private Handler handler;	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_fiscalizacao_concluida);
-		
-		handler = new Handler();
 
 		/*
 		 * Captando a missão
@@ -102,53 +78,47 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 				secao = bundle.getString(InformacoesFiscalizacaoActivity.SECAO);
 				zonaEleitoral = bundle.getString(InformacoesFiscalizacaoActivity.ZONA);
 				municipio = bundle.getString(InformacoesFiscalizacaoActivity.MUNICIPIO);
-
 			}
 		}
-		
-		
-		//--------------------------------------------------------------------------------------------------------
-		//Twitter Button Click
-		//		try {
-		//
-		//			twitterButton = (ImageButton) findViewById(R.id.twitterButton);
-		//			twitterButton.setOnClickListener(new View.OnClickListener() {
-		//
-		//				@Override
-		//				public void onClick(View v) {
-		//					// TODO Auto-generated method stub
-		//					try {
-		//						onClickTwitt();
-		//					} catch (TwitterException e) {
-		//						// TODO Auto-generated catch block
-		//						e.printStackTrace();
-		//					}
-		//				}
-		//			});
-		//		} catch (Exception e) {
-		//			// TODO: handle exception
-		//			runOnUiThread(new Runnable() {
-		//				public void run() {
-		//					showToast("View problem");
-		//				}
-		//			});
-		//
-		//		}
 
+		SharedPreferences prefs = null;
+		SharedPreferences.Editor editor = null;
 
-		//--------------------------------------------------------------------------------------------------------
-		
-		
+		prefs = getSharedPreferences("vocefiscal", 0);
+		if(prefs!=null)
+			editor = prefs.edit();
+
+		if(prefs!=null&&editor!=null)
+		{	
+			if(secao!=null)
+				editor.putString(InformacoesFiscalizacaoActivity.SECAO, secao);
+			else
+				secao = prefs.getString(InformacoesFiscalizacaoActivity.SECAO, null);
+			if(zonaEleitoral!=null)
+				editor.putString(InformacoesFiscalizacaoActivity.ZONA, zonaEleitoral);
+			else
+				zonaEleitoral = prefs.getString(InformacoesFiscalizacaoActivity.ZONA, null);
+			if(municipio!=null)
+				editor.putString(InformacoesFiscalizacaoActivity.MUNICIPIO, municipio);
+			else
+				municipio = prefs.getString(InformacoesFiscalizacaoActivity.MUNICIPIO, null);
+
+			editor.commit();
+		}			
+
+		handler = new Handler();				
+
 		//Listener do botão Compartilhar no Facebook
 		facebookLogin = (ImageButton) findViewById(R.id.btn_facebook);
 		facebookLogin.setOnClickListener(new OnClickListener() 
 		{
 			@Override
 			public void onClick(View v) 
-			{	
+			{							        
 				//Pega a sessão ativa
 				Session session = Session.getActiveSession();
-				if (!session.isOpened() && !session.isClosed()) 
+
+				if (session!=null&&!session.isOpened() && !session.isClosed()) 
 				{
 					session.openForRead(new Session.OpenRequest(FiscalizacaoConcluidaActivity.this).setCallback(statusCallback));
 				} else
@@ -157,9 +127,24 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 				}
 			}
 		});
-		
-//------------------------------------------------------------------------------------------------------------------------
-		
+
+		facebookLogin.setOnLongClickListener(new OnLongClickListener()
+		{			
+			@Override
+			public boolean onLongClick(View v) 
+			{
+				Session session = Session.getActiveSession();
+
+				if (session!=null&&!session.isClosed()) 
+				{
+					session.closeAndClearTokenInformation();
+				}
+
+				finish();
+				return true;
+			}
+		});
+
 		twitterButton = (ImageButton) findViewById(R.id.twitterButton);
 		twitterButton.setOnClickListener(new View.OnClickListener() 
 		{
@@ -174,46 +159,46 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 						public void run() 
 						{
 							ConfigurationBuilder cb = new ConfigurationBuilder();
-							cb.setOAuthConsumerKey(TwitterLoginHandler.consumerKey).setOAuthConsumerSecret(TwitterLoginHandler.consumerSecret).setOAuthAccessToken(ts.getToken()).setOAuthAccessTokenSecret(ts.getTokensecret());
+							cb.setOAuthConsumerKey(CommunicationConstants.TWITTER_API_KEY).setOAuthConsumerSecret(CommunicationConstants.TWITTER_API_SECRET).setOAuthAccessToken(ts.getToken()).setOAuthAccessTokenSecret(ts.getTokensecret());
 							TwitterFactory tf = new TwitterFactory(cb.build());
 							Twitter twitterPost = tf.getInstance();
 
 							String tweet = "Eu fiscalizei a seção "+ secao +", na zona eleitoral " +  zonaEleitoral + ", no município de: " +  municipio + " http://www.vocefiscal.org/";
-																			
+
 							try 
 							{
 								twitterPost.updateStatus(tweet);
-								
+
 								handler.post(new Runnable() 
 								{
-									
+
 									@Override
 									public void run() 
 									{
 										Toast.makeText(FiscalizacaoConcluidaActivity.this,"Tweet feito com sucesso!",Toast.LENGTH_SHORT).show();
-										
+
 									}
 								});
-								
-								
+
+
 							} catch (TwitterException e) 
-							{							
-								handler.post(new Runnable() 
+							{		
+								if(e!=null&&e.getStatusCode()!=403)
 								{
-									
-									@Override
-									public void run() 
+									handler.post(new Runnable() 
 									{
-										Toast.makeText(FiscalizacaoConcluidaActivity.this,"Não foi possível twittar!",Toast.LENGTH_SHORT).show();
-									}
-								});
-								
+
+										@Override
+										public void run() 
+										{
+											Toast.makeText(FiscalizacaoConcluidaActivity.this,"Não foi possível twittar!",Toast.LENGTH_SHORT).show();
+										}
+									});
+								}						
 							}
 						}
 					};
-					t.start();
-					
-					
+					t.start();								
 				}else
 				{
 					final String callbackURL = "fiscalizacaoconcluidaactivitycallback:///"; 
@@ -221,20 +206,17 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 					Thread t = new Thread() 
 					{
 						public void run() 
-						{
-							twitterLoginHandler = new TwitterLoginHandler(handler);
-							twitterLoginHandler.startLogin(FiscalizacaoConcluidaActivity.this, callbackURL);
+						{															
+							startTwitterLogin(callbackURL);
 						}
 					};
 					t.start();	
 				}
-				
+
 
 			}
-		});
+		});	
 
-//-----------------------------------------------------------------------------------------------------------------------		
-		
 		TextView secao = (TextView)findViewById(R.id.secaoEleitoral);
 		secao.setText(this.secao);
 
@@ -259,13 +241,64 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 			{
 				session = new Session(this);
 			}
-			
+
 			Session.setActiveSession(session);
 			if (session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) 
 			{
 				session.openForRead(new Session.OpenRequest(this).setCallback(statusCallback));
 			}
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onResume()
+	 */
+	@Override
+	protected void onResume() 
+	{
+		super.onResume();
+
+		Uri uri = getIntent().getData(); 
+		if (uri != null)
+		{ 
+			String oauthVerifier = uri.getQueryParameter("oauth_verifier"); 
+			if(oauthVerifier!=null)
+			{
+				TwitterSession.restore(getApplicationContext()).saveRequest(getApplicationContext(), oauthVerifier);
+
+				completeTwitterLogin();
+			}				
+		}				
+	}
+
+	@Override
+	public void onStart() 
+	{
+		super.onStart();
+		Session.getActiveSession().addCallback(statusCallback);
+	}
+
+
+	@Override
+	public void onStop() 
+	{   
+		super.onStop();
+		Session.getActiveSession().removeCallback(statusCallback);        
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) 
+	{
+		super.onSaveInstanceState(outState);
+		Session session = Session.getActiveSession();
+		Session.saveSession(session, outState);
+	}	
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) 
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+		Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
 	}
 
 	/**
@@ -306,13 +339,16 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	 */
 	public void proximaSecao(View view)
 	{
-		Intent intent = new Intent(FiscalizacaoConcluidaActivity.this,CameraActivity.class);
+		Intent intent = new Intent(FiscalizacaoConcluidaActivity.this,HomeActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putInt(TAB_TO_SELECT, CAMERA);
+		intent.putExtras(bundle);
 		startActivity(intent);
 
 		finish();
 
 	}
-	
+
 	/**
 	 * Chama a sessão de Mapas da Activity
 	 * @param view
@@ -385,7 +421,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 					session.requestNewPublishPermissions(newPermissionsRequest);
 					return;
 				}
-				
+
 				publishStory(session);
 			}
 		}
@@ -403,159 +439,146 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 		return true;
 	}
 
-	@Override
-	public void onStart() 
-	{
-		super.onStart();
-		Session.getActiveSession().addCallback(statusCallback);
-	}
-
-
-	@Override
-	public void onStop() 
-	{   
-		super.onStop();
-		Session.getActiveSession().removeCallback(statusCallback);        
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) 
-	{
-		super.onSaveInstanceState(outState);
-		Session session = Session.getActiveSession();
-		Session.saveSession(session, outState);
-	}	
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) 
-	{
-		super.onActivityResult(requestCode, resultCode, data);
-		Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
-	}
-
 	public void voltar(View view)
 	{
 		finish();
-	}
+	}	
+
+	public boolean startTwitterLogin(final String callbackURL)
+	{		
+		Twitter twitter = new TwitterFactory().getInstance(); 
+		twitter.setOAuthConsumer (CommunicationConstants.TWITTER_API_KEY, CommunicationConstants.TWITTER_API_SECRET); 
+
+		boolean ok = true;
+
+		try 
+		{
+			RequestToken rToken = twitter.getOAuthRequestToken(callbackURL);
 
 
-	/*
-	 * MÉTODOS DO TWITTER 
-	 */
+			TwitterSession twitterSession = new TwitterSession();
 
-	//------------------------------------------------------------------------------------------------
+			twitterSession.saveRequest(FiscalizacaoConcluidaActivity.this, rToken,twitter);
 
-	//	// Here you can pass the string message & image path which you want to share
-	//	// in Twitter.
-	//	public void onClickTwitt() throws TwitterException {
-	//		if (isNetworkAvailable()) {
-	//			Twitt_Sharing twitt = new Twitt_Sharing(FiscalizacaoConcluidaActivity.this, consumer_key, secret_key);
-	//			//string_img_url = "http://imagizer.imageshack.us/v2/150x100q90/913/bAwPgx.png";
-	//			string_msg = "Você fiscalizou a seção: "+ this.secao +"\nNa zona eleitoral: " + this.zonaEleitoral + "\nNo município de: " + this.municipio;
-	//			
-	//			string_img_url = "http://www.bharatbpo.in/bbpo/images/AndroidLogo.jpg";
-	//			//string_msg = "TESTE";
-	//			
-	//			// here we have web url image so we have to make it as file to
-	//			// upload
-	//			String_to_File(string_img_url);
-	//			
-	//			// Now share both message & image to sharing activity
-	//			twitt.shareToTwitter(string_msg, casted_image);
-	//			//twitt.shareToTwitter(string_img_url, casted_image);
-	//
-	//		} else {
-	//			showToast("Sem conexão disponível!");
-	//		}
-	//	}
-	//----------------------------------------------------------------------------------------------
-	
-	
-	private void showToast(String msg) 
-	{
-		Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+			Intent twitterIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(rToken.getAuthenticationURL()+"&force_login=true"));
+			startActivity(twitterIntent); 
 
-	}
+			handler.postDelayed(new Runnable() 
+			{				
+				@Override
+				public void run() 
+				{
+					FiscalizacaoConcluidaActivity.this.finish();					
+				}
+			}, 2000);
+		} catch (TwitterException e) 
+		{
+			ok = false;
+			if(e!=null&&e.getStatusCode()!=403)
+			{
+				handler.post(new Runnable() 
+				{
 
-	// when user will click on twitte then first that will check that is
-	// internet exist or not
-	public boolean isNetworkAvailable() 
-	{
-		ConnectivityManager connectivity = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		if (connectivity == null) {
-			return false;
-		} else {
-			NetworkInfo [ ] info = connectivity.getAllNetworkInfo();
-			if (info != null) {
-				for (int i = 0; i < info.length; i++) {
-					if (info[i].getState() == NetworkInfo.State.CONNECTED) {
-						return true;
+					@Override
+					public void run() 
+					{
+						Toast.makeText(FiscalizacaoConcluidaActivity.this,"Não foi possível twittar!",Toast.LENGTH_SHORT).show();
+
 					}
+				});	
+			}
+		}
+		return ok;
+	}
+
+	public void completeTwitterLogin()
+	{
+		Thread t = new Thread()
+		{
+			public void run()
+			{
+				try 
+				{
+					final TwitterSession twitterSession = TwitterSession.restore(FiscalizacaoConcluidaActivity.this);
+
+					if (twitterSession!=null && twitterSession.getOauthverifier() != null) 
+					{ 
+						//COMMON PART
+
+						final Twitter twitter = new TwitterFactory().getInstance();				
+
+						twitter.setOAuthConsumer (CommunicationConstants.TWITTER_API_KEY, CommunicationConstants.TWITTER_API_SECRET); 
+
+						//retrieve request token
+						RequestToken requestToken = new RequestToken(twitterSession.getRtoken(), twitterSession.getRtokensecret());
+
+						final AccessToken at = twitter.getOAuthAccessToken(requestToken, twitterSession.getOauthverifier());
+
+						twitterSession.setTwitter(twitter);
+
+						twitterSession.save(FiscalizacaoConcluidaActivity.this, at);
+
+
+						ConfigurationBuilder cb = new ConfigurationBuilder();
+						cb.setOAuthConsumerKey(CommunicationConstants.TWITTER_API_KEY).setOAuthConsumerSecret(CommunicationConstants.TWITTER_API_SECRET).setOAuthAccessToken(at.getToken()).setOAuthAccessTokenSecret(at.getTokenSecret());
+						TwitterFactory tf = new TwitterFactory(cb.build());
+						Twitter twitterPost = tf.getInstance();
+
+						String tweet = "Eu fiscalizei a seção "+ secao +", na zona eleitoral " +  zonaEleitoral + ", no município de: " +  municipio + " http://www.vocefiscal.org/";
+
+						try 
+						{
+							twitterPost.updateStatus(tweet);
+
+							handler.post(new Runnable() 
+							{
+
+								@Override
+								public void run() 
+								{
+									Toast.makeText(FiscalizacaoConcluidaActivity.this,"Tweet feito com sucesso!",Toast.LENGTH_SHORT).show();
+
+								}
+							});
+						} catch (TwitterException e) 
+						{		
+							if(e!=null&&e.getStatusCode()!=403)
+							{
+								handler.post(new Runnable() 
+								{
+
+									@Override
+									public void run() 
+									{
+										Toast.makeText(FiscalizacaoConcluidaActivity.this,"Não foi possível twittar!",Toast.LENGTH_SHORT).show();
+									}
+								});
+							}						
+						}						
+					}
+				} catch (TwitterException e) 
+				{
+					e.printStackTrace();
 				}
 			}
-		}
-		return false;
-	}
-
-	// this function will make your image to file
-	public File String_to_File(String img_url) {
-
-		try {
-			File rootSdDirectory = Environment.getExternalStorageDirectory();
-
-			casted_image = new File(rootSdDirectory, "attachment.jpg");
-			if (casted_image.exists()) {
-				casted_image.delete();
-			}
-			casted_image.createNewFile();
-
-			FileOutputStream fos = new FileOutputStream(casted_image);
-
-			URL url = new URL(img_url);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setDoOutput(true);
-			connection.connect();
-			InputStream in = connection.getInputStream();
-
-			byte [ ] buffer = new byte [1024];
-			int size = 0;
-			while ((size = in.read(buffer)) > 0) {
-				fos.write(buffer, 0, size);
-			}
-			fos.close();
-			return casted_image;
-
-		} catch (Exception e) {
-
-			System.out.print(e);
-			// e.printStackTrace();
-
-		}
-		return casted_image;
+		};
+		t.start();			
 	}
 
 	/* (non-Javadoc)
-	 * @see android.app.Activity#onResume()
+	 * @see android.app.Activity#onBackPressed()
 	 */
 	@Override
-	protected void onResume() 
-	{
-		super.onResume();
-		
-		Uri uri = getIntent().getData(); 
-		if (uri != null)
-		{ 
-			String oauthVerifier = uri.getQueryParameter("oauth_verifier"); 
-			if(oauthVerifier!=null)
-				TwitterSession.restore(getApplicationContext()).saveRequest(getApplicationContext(), oauthVerifier);
-		}
-		
-		if(twitterLoginHandler==null)
-			twitterLoginHandler = new TwitterLoginHandler(handler);
-		
-		twitterLoginHandler.completeLogin(FiscalizacaoConcluidaActivity.this,secao,zonaEleitoral,municipio);
+	public void onBackPressed() 
+	{	
+		super.onBackPressed();
+
+		Intent intent = new Intent(FiscalizacaoConcluidaActivity.this,HomeActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putInt(TAB_TO_SELECT, FISCALIZAR);
+		intent.putExtras(bundle);
+		startActivity(intent);
+
+		finish();
 	}
-	
-	
 }

@@ -7,7 +7,7 @@
     <string name="title_section3">Section 3</string>
     <string name="action_settings">Settings</string>
     <string name="vazio"></string>
-    <string name="text_sobre">A ideia de fiscalizar a urna eletrônica põe em destaque o que pode ser sua maior fragilidade. No Brasil, usamos um sistema de primeira geração, que desmaterializa o voto e o grava em meio digital eletrônico, tornando-o passível de fraude. \n\nEm outros países, a urna imprime o voto, que fica na seção eleitoral e permite uma recontagem. No entento, o STF julgou em novembro que o voto impresso é inconstitucional no Brasil, por violar o segredo do voto do eleitor.</string>
+    <string name="text_sobre">A ideia de fiscalizar a urna eletrônica põe em destaque o que pode ser sua maior fragilidade. No Brasil, usamos um sistema de primeira geração, que desmaterializa o voto e o grava em meio digital eletrônico, tornando-o passível de fraude. \n\nEm outros países, a urna imprime o voto, que fica na seção eleitoral e permite uma recontagem. No entanto, o STF julgou em novembro que o voto impresso é inconstitucional no Brasil, por violar o segredo do voto do eleitor.</string>
     <string name="title_activity_teste">TesteActivity</string>
     <string name="title_texto_sobre">O PROJETO</string>
     <string name="title_activity_sobre">SOBRE</string>
