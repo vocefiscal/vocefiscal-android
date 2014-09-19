@@ -12,11 +12,18 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.vocefiscal.R;
+import org.vocefiscal.twitter.TwitterLoginHandler;
+import org.vocefiscal.twitter.TwitterSession;
 
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -37,10 +44,6 @@ import com.facebook.Settings;
 
 public class FiscalizacaoConcluidaActivity extends AnalyticsActivity 
 {
-	// Chaves do Twitter
-	public final String consumer_key = "oK5OfonM29VXA5dOfiVam0mLl";
-	public final String secret_key = "TKLEgt3Zp5BHTq4NyMZKgH6GjHzfTBpNecVxy58cjdr07q0A8b";
-
 	File casted_image;
 
 	String string_img_url = null , string_msg = null;
@@ -69,8 +72,11 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 
 
 	//Twitter Variables
-	ImageButton twitterButton;
-
+	private ImageButton twitterButton;
+	
+	private TwitterLoginHandler twitterLoginHandler;
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -143,6 +149,56 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 				{
 					Session.openActiveSession(FiscalizacaoConcluidaActivity.this, true, statusCallback);					
 				}
+			}
+		});
+		
+		twitterButton = (ImageButton) findViewById(R.id.twitterButton);
+		twitterButton.setOnClickListener(new View.OnClickListener() 
+		{
+			@Override
+			public void onClick(View v) 
+			{
+				final TwitterSession ts = TwitterSession.restore(getApplicationContext());
+				if(ts!=null&ts.getToken()!=null&&ts.getTokensecret()!=null)
+				{
+					Thread t = new Thread() 
+					{
+						public void run() 
+						{
+							ConfigurationBuilder cb = new ConfigurationBuilder();
+							cb.setOAuthConsumerKey(TwitterLoginHandler.consumerKey).setOAuthConsumerSecret(TwitterLoginHandler.consumerSecret).setOAuthAccessToken(ts.getToken()).setOAuthAccessTokenSecret(ts.getTokensecret());
+							TwitterFactory tf = new TwitterFactory(cb.build());
+							Twitter twitterPost = tf.getInstance();
+
+							String tweet = "Eu fiscalizei a seção "+ secao +", na zona eleitoral " +  zonaEleitoral + ", no município de: " +  municipio + " http://www.vocefiscal.org/";
+
+							try 
+							{
+								twitterPost.updateStatus(tweet);
+							} catch (TwitterException e) 
+							{							
+								e.printStackTrace();
+							}
+						}
+					};
+					t.start();
+					
+				}else
+				{
+					final String callbackURL = "fiscalizacaoconcluidaactivitycallback:///"; 
+
+					Thread t = new Thread() 
+					{
+						public void run() 
+						{
+							twitterLoginHandler = new TwitterLoginHandler();
+							twitterLoginHandler.startLogin(FiscalizacaoConcluidaActivity.this, callbackURL);
+						}
+					};
+					t.start();	
+				}
+				
+
 			}
 		});
 
@@ -244,8 +300,8 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 		postParams.putString("name", "Você Fiscal");
 
 		// Receber os dados da eleição!!!
-		postParams.putString("message", "Você fiscalizou a seção: "+ this.secao +"\nNa zona eleitoral: " + this.zonaEleitoral + "\nNo município de: " + this.municipio);			
-		postParams.putString("description", "Obrigado por contribruir com a democracia!");
+		postParams.putString("message", "Eu fiscalizei a seção: "+ this.secao +"\nNa zona eleitoral: " + this.zonaEleitoral + "\nNo município de: " + this.municipio);			
+		postParams.putString("description", "Obrigado por contribuir com a democracia!");
 		postParams.putString("link", "http://www.vocefiscal.org/");
 		postParams.putString("picture", "http://imagizer.imageshack.us/v2/150x100q90/913/bAwPgx.png");
 
@@ -446,4 +502,27 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 		return casted_image;
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onResume()
+	 */
+	@Override
+	protected void onResume() 
+	{
+		super.onResume();
+		
+		Uri uri = getIntent().getData(); 
+		if (uri != null)
+		{ 
+			String oauthVerifier = uri.getQueryParameter("oauth_verifier"); 
+			if(oauthVerifier!=null)
+				TwitterSession.restore(getApplicationContext()).saveRequest(getApplicationContext(), oauthVerifier);
+		}
+		
+		if(twitterLoginHandler==null)
+			twitterLoginHandler = new TwitterLoginHandler();
+		
+		twitterLoginHandler.completeLogin(FiscalizacaoConcluidaActivity.this,secao,zonaEleitoral,municipio);
+	}
+	
+	
 }

@@ -98,6 +98,14 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="fiscalizacaoconcluidaactivitycallback" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activities.InformacoesFiscalizacaoActivity"
