@@ -226,6 +226,8 @@ public class FiscalizacaoAdapter extends BaseAdapter
 			//zona eleitoral | local de votação | Seção eleitoral
 			if(fiscalizacao.getZonaEleitoral()!=null&&fiscalizacao.getLocalDaVotacao()!=null&&fiscalizacao.getSecaoEleitoral()!=null)
 				zona__local_secao_eleitoral.setText("Zona Eleitoral: "+fiscalizacao.getZonaEleitoral()+" | Local de Votação: "+fiscalizacao.getLocalDaVotacao()+" | Seção Eleitoral: "+fiscalizacao.getSecaoEleitoral());
+			else if(fiscalizacao.getZonaEleitoral()!=null&&fiscalizacao.getSecaoEleitoral()!=null)
+				zona__local_secao_eleitoral.setText("Zona Eleitoral: "+fiscalizacao.getZonaEleitoral()+" | Seção Eleitoral: "+fiscalizacao.getSecaoEleitoral());
 			else
 				zona__local_secao_eleitoral.setText("");
 
@@ -307,6 +309,16 @@ public class FiscalizacaoAdapter extends BaseAdapter
 						fiscalizacao.setStatusDoEnvio(StatusEnvioEnum.PAUSADO.ordinal());
 						if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
 							voceFiscalDatabase.updateStatusEnvio(fiscalizacao.getIdFiscalizacao(),StatusEnvioEnum.PAUSADO.ordinal());
+						
+						Intent intent = new Intent(mContext, UploadManagerService.class);
+						
+						Bundle bundle = new Bundle();
+						bundle.putInt(UploadManagerService.COMMAND, UploadManagerService.STOP_UPLOADING);
+						bundle.putLong(UploadManagerService.ID_FISCALIZACAO,fiscalizacao.getIdFiscalizacao());
+						
+						intent.putExtras(bundle);
+						
+						mContext.startService(intent);
 
 						status_envio.setImageResource(StatusEnvioEnum.getImageResource(fiscalizacao.getStatusDoEnvio()));
 						porcentagem_envio.setTextColor(mContext.getResources().getColor(R.color.azul_vocefiscal));
@@ -407,6 +419,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 		Intent intent = new Intent(mContext, UploadManagerService.class);
 		
 		Bundle bundle = new Bundle();
+		bundle.putInt(UploadManagerService.COMMAND, UploadManagerService.START_UPLOADING);
 		bundle.putLong(UploadManagerService.ID_FISCALIZACAO,fiscalizacao.getIdFiscalizacao());
 		
 		intent.putExtras(bundle);

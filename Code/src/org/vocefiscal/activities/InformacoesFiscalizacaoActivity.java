@@ -393,6 +393,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 		Intent intentService = new Intent(getApplicationContext(), UploadManagerService.class);
 
 		Bundle bundle = new Bundle();
+		bundle.putInt(UploadManagerService.COMMAND, UploadManagerService.START_UPLOADING);
 		bundle.putLong(UploadManagerService.ID_FISCALIZACAO,fiscalizacao.getIdFiscalizacao());
 
 		intentService.putExtras(bundle);

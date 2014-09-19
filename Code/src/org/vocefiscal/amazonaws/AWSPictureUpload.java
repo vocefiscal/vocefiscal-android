@@ -331,4 +331,16 @@ public class AWSPictureUpload extends AWSTransferModel
 		public void finishedPictureUploadS3ComResultado(S3UploadPictureResult resultado);
 		public void finishedPictureUploadS3ComError(String slugFiscalizacao, String zonaFiscalizacao, Long idFiscalizacao,Integer posicaoFoto);		
 	}
+
+	public void setNewPictureUploadData(String picturePath, Integer posicaoFoto, Integer podeEnviarRedeDados, Integer sleep) 
+	{
+		this.picturePath = picturePath;
+
+		this.posicaoFoto = posicaoFoto;
+		
+		this.podeEnviarRedeDados = podeEnviarRedeDados;
+		
+		this.sleep = sleep;
+		
+	}
 }

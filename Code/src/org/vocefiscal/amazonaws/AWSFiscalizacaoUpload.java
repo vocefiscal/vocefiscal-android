@@ -284,4 +284,18 @@ public class AWSFiscalizacaoUpload extends AWSTransferModel
 		public void finishedFiscalizacaoUploadS3ComError(Long idFiscalizacao);		
 	}
 
+	/**
+	 * @return the sleep
+	 */
+	public Integer getSleep() {
+		return sleep;
+	}
+
+	/**
+	 * @param sleep the sleep to set
+	 */
+	public void setSleep(Integer sleep) {
+		this.sleep = sleep;
+	}
+
 }
