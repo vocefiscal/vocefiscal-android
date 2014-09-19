@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	public static final String TAB_TO_SELECT = "tab_to_select";
 	public static final int FISCALIZAR = 0;
 	public static final int CONFERIR = 1;
+	public static final int CAMERA = 2;
 
 	private String secao;
 	private String zonaEleitoral;
@@ -54,9 +56,9 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 
 	//Twitter Variables
 	private ImageButton twitterButton;
-	
+
 	private Handler handler;	
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -78,10 +80,10 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 				municipio = bundle.getString(InformacoesFiscalizacaoActivity.MUNICIPIO);
 			}
 		}
-		
+
 		SharedPreferences prefs = null;
 		SharedPreferences.Editor editor = null;
-		
+
 		prefs = getSharedPreferences("vocefiscal", 0);
 		if(prefs!=null)
 			editor = prefs.edit();
@@ -100,22 +102,23 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 				editor.putString(InformacoesFiscalizacaoActivity.MUNICIPIO, municipio);
 			else
 				municipio = prefs.getString(InformacoesFiscalizacaoActivity.MUNICIPIO, null);
-			
+
 			editor.commit();
 		}			
-		
+
 		handler = new Handler();				
-		
+
 		//Listener do botão Compartilhar no Facebook
 		facebookLogin = (ImageButton) findViewById(R.id.btn_facebook);
 		facebookLogin.setOnClickListener(new OnClickListener() 
 		{
 			@Override
 			public void onClick(View v) 
-			{	
+			{							        
 				//Pega a sessão ativa
 				Session session = Session.getActiveSession();
-				if (!session.isOpened() && !session.isClosed()) 
+
+				if (session!=null&&!session.isOpened() && !session.isClosed()) 
 				{
 					session.openForRead(new Session.OpenRequest(FiscalizacaoConcluidaActivity.this).setCallback(statusCallback));
 				} else
@@ -124,7 +127,24 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 				}
 			}
 		});
-		
+
+		facebookLogin.setOnLongClickListener(new OnLongClickListener()
+		{			
+			@Override
+			public boolean onLongClick(View v) 
+			{
+				Session session = Session.getActiveSession();
+
+				if (session!=null&&!session.isClosed()) 
+				{
+					session.closeAndClearTokenInformation();
+				}
+
+				finish();
+				return true;
+			}
+		});
+
 		twitterButton = (ImageButton) findViewById(R.id.twitterButton);
 		twitterButton.setOnClickListener(new View.OnClickListener() 
 		{
@@ -144,30 +164,30 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 							Twitter twitterPost = tf.getInstance();
 
 							String tweet = "Eu fiscalizei a seção "+ secao +", na zona eleitoral " +  zonaEleitoral + ", no município de: " +  municipio + " http://www.vocefiscal.org/";
-																			
+
 							try 
 							{
 								twitterPost.updateStatus(tweet);
-								
+
 								handler.post(new Runnable() 
 								{
-									
+
 									@Override
 									public void run() 
 									{
 										Toast.makeText(FiscalizacaoConcluidaActivity.this,"Tweet feito com sucesso!",Toast.LENGTH_SHORT).show();
-										
+
 									}
 								});
-								
-								
+
+
 							} catch (TwitterException e) 
 							{		
 								if(e!=null&&e.getStatusCode()!=403)
 								{
 									handler.post(new Runnable() 
 									{
-										
+
 										@Override
 										public void run() 
 										{
@@ -192,11 +212,11 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 					};
 					t.start();	
 				}
-				
+
 
 			}
 		});	
-		
+
 		TextView secao = (TextView)findViewById(R.id.secaoEleitoral);
 		secao.setText(this.secao);
 
@@ -221,7 +241,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 			{
 				session = new Session(this);
 			}
-			
+
 			Session.setActiveSession(session);
 			if (session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) 
 			{
@@ -229,7 +249,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 			}
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onResume()
 	 */
@@ -237,7 +257,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	protected void onResume() 
 	{
 		super.onResume();
-		
+
 		Uri uri = getIntent().getData(); 
 		if (uri != null)
 		{ 
@@ -245,35 +265,10 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 			if(oauthVerifier!=null)
 			{
 				TwitterSession.restore(getApplicationContext()).saveRequest(getApplicationContext(), oauthVerifier);
-				
+
 				completeTwitterLogin();
 			}				
 		}				
-	}
-	
-	
-
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onNewIntent(android.content.Intent)
-	 */
-	@Override
-	protected void onNewIntent(Intent intent) 
-	{
-		super.onNewIntent(intent);
-		if(intent!=null)
-		{
-			Uri uri = intent.getData(); 
-			if (uri != null)
-			{ 
-				String oauthVerifier = uri.getQueryParameter("oauth_verifier"); 
-				if(oauthVerifier!=null)
-				{
-					TwitterSession.restore(getApplicationContext()).saveRequest(getApplicationContext(), oauthVerifier);
-					
-					completeTwitterLogin();
-				}				
-			}
-		}	
 	}
 
 	@Override
@@ -344,13 +339,16 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	 */
 	public void proximaSecao(View view)
 	{
-		Intent intent = new Intent(FiscalizacaoConcluidaActivity.this,CameraActivity.class);
+		Intent intent = new Intent(FiscalizacaoConcluidaActivity.this,HomeActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putInt(TAB_TO_SELECT, CAMERA);
+		intent.putExtras(bundle);
 		startActivity(intent);
 
 		finish();
 
 	}
-	
+
 	/**
 	 * Chama a sessão de Mapas da Activity
 	 * @param view
@@ -423,7 +421,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 					session.requestNewPublishPermissions(newPermissionsRequest);
 					return;
 				}
-				
+
 				publishStory(session);
 			}
 		}
@@ -445,7 +443,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	{
 		finish();
 	}	
-	
+
 	public boolean startTwitterLogin(final String callbackURL)
 	{		
 		Twitter twitter = new TwitterFactory().getInstance(); 
@@ -463,8 +461,16 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 			twitterSession.saveRequest(FiscalizacaoConcluidaActivity.this, rToken,twitter);
 
 			Intent twitterIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(rToken.getAuthenticationURL()+"&force_login=true"));
-			
 			startActivity(twitterIntent); 
+
+			handler.postDelayed(new Runnable() 
+			{				
+				@Override
+				public void run() 
+				{
+					FiscalizacaoConcluidaActivity.this.finish();					
+				}
+			}, 2000);
 		} catch (TwitterException e) 
 		{
 			ok = false;
@@ -557,6 +563,22 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 			}
 		};
 		t.start();			
+	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onBackPressed()
+	 */
+	@Override
+	public void onBackPressed() 
+	{	
+		super.onBackPressed();
+
+		Intent intent = new Intent(FiscalizacaoConcluidaActivity.this,HomeActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putInt(TAB_TO_SELECT, FISCALIZAR);
+		intent.putExtras(bundle);
+		startActivity(intent);
+
+		finish();
 	}
 }
