@@ -35,7 +35,3 @@
 -keepnames class * implements android.os.Parcelable {
     public static final ** CREATOR;
 }
-
--keep class com.google.gson.** { *; }
--keep class com.google.inject.* { *; }
--keep class org.apache.http.* { *; }
