@@ -33,14 +33,31 @@ public class TourActivity extends FragmentActivity
 	private ImageView oitavaBolinha; 	
 
 	private ViewPager tourPager;
-	
+
 	private ImageView comecar;
+
+	public static final String MODO_MENU = "modo_menu";
+
+	private boolean isModoMenu = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_tour);
+		
+		/*
+		 * Captando a missão
+		 */
+		Intent intent = this.getIntent();
+		if(intent!=null)
+		{
+			Bundle bundle = intent.getExtras();
+			if(bundle!=null)
+			{
+				isModoMenu= bundle.getBoolean(MODO_MENU,false);
+			}
+		}
 
 		primeiraBolinha  = (ImageView) findViewById(R.id.primeira_bolinha);      
 		segundaBolinha   = (ImageView) findViewById(R.id.segunda_bolinha);
@@ -50,7 +67,7 @@ public class TourActivity extends FragmentActivity
 		sextaBolinha     = (ImageView) findViewById(R.id.sexta_bolinha);
 		setimaBolinha    = (ImageView) findViewById(R.id.setima_bolinha); 
 		oitavaBolinha    = (ImageView) findViewById(R.id.oitava_bolinha); 
-		
+
 		comecar = (ImageView)findViewById(R.id.btn_comecar);
 		comecar.setOnClickListener(new OnClickListener() 
 		{			
@@ -85,7 +102,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					setimaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					oitavaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
-					
+
 					primeiraBolinha.setVisibility(View.VISIBLE);
 					segundaBolinha.setVisibility(View.VISIBLE);
 					terceiraBolinha.setVisibility(View.VISIBLE);
@@ -94,7 +111,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setVisibility(View.VISIBLE);
 					setimaBolinha.setVisibility(View.VISIBLE);
 					oitavaBolinha.setVisibility(View.VISIBLE);
-					
+
 					comecar.setVisibility(View.GONE);
 				}else if(position==1)
 				{
@@ -107,7 +124,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					setimaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					oitavaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
-					
+
 					primeiraBolinha.setVisibility(View.VISIBLE);
 					segundaBolinha.setVisibility(View.VISIBLE);
 					terceiraBolinha.setVisibility(View.VISIBLE);
@@ -116,7 +133,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setVisibility(View.VISIBLE);
 					setimaBolinha.setVisibility(View.VISIBLE);
 					oitavaBolinha.setVisibility(View.VISIBLE);
-					
+
 					comecar.setVisibility(View.GONE);
 				}else if(position==2)
 				{
@@ -129,7 +146,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					setimaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada); 
 					oitavaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
-					
+
 					primeiraBolinha.setVisibility(View.VISIBLE);
 					segundaBolinha.setVisibility(View.VISIBLE);
 					terceiraBolinha.setVisibility(View.VISIBLE);
@@ -138,7 +155,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setVisibility(View.VISIBLE);
 					setimaBolinha.setVisibility(View.VISIBLE);
 					oitavaBolinha.setVisibility(View.VISIBLE);
-					
+
 					comecar.setVisibility(View.GONE);
 				}else if(position==3)
 				{
@@ -151,7 +168,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					setimaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada); 
 					oitavaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada); 
-					
+
 					primeiraBolinha.setVisibility(View.VISIBLE);
 					segundaBolinha.setVisibility(View.VISIBLE);
 					terceiraBolinha.setVisibility(View.VISIBLE);
@@ -160,7 +177,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setVisibility(View.VISIBLE);
 					setimaBolinha.setVisibility(View.VISIBLE);
 					oitavaBolinha.setVisibility(View.VISIBLE);
-					
+
 					comecar.setVisibility(View.GONE);
 				}else if(position==4)
 				{
@@ -173,7 +190,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					setimaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada); 
 					oitavaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
-					
+
 					primeiraBolinha.setVisibility(View.VISIBLE);
 					segundaBolinha.setVisibility(View.VISIBLE);
 					terceiraBolinha.setVisibility(View.VISIBLE);
@@ -182,7 +199,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setVisibility(View.VISIBLE);
 					setimaBolinha.setVisibility(View.VISIBLE);
 					oitavaBolinha.setVisibility(View.VISIBLE);
-					
+
 					comecar.setVisibility(View.GONE);
 				}else if(position==5)
 				{
@@ -195,7 +212,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setImageResource(R.drawable.ic_bolinha_home);
 					setimaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada); 
 					oitavaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
-					
+
 					primeiraBolinha.setVisibility(View.VISIBLE);
 					segundaBolinha.setVisibility(View.VISIBLE);
 					terceiraBolinha.setVisibility(View.VISIBLE);
@@ -204,7 +221,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setVisibility(View.VISIBLE);
 					setimaBolinha.setVisibility(View.VISIBLE);
 					oitavaBolinha.setVisibility(View.VISIBLE);
-					
+
 					comecar.setVisibility(View.GONE);
 				}else if(position==6)
 				{
@@ -217,7 +234,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada);
 					setimaBolinha.setImageResource(R.drawable.ic_bolinha_home);
 					oitavaBolinha.setImageResource(R.drawable.ic_bolinha_home_apagada); 
-					
+
 					primeiraBolinha.setVisibility(View.VISIBLE);
 					segundaBolinha.setVisibility(View.VISIBLE);
 					terceiraBolinha.setVisibility(View.VISIBLE);
@@ -226,7 +243,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setVisibility(View.VISIBLE);
 					setimaBolinha.setVisibility(View.VISIBLE);
 					oitavaBolinha.setVisibility(View.VISIBLE);
-					
+
 					comecar.setVisibility(View.GONE);	
 				}
 				else if(position==7)
@@ -240,7 +257,7 @@ public class TourActivity extends FragmentActivity
 					sextaBolinha.setVisibility(View.GONE);
 					setimaBolinha.setVisibility(View.GONE);
 					oitavaBolinha.setVisibility(View.GONE);
-					
+
 					comecar.setVisibility(View.VISIBLE);				
 				}								
 
@@ -266,7 +283,8 @@ public class TourActivity extends FragmentActivity
 	@Override
 	public void onBackPressed() 
 	{
-		//do nothing
+		if(isModoMenu)
+			finish();
 	}
 
 	/* (non-Javadoc)

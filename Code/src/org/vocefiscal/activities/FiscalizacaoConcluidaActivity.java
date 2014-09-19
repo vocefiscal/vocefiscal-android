@@ -8,21 +8,23 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.vocefiscal.R;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.facebook.FacebookRequestError;
 import com.facebook.HttpMethod;
 import com.facebook.LoggingBehavior;
@@ -38,9 +40,6 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	// Chaves do Twitter
 	public final String consumer_key = "oK5OfonM29VXA5dOfiVam0mLl";
 	public final String secret_key = "TKLEgt3Zp5BHTq4NyMZKgH6GjHzfTBpNecVxy58cjdr07q0A8b";
-
-	//public final String consumer_key = "trWwomp0b09ER2A8H1cQg";
-	//public final String secret_key = "PAC3E3CtcPcTuPl9VpCuzY6eDD8hPZPwp6gRDCviLs";
 
 	File casted_image;
 
@@ -132,22 +131,18 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 		facebookLogin = (ImageButton) findViewById(R.id.btn_facebook);
 		facebookLogin.setOnClickListener(new OnClickListener() 
 		{
-
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v) 
+			{	
 				//Pega a sessão ativa
 				Session session = Session.getActiveSession();
 				if (!session.isOpened() && !session.isClosed()) 
 				{
 					session.openForRead(new Session.OpenRequest(FiscalizacaoConcluidaActivity.this).setCallback(statusCallback));
-
 				} else
 				{
-					//Session.openActiveSession(FiscalizacaoConcluidaActivity.this, true, statusCallback);
-					publishStory();	
-
+					Session.openActiveSession(FiscalizacaoConcluidaActivity.this, true, statusCallback);					
 				}
-
 			}
 		});
 
@@ -175,13 +170,13 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 			{
 				session = new Session(this);
 			}
+			
 			Session.setActiveSession(session);
-			if (session.getState().equals(SessionState.CREATED) || session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) 
+			if (session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) 
 			{
 				session.openForRead(new Session.OpenRequest(this).setCallback(statusCallback));
 			}
 		}
-
 	}
 
 	/**
@@ -228,78 +223,64 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 		finish();
 
 	}
-
+	
 	/**
-	 * Chamada quando o botão mapa é clicado
+	 * Chama a sessão de Mapas da Activity
 	 * @param view
 	 */
-	public void mapaSecoes(View view)
+	public void buttonMapaSecoes (View view)
 	{
+		Intent intent = new Intent(FiscalizacaoConcluidaActivity.this, MapsActivity.class);
+		startActivity(intent);
 
 	}
 
 	//	/**
 	//	 * Publica no mural do Facebook
 	//	 */
-	private void publishStory() 
+	private void publishStory(Session session) 
 	{
-		Session session = Session.getActiveSession();
+		Bundle postParams = new Bundle();
+		postParams.putString("name", "Você Fiscal");
 
-		if (session != null){
+		// Receber os dados da eleição!!!
+		postParams.putString("message", "Você fiscalizou a seção: "+ this.secao +"\nNa zona eleitoral: " + this.zonaEleitoral + "\nNo município de: " + this.municipio);			
+		postParams.putString("description", "Obrigado por contribruir com a democracia!");
+		postParams.putString("link", "http://www.vocefiscal.org/");
+		postParams.putString("picture", "http://imagizer.imageshack.us/v2/150x100q90/913/bAwPgx.png");
 
-			// Check for publish permissions    
-			List<String> permissions = session.getPermissions();
-			if (!isSubsetOf(PERMISSIONS, permissions)) {
-				Session.NewPermissionsRequest newPermissionsRequest = new Session
-						.NewPermissionsRequest(this, PERMISSIONS);
-				session.requestNewPublishPermissions(newPermissionsRequest);
-				return;
-			}
-
-			Bundle postParams = new Bundle();
-			postParams.putString("name", "Você Fiscal");
-
-			// Receber os dados da eleição!!!
-			postParams.putString("message", "Você fiscalizou a seção: "+ this.secao +"\nNa zona eleitoral: " + this.zonaEleitoral + "\nNo município de: " + this.municipio);
-			//postParams.putString("caption", "Você fiscalizou a seção: "+ this.secao +"\nna zona eleitoral" + this.zonaEleitoral + "\nno município de" + this.municipio);
-			postParams.putString("description", "Obrigado por contribruir com a democracia!");
-			postParams.putString("link", "http://www.vocefiscal.org/");
-			postParams.putString("picture", "http://imagizer.imageshack.us/v2/150x100q90/913/bAwPgx.png");
-
-			Request.Callback callback= new Request.Callback() {
-				public void onCompleted(Response response) {
-					JSONObject graphResponse = response.getGraphObject().getInnerJSONObject();
-					String postId = "Compartilhado com sucesso!";
-					try {
-						postId = graphResponse.getString("Compartilhado com sucesso!");
-					} catch (JSONException e) {
-						Log.i(TAG,
-								"JSON error "+ e.getMessage());
-					}
-					FacebookRequestError error = response.getError();
-					if (error != null) {
-						Toast.makeText(FiscalizacaoConcluidaActivity.this.getApplicationContext(),error.getErrorMessage(),
-								Toast.LENGTH_SHORT).show();
-					} else {
-						Toast.makeText(FiscalizacaoConcluidaActivity.this.getApplicationContext(), 
-								postId,
-								Toast.LENGTH_LONG).show();
-					}
+		Request.Callback callback= new Request.Callback() 
+		{
+			public void onCompleted(Response response) 
+			{
+				JSONObject graphResponse = response.getGraphObject().getInnerJSONObject();
+				String postId = "Compartilhado com sucesso!";
+				try 
+				{
+					postId = graphResponse.getString("Compartilhado com sucesso!");
+				} catch (JSONException e) 
+				{
 				}
-			};
+				FacebookRequestError error = response.getError();
+				if (error != null) 
+				{
+					Toast.makeText(FiscalizacaoConcluidaActivity.this.getApplicationContext(),error.getErrorMessage(),Toast.LENGTH_SHORT).show();
+				} else 
+				{
+					Toast.makeText(FiscalizacaoConcluidaActivity.this.getApplicationContext(),	postId,	Toast.LENGTH_LONG).show();
+				}
+			}
+		};
 
-			Request request = new Request(session, "me/feed", postParams, 
-					HttpMethod.POST, callback);
+		Request request = new Request(session, "me/feed", postParams, HttpMethod.POST, callback);
 
-			RequestAsyncTask task = new RequestAsyncTask(request);
-			task.execute();
-		}
-
+		RequestAsyncTask task = new RequestAsyncTask(request);
+		task.execute();
 	}
-	//
+
+
 	private class SessionStatusCallback implements Session.StatusCallback
 	{ 
-
 		@Override
 		public void call(Session session, SessionState state, Exception exception) 
 		{
@@ -312,21 +293,13 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 				if (!isSubsetOf(PERMISSIONS, permissions)) 
 				{
 					Session.NewPermissionsRequest newPermissionsRequest = new Session.NewPermissionsRequest(FiscalizacaoConcluidaActivity.this, PERMISSIONS);
-					session.requestNewReadPermissions(newPermissionsRequest);
+					session.requestNewPublishPermissions(newPermissionsRequest);
 					return;
 				}
-
-				//				if(isStatusChanged == false)
-				//				{	
-				//					publishStory();
-				//					isStatusChanged = true;
-				//				}
-
+				
+				publishStory(session);
 			}
-
-
 		}
-
 	}
 
 	private boolean isSubsetOf(Collection<String> subset,Collection<String> superset) 
@@ -347,7 +320,8 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 		super.onStart();
 		Session.getActiveSession().addCallback(statusCallback);
 	}
-	//
+
+
 	@Override
 	public void onStop() 
 	{   
@@ -364,7 +338,8 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	}	
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onActivityResult(int requestCode, int resultCode, Intent data) 
+	{
 		super.onActivityResult(requestCode, resultCode, data);
 		Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
 	}
@@ -407,14 +382,16 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	//----------------------------------------------------------------------------------------------
 	
 	
-	private void showToast(String msg) {
+	private void showToast(String msg) 
+	{
 		Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
 
 	}
 
 	// when user will click on twitte then first that will check that is
 	// internet exist or not
-	public boolean isNetworkAvailable() {
+	public boolean isNetworkAvailable() 
+	{
 		ConnectivityManager connectivity = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (connectivity == null) {
 			return false;
@@ -429,17 +406,6 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Chama a sessão de Mapas da Activity
-	 * @param view
-	 */
-	public void buttonMapaSecoes (View view)
-	{
-		Intent intent = new Intent(FiscalizacaoConcluidaActivity.this, MapsActivity.class);
-		startActivity(intent);
-
 	}
 
 	// this function will make your image to file

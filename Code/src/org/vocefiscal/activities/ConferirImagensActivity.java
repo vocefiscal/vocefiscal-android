@@ -13,7 +13,6 @@ import org.vocefiscal.bitmaps.ImageHandler;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,8 +44,6 @@ public class ConferirImagensActivity extends AnalyticsActivity
 	private static final float FOTO_SIZE_REF_HEIGHT = 1280;
 
 	public static final String MODO_HISTORICO = "modo_historico";
-
-	private Handler handler;
 	
 	private boolean isModoHistorico = false;
 
@@ -86,8 +83,6 @@ public class ConferirImagensActivity extends AnalyticsActivity
 				isModoHistorico = bundle.getBoolean(MODO_HISTORICO,false);
 			}
 		}
-		
-		//pictureURLList = new ArrayList<String>();
 
 		/* 
 		 * ImageFetcher e Cache 
@@ -103,8 +98,6 @@ public class ConferirImagensActivity extends AnalyticsActivity
 		/*
 		 * Elementos de UI e comportamentos
 		 */
-
-		handler = new Handler();
 		
 		TextView titulo = (TextView)findViewById(R.id.titulo);
 		if(isModoHistorico)

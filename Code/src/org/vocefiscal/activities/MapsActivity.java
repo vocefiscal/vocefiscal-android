@@ -1,6 +1,9 @@
 package org.vocefiscal.activities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.vocefiscal.R;
 import org.vocefiscal.asynctasks.AsyncTask;
@@ -28,8 +31,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
-import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -49,7 +50,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
-public class MapsActivity extends FragmentActivity  implements GooglePlayServicesClient.ConnectionCallbacks,
+public class MapsActivity extends AnalyticsActivity  implements GooglePlayServicesClient.ConnectionCallbacks,
 GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteListener<Object>
 {	
 	private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -73,6 +74,8 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 	Marker lastOpenned = null;
 
 	private Runnable atualizarMapa;
+	
+	private HashMap<String, GetStateStatsAsyncTask> mapStateStatsAsyncTasks;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -81,6 +84,8 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 		setContentView(R.layout.activity_maps);
 
 		handler = new Handler();
+		
+		mapStateStatsAsyncTasks = new HashMap<String, GetStateStatsAsyncTask>();
 
 		atualizarMapa = new Runnable()
 		{	
@@ -96,16 +101,17 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 
 					//Compara a latitude e longitude da minha localização, em módulo, 
 					//com as capitais dos estados se for menor, cria e preenche o Marker
-					for(String estados : listaDeEstados)
+					for(String estado : listaDeEstados)
 					{
 						try
 						{
-							if ( (Math.abs( (Math.abs(mLocation.getLatitude()) - Math.abs(getStateLocation(estados).latitude))) < 25) &&
-									(Math.abs( (Math.abs(mLocation.getLongitude()) - Math.abs(getStateLocation(estados).longitude))) < 8))
+							if ( (Math.abs( (Math.abs(mLocation.getLatitude()) - Math.abs(getStateLocation(estado).latitude))) < 25) &&
+									(Math.abs( (Math.abs(mLocation.getLongitude()) - Math.abs(getStateLocation(estado).longitude))) < 8))
 							{
-								GetStateStatsAsyncTask getStateStatsAsyncTask = new GetStateStatsAsyncTask(getApplicationContext(), MapsActivity.this, estados, 0);
-								//GetStateStatsAsyncTask getStateStatsAsyncTask = new GetStateStatsAsyncTask(getApplicationContext(), this, BrazilStateCodesEnum.getStateCode(SP), 0);
+								GetStateStatsAsyncTask getStateStatsAsyncTask = new GetStateStatsAsyncTask(getApplicationContext(), MapsActivity.this, estado, 0);
 								getStateStatsAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+								
+								mapStateStatsAsyncTasks.put(estado, getStateStatsAsyncTask);
 							}
 						}catch(Exception e)
 						{
@@ -168,7 +174,6 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 		uiSettings.setZoomGesturesEnabled(false);
 
 
-
 		/*
 		 * *************************************************
 		 * Location
@@ -179,6 +184,79 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 
 		criaListaDeEstados();
 
+	}
+	
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onResume()
+	 */
+	@Override
+	protected void onResume() 
+	{
+		super.onResume();
+
+		// Acquire a reference to the system Location Manager
+		LocationManager locationManager = (LocationManager) MapsActivity.this.getSystemService(Context.LOCATION_SERVICE);
+		if (!locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
+		{
+			Toast.makeText(getApplicationContext(), "Habilite o seu GPS para melhores resultados de posicionamento.", Toast.LENGTH_LONG).show();
+		}
+		handler.post(atualizarMapa);
+	}
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onPause()
+	 */
+	@Override
+	protected void onPause() 
+	{
+		super.onPause();
+
+		handler.removeCallbacks(atualizarMapa);
+	}
+	
+	/*
+	 * Called when the Activity becomes visible.
+	 */
+	@Override
+	protected void onStart() 
+	{
+		super.onStart();
+
+		locationController.start();
+	}
+	
+	/*
+	 * Called when the Activity is no longer visible.
+	 */
+	@Override
+	protected void onStop() 
+	{
+		locationController.stop();
+
+		super.onStop();
+	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onDestroy()
+	 */
+	@Override
+	protected void onDestroy() 
+	{
+		if(mapStateStatsAsyncTasks!=null)
+		{
+			Iterator<Map.Entry<String,GetStateStatsAsyncTask>> it =  mapStateStatsAsyncTasks.entrySet().iterator();
+		    while (it.hasNext()) 
+		    {
+		    	Map.Entry<String,GetStateStatsAsyncTask> pairs = (Map.Entry<String,GetStateStatsAsyncTask>)it.next();
+		    	GetStateStatsAsyncTask getStateStatsAsyncTask = pairs.getValue();
+		    	if(getStateStatsAsyncTask!=null&&!getStateStatsAsyncTask.isCancelled())
+		    		getStateStatsAsyncTask.cancel(true);
+		    }
+		}
+		
+		super.onDestroy();
 	}
 
 	/**
@@ -282,17 +360,6 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 
 	//----------------------------------------------------------------------------------------------------------------	
 
-	/*
-	 * Called when the Activity is no longer visible.
-	 */
-	@Override
-	protected void onStop() 
-	{
-		locationController.stop();
-
-		super.onStop();
-	}
-
 	//----------------------------------------------------------------------------------------------------------------	
 
 	/*
@@ -312,7 +379,6 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 		{
 			try 
 			{
-
 				// Start an Activity that tries to resolve the error
 				connectionResult.startResolutionForResult(this, LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
 
@@ -323,7 +389,6 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 
 			} catch (IntentSender.SendIntentException e) 
 			{
-
 				// Log the error
 				e.printStackTrace();
 			}
@@ -337,31 +402,23 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 
 	//----------------------------------------------------------------------------------------------------------------	
 
-	/*
-	 * Called when the Activity becomes visible.
-	 */
-	@Override
-	protected void onStart() 
-	{
-		super.onStart();
-
-		locationController.start();
-	}
-
 	//Cria os marcadores no mapa e adiciona as informações dentro dos Markers
 	private void fillStateStats(String stateCode, int pollTapesCount) 
 	{
-
 		//Tira a opção do usuário clicar no Market e mudar a posição do mapa
-		mapa.setOnMarkerClickListener(new OnMarkerClickListener() {
-			public boolean onMarkerClick(Marker marker) {
+		mapa.setOnMarkerClickListener(new OnMarkerClickListener() 
+		{
+			public boolean onMarkerClick(Marker marker) 
+			{
 				// Check if there is an open info window
-				if (lastOpenned != null) {
+				if (lastOpenned != null) 
+				{
 					// Close the info window
 					((Marker) lastOpenned).hideInfoWindow();
 
 					// Is the marker the same marker that was already open
-					if (lastOpenned.equals(marker)) {
+					if (lastOpenned.equals(marker)) 
+					{
 						// Nullify the lastOpenned object
 						lastOpenned = null;
 						// Return so that the info window isn't openned again
@@ -405,33 +462,33 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 
 		listaDeEstados = new ArrayList<String>();
 
-		//		listaDeEstados.add("AC");
-		//		listaDeEstados.add("AL");
-		//		listaDeEstados.add("AP");
-		//		listaDeEstados.add("AM");
-		//		listaDeEstados.add("BA");
-		//		listaDeEstados.add("CE");
-		//		listaDeEstados.add("DF");
+		listaDeEstados.add("AC");
+		listaDeEstados.add("AL");
+		listaDeEstados.add("AP");
+		listaDeEstados.add("AM");
+		listaDeEstados.add("BA");
+		listaDeEstados.add("CE");
+		listaDeEstados.add("DF");
 		listaDeEstados.add("ES");
-		//		listaDeEstados.add("GO");
-		//		listaDeEstados.add("MA");
-		//		listaDeEstados.add("MT");
-		//		listaDeEstados.add("MS");
+		listaDeEstados.add("GO");
+		listaDeEstados.add("MA");
+		listaDeEstados.add("MT");
+		listaDeEstados.add("MS");
 		listaDeEstados.add("MG");
-		//		listaDeEstados.add("PA");
-		//		listaDeEstados.add("PB");
-		//		listaDeEstados.add("PR");
-		//		listaDeEstados.add("PE");
-		//		listaDeEstados.add("PI");
+		listaDeEstados.add("PA");
+		listaDeEstados.add("PB");
+		listaDeEstados.add("PR");
+		listaDeEstados.add("PE");
+		listaDeEstados.add("PI");
 		listaDeEstados.add("RJ");
-		//		listaDeEstados.add("RN");
-		//		listaDeEstados.add("RS");
-		//		listaDeEstados.add("RO");
-		//		listaDeEstados.add("RR");
-		//		listaDeEstados.add("SC");
+		listaDeEstados.add("RN");
+		listaDeEstados.add("RS");
+		listaDeEstados.add("RO");
+		listaDeEstados.add("RR");
+		listaDeEstados.add("SC");
 		listaDeEstados.add("SP");
-		//		listaDeEstados.add("SE");
-		//		listaDeEstados.add("TO");
+		listaDeEstados.add("SE");
+		listaDeEstados.add("TO");
 
 	}
 
@@ -535,7 +592,6 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 	public void finishedGetStateStatsComResultado(StateStats stateStats) 
 	{
 		backoffStats = 0;
-
 		fillStateStats(stateStats.getStateCode(), stateStats.getPollTapesCount());
 	}
 
@@ -546,19 +602,18 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 	{
 		backoffStats++;
 
-		GetStateStatsAsyncTask getStateStatsAsyncTask = new GetStateStatsAsyncTask(getApplicationContext(),
-				this, stateCode,CommunicationConstants.WAIT_RETRY*backoffStats);
-
+		GetStateStatsAsyncTask getStateStatsAsyncTask = new GetStateStatsAsyncTask(getApplicationContext(),this, stateCode,CommunicationConstants.WAIT_RETRY*backoffStats);
 		getStateStatsAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		
+		mapStateStatsAsyncTasks.put(stateCode, getStateStatsAsyncTask);
 
 	}
 
 	//----------------------------------------------------------------------------------------------------------------	
 
-	private Bitmap writeTextOnDrawable(int drawableId, String text) {
-
-		Bitmap bm = BitmapFactory.decodeResource(getResources(), drawableId)
-				.copy(Bitmap.Config.ARGB_8888, true);
+	private Bitmap writeTextOnDrawable(int drawableId, String text) 
+	{
+		Bitmap bm = BitmapFactory.decodeResource(getResources(), drawableId).copy(Bitmap.Config.ARGB_8888, true);
 
 		Typeface tf = Typeface.create("Helvetica", Typeface.BOLD);
 
@@ -591,54 +646,11 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 
 	//----------------------------------------------------------------------------------------------------------------	
 
-	public static int convertToPixels(Context context, int nDP)
+	private static int convertToPixels(Context context, int nDP)
 	{
 		final float conversionScale = context.getResources().getDisplayMetrics().density;
 
 		return (int) ((nDP * conversionScale) + 0.5f) ;
 
 	}
-
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.FragmentActivity#onResume()
-	 */
-	@Override
-	protected void onResume() 
-	{
-		super.onResume();
-
-		// Acquire a reference to the system Location Manager
-		LocationManager locationManager = (LocationManager) MapsActivity.this.getSystemService(Context.LOCATION_SERVICE);
-		if (!locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
-		{
-			Toast.makeText(getApplicationContext(), "Habilite o seu GPS para melhores resultados de posicionamento.", Toast.LENGTH_LONG).show();
-		}
-		handler.post(atualizarMapa);
-	}
-
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.FragmentActivity#onPause()
-	 */
-	@Override
-	protected void onPause() 
-	{
-		super.onPause();
-
-		handler.removeCallbacks(atualizarMapa);
-	}
-
-
-
-	//	mapa.setOnMarkerClickListener(
-	//		    new OnMarkerClickListener() 
-	//		    {
-	//		        boolean doNotMoveCameraToCenterMarker = true;
-	//		        public boolean onMarkerClick(Marker marker) 
-	//		        {
-	//		            //Do whatever you need to do here ....
-	//		            return doNotMoveCameraToCenterMarker;
-	//		        }
-	//		    });
-	//	
-
 }

@@ -195,14 +195,15 @@ public class HomeActivity extends ActionBarActivity implements ActionBar.TabList
 		int id = item.getItemId();
 		if (id == R.id.sobre) 
 		{
-			//Intent intent = new Intent(HomeActivity.this,MapsActivity.class);
 			Intent intent = new Intent(HomeActivity.this,SobreActivity.class);
-			//Intent intent = new Intent(HomeActivity.this,FiscalizacaoConcluidaActivity.class);
 			startActivity(intent);
 			return true;
 		}else if (id == R.id.tutorial)
 		{
-			Intent intent = new Intent(HomeActivity.this,TourActivity.class);    		
+			Intent intent = new Intent(HomeActivity.this,TourActivity.class);  
+			Bundle bundle = new Bundle();
+			bundle.putBoolean(TourActivity.MODO_MENU, true);
+			intent.putExtras(bundle);
 			startActivity(intent);
 			return true;
 		}
