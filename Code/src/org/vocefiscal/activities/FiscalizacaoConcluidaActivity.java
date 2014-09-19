@@ -12,6 +12,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.vocefiscal.R;
+import org.vocefiscal.communications.CommunicationConstants;
 import org.vocefiscal.twitter.TwitterLoginHandler;
 import org.vocefiscal.twitter.TwitterSession;
 
@@ -166,7 +167,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 						public void run() 
 						{
 							ConfigurationBuilder cb = new ConfigurationBuilder();
-							cb.setOAuthConsumerKey(TwitterLoginHandler.consumerKey).setOAuthConsumerSecret(TwitterLoginHandler.consumerSecret).setOAuthAccessToken(ts.getToken()).setOAuthAccessTokenSecret(ts.getTokensecret());
+							cb.setOAuthConsumerKey(CommunicationConstants.TWITTER_API_KEY).setOAuthConsumerSecret(CommunicationConstants.TWITTER_API_SECRET).setOAuthAccessToken(ts.getToken()).setOAuthAccessTokenSecret(ts.getTokensecret());
 							TwitterFactory tf = new TwitterFactory(cb.build());
 							Twitter twitterPost = tf.getInstance();
 

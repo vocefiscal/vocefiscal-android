@@ -1,5 +1,7 @@
 package org.vocefiscal.twitter;
 
+import org.vocefiscal.communications.CommunicationConstants;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -13,9 +15,6 @@ import android.net.Uri;
 
 public class TwitterLoginHandler 
 {
-	public static final String consumerKey = "oK5OfonM29VXA5dOfiVam0mLl";
-	public static final String consumerSecret = "TKLEgt3Zp5BHTq4NyMZKgH6GjHzfTBpNecVxy58cjdr07q0A8b";
-
 	public TwitterLoginHandler() 
 	{
 
@@ -24,7 +23,7 @@ public class TwitterLoginHandler
 	public boolean startLogin(Context context, String callbackURL )
 	{		
 		Twitter twitter = new TwitterFactory().getInstance(); 
-		twitter.setOAuthConsumer (consumerKey, consumerSecret); 
+		twitter.setOAuthConsumer (CommunicationConstants.TWITTER_API_KEY, CommunicationConstants.TWITTER_API_SECRET); 
 
 		boolean ok = true;
 
@@ -61,7 +60,7 @@ public class TwitterLoginHandler
 
 						final Twitter twitter = new TwitterFactory().getInstance();				
 
-						twitter.setOAuthConsumer (consumerKey, consumerSecret); 
+						twitter.setOAuthConsumer (CommunicationConstants.TWITTER_API_KEY, CommunicationConstants.TWITTER_API_SECRET); 
 
 						//retrieve request token
 						RequestToken requestToken = new RequestToken(twitterSession.getRtoken(), twitterSession.getRtokensecret());
@@ -76,7 +75,7 @@ public class TwitterLoginHandler
 						//TODO - Mover para dentro do Fiscalizacao concluida activity e testar para só compartilhar uma vez
 						
 						ConfigurationBuilder cb = new ConfigurationBuilder();
-						cb.setOAuthConsumerKey(TwitterLoginHandler.consumerKey).setOAuthConsumerSecret(TwitterLoginHandler.consumerSecret).setOAuthAccessToken(at.getToken()).setOAuthAccessTokenSecret(at.getTokenSecret());
+						cb.setOAuthConsumerKey(CommunicationConstants.TWITTER_API_KEY).setOAuthConsumerSecret(CommunicationConstants.TWITTER_API_SECRET).setOAuthAccessToken(at.getToken()).setOAuthAccessTokenSecret(at.getTokenSecret());
 						TwitterFactory tf = new TwitterFactory(cb.build());
 						Twitter twitterPost = tf.getInstance();
 
