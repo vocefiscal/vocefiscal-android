@@ -8,6 +8,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.vocefiscal.R;
 import org.vocefiscal.communications.CommunicationConstants;
+import org.vocefiscal.dialogs.CustomDialogClass;
+import org.vocefiscal.dialogs.CustomDialogClass.BtnsControl;
 import org.vocefiscal.twitter.TwitterSession;
 
 import twitter4j.Twitter;
@@ -58,6 +60,8 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	private ImageButton twitterButton;
 
 	private Handler handler;	
+	
+	private CustomDialogClass envio;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -151,69 +155,88 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 			@Override
 			public void onClick(View v) 
 			{
-				final TwitterSession ts = TwitterSession.restore(getApplicationContext());
-				if(ts!=null&ts.getToken()!=null&&ts.getTokensecret()!=null)
+				BtnsControl btnsControlTimeout = new BtnsControl() 
 				{
-					Thread t = new Thread() 
+
+					@Override
+					public void positiveBtnClicked() 
 					{
-						public void run() 
+						final TwitterSession ts = TwitterSession.restore(getApplicationContext());
+						if(ts!=null&ts.getToken()!=null&&ts.getTokensecret()!=null)
 						{
-							ConfigurationBuilder cb = new ConfigurationBuilder();
-							cb.setOAuthConsumerKey(CommunicationConstants.TWITTER_API_KEY).setOAuthConsumerSecret(CommunicationConstants.TWITTER_API_SECRET).setOAuthAccessToken(ts.getToken()).setOAuthAccessTokenSecret(ts.getTokensecret());
-							TwitterFactory tf = new TwitterFactory(cb.build());
-							Twitter twitterPost = tf.getInstance();
-
-							String tweet = "Eu fiscalizei a seção "+ secao +", na zona eleitoral " +  zonaEleitoral + ", no município de: " +  municipio + " http://www.vocefiscal.org/";
-
-							try 
+							Thread t = new Thread() 
 							{
-								twitterPost.updateStatus(tweet);
-
-								handler.post(new Runnable() 
+								public void run() 
 								{
+									ConfigurationBuilder cb = new ConfigurationBuilder();
+									cb.setOAuthConsumerKey(CommunicationConstants.TWITTER_API_KEY).setOAuthConsumerSecret(CommunicationConstants.TWITTER_API_SECRET).setOAuthAccessToken(ts.getToken()).setOAuthAccessTokenSecret(ts.getTokensecret());
+									TwitterFactory tf = new TwitterFactory(cb.build());
+									Twitter twitterPost = tf.getInstance();
 
-									@Override
-									public void run() 
+									String tweet = "Eu fiscalizei a seção "+ secao +", na zona eleitoral " +  zonaEleitoral + ", no município de: " +  municipio + " http://www.vocefiscal.org/";
+
+									try 
 									{
-										Toast.makeText(FiscalizacaoConcluidaActivity.this,"Tweet feito com sucesso!",Toast.LENGTH_SHORT).show();
+										twitterPost.updateStatus(tweet);
 
-									}
-								});
-
-
-							} catch (TwitterException e) 
-							{		
-								if(e!=null&&e.getStatusCode()!=403)
-								{
-									handler.post(new Runnable() 
-									{
-
-										@Override
-										public void run() 
+										handler.post(new Runnable() 
 										{
-											Toast.makeText(FiscalizacaoConcluidaActivity.this,"Não foi possível twittar!",Toast.LENGTH_SHORT).show();
-										}
-									});
-								}						
-							}
-						}
-					};
-					t.start();								
-				}else
-				{
-					final String callbackURL = "fiscalizacaoconcluidaactivitycallback:///"; 
 
-					Thread t = new Thread() 
+											@Override
+											public void run() 
+											{
+												Toast.makeText(FiscalizacaoConcluidaActivity.this,"Tweet feito com sucesso!",Toast.LENGTH_SHORT).show();
+
+											}
+										});
+
+
+									} catch (TwitterException e) 
+									{		
+										if(e!=null&&e.getStatusCode()!=403)
+										{
+											handler.post(new Runnable() 
+											{
+
+												@Override
+												public void run() 
+												{
+													Toast.makeText(FiscalizacaoConcluidaActivity.this,"Não foi possível twittar!",Toast.LENGTH_SHORT).show();
+												}
+											});
+										}						
+									}
+								}
+							};
+							t.start();								
+						}else
+						{
+							final String callbackURL = "fiscalizacaoconcluidaactivitycallback:///"; 
+
+							Thread t = new Thread() 
+							{
+								public void run() 
+								{															
+									startTwitterLogin(callbackURL);
+								}
+							};
+							t.start();	
+						}
+					}
+
+					@Override
+					public void negativeBtnClicked() 
 					{
-						public void run() 
-						{															
-							startTwitterLogin(callbackURL);
-						}
-					};
-					t.start();	
-				}
-
-
+						//do nothing
+					}
+				};
+				
+				String tweet = "Eu fiscalizei a seção "+ secao +", na zona eleitoral " +  zonaEleitoral + ", no município de: " +  municipio + " http://www.vocefiscal.org/";
+				
+				envio = new CustomDialogClass(FiscalizacaoConcluidaActivity.this, "Compartilhar no Twitter", "Será twittado no seu perfil - "+tweet);
+				envio.setBtnsControl(btnsControlTimeout, "OK", "Cancelar");	
+				if(envio!=null&&!envio.isShowing())
+					envio.show();
 			}
 		});	
 
@@ -243,10 +266,6 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 			}
 
 			Session.setActiveSession(session);
-			if (session.getState().equals(SessionState.CREATED_TOKEN_LOADED)) 
-			{
-				session.openForRead(new Session.OpenRequest(this).setCallback(statusCallback));
-			}
 		}
 	}
 
