@@ -372,46 +372,58 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 	protected void gravarNaBaseLocalESeguir() 
 	{
 		if(voceFiscalDatabase!=null&&voceFiscalDatabase.isOpen())
-			voceFiscalDatabase.addFiscalizacao(fiscalizacao);
-
-		FlurryAgent.logEvent("Fiscalizou");
-		
-		SharedPreferences prefs = getSharedPreferences("vocefiscal", 0);
-		if(prefs!=null)
 		{
-			SharedPreferences.Editor editor = prefs.edit();
-			if(editor!=null)
+			voceFiscalDatabase.addFiscalizacao(fiscalizacao);
+			
+			if(fiscalizacao!=null&&fiscalizacao.getIdFiscalizacao()!=null)
 			{
-				if(estado_spinner!=null)
-					editor.putInt(POSICAO_INICIAL_ESTADO, estado_spinner.getSelectedItemPosition());
-				if(municipio_spinner!=null)
-					editor.putInt(POSICAO_INICIAL_MUNICIPIO, municipio_spinner.getSelectedItemPosition());
-				editor.commit();
-			}		
+				FlurryAgent.logEvent("Fiscalizou");
+				
+				SharedPreferences prefs = getSharedPreferences("vocefiscal", 0);
+				if(prefs!=null)
+				{
+					SharedPreferences.Editor editor = prefs.edit();
+					if(editor!=null)
+					{
+						if(estado_spinner!=null)
+							editor.putInt(POSICAO_INICIAL_ESTADO, estado_spinner.getSelectedItemPosition());
+						if(municipio_spinner!=null)
+							editor.putInt(POSICAO_INICIAL_MUNICIPIO, municipio_spinner.getSelectedItemPosition());
+						editor.commit();
+					}		
+				}
+				
+				Intent intentService = new Intent(getApplicationContext(), UploadManagerService.class);
+
+				Bundle bundle = new Bundle();
+				bundle.putInt(UploadManagerService.COMMAND, UploadManagerService.START_UPLOADING);
+				bundle.putLong(UploadManagerService.ID_FISCALIZACAO,fiscalizacao.getIdFiscalizacao());
+
+				intentService.putExtras(bundle);
+
+				startService(intentService);
+
+				Intent intent = new Intent(getApplicationContext(), FiscalizacaoConcluidaActivity.class);
+				Bundle bundleActivity = new Bundle();
+				bundleActivity.putString(SECAO, fiscalizacao.getSecaoEleitoral());
+				bundleActivity.putString(ZONA, fiscalizacao.getZonaEleitoral());
+				bundleActivity.putString(MUNICIPIO, fiscalizacao.getMunicipio());
+
+				intent.putExtras(bundleActivity);
+
+				startActivity(intent);
+
+				finish();	
+			}else
+			{
+				voceFiscalDatabase = new VoceFiscalDatabase(this);
+				Toast.makeText(getApplicationContext(), "Não foi possível salvar a fiscalização. Por favor, tente novamente.", Toast.LENGTH_SHORT).show();
+			}
+		}else
+		{
+			voceFiscalDatabase = new VoceFiscalDatabase(this);
+			Toast.makeText(getApplicationContext(), "Não foi possível salvar a fiscalização. Por favor, tente novamente.", Toast.LENGTH_SHORT).show();
 		}
-		
-		Intent intentService = new Intent(getApplicationContext(), UploadManagerService.class);
-
-		Bundle bundle = new Bundle();
-		bundle.putInt(UploadManagerService.COMMAND, UploadManagerService.START_UPLOADING);
-		bundle.putLong(UploadManagerService.ID_FISCALIZACAO,fiscalizacao.getIdFiscalizacao());
-
-		intentService.putExtras(bundle);
-
-		startService(intentService);
-
-		Intent intent = new Intent(getApplicationContext(), FiscalizacaoConcluidaActivity.class);
-		Bundle bundleActivity = new Bundle();
-		bundleActivity.putString(SECAO, fiscalizacao.getSecaoEleitoral());
-		bundleActivity.putString(ZONA, fiscalizacao.getZonaEleitoral());
-		bundleActivity.putString(MUNICIPIO, fiscalizacao.getMunicipio());
-
-		intent.putExtras(bundleActivity);
-
-		startActivity(intent);
-
-		finish();					
-
 	}
 
 	protected void voltarParaConferir() 
