@@ -23,6 +23,7 @@ import org.vocefiscal.views.CameraPreview;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Typeface;
@@ -49,6 +50,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * @author andre
@@ -209,8 +211,37 @@ public class CameraActivity extends AnalyticsActivity
 			{				
 				// get an image from the camera
 				try
-				{						
-					mCamera.autoFocus(myAutoFocusCallback);				
+				{	
+					PackageManager packageManager = CameraActivity.this.getPackageManager();
+					if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) 
+					{
+						mCamera.autoFocus(myAutoFocusCallback);		
+					}else
+					{
+						mCamera.takePicture(null, null, mPicture);
+						handler.post(new Runnable() 
+						{
+
+							@Override
+							public void run() 
+							{
+								if(soundID!=-1)
+								{
+									if(canPlaySound)
+									{
+										spool.play(soundID, 100, 100, 1, 0, 1.0f);
+									}else
+									{
+										handler.postDelayed(this, 100);
+									}			
+								}			
+							}
+						});	
+
+						//animacao da camera
+						animationDrawable.setVisible(false, false);
+						animateImageView.setVisibility(View.GONE);
+					}
 				}catch(Exception e)
 				{
 					Log.i(TAG, e.getMessage());
@@ -277,21 +308,30 @@ public class CameraActivity extends AnalyticsActivity
 		});
 
 		flash_status = (ImageView) findViewById(R.id.flash_status);
-		flash_status.setOnClickListener(new OnClickListener() 
+		PackageManager packageManager = CameraActivity.this.getPackageManager();
+		if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) 
 		{
-
-			@Override
-			public void onClick(View v) 
+			flash_status.setVisibility(View.VISIBLE);
+			flash_status.setOnClickListener(new OnClickListener() 
 			{
-				flashStatus = FlashModeEnum.nextFlashMode(flashStatus);												
 
-				Camera.Parameters params = mCamera.getParameters();				
-				params.setFlashMode(FlashModeEnum.getFlashMode(flashStatus));				
-				mCamera.setParameters(params);
+				@Override
+				public void onClick(View v) 
+				{
+					flashStatus = FlashModeEnum.nextFlashMode(flashStatus);												
 
-				flash_status.setImageResource(FlashModeEnum.getImageResource(flashStatus));
-			}
-		});		
+					Camera.Parameters params = mCamera.getParameters();				
+					params.setFlashMode(FlashModeEnum.getFlashMode(flashStatus));				
+					mCamera.setParameters(params);
+
+					flash_status.setImageResource(FlashModeEnum.getImageResource(flashStatus));
+				}
+			});	
+		}else
+		{
+			flash_status.setVisibility(View.INVISIBLE);
+		}
+			
 
 		photo_counter = (TextView) findViewById(R.id.photo_counter);		
 
@@ -303,15 +343,19 @@ public class CameraActivity extends AnalyticsActivity
 
 			@Override
 			public void onClick(View v) 
-			{				
-				mCamera.autoFocus(new AutoFocusCallback() 
-				{					
-					@Override
-					public void onAutoFocus(boolean success, Camera camera) 
-					{
-						// do nothing here					
-					}
-				});				
+			{	
+				PackageManager packageManager = CameraActivity.this.getPackageManager();
+				if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) 
+				{
+					mCamera.autoFocus(new AutoFocusCallback() 
+					{					
+						@Override
+						public void onAutoFocus(boolean success, Camera camera) 
+						{
+							// do nothing here					
+						}
+					});	
+				}							
 			}
 		});
 
@@ -375,8 +419,8 @@ public class CameraActivity extends AnalyticsActivity
 
 				if (pictureFile == null)
 				{
-					Log.d(TAG, "Error creating media file, check storage permissions");
-					return;
+					Toast.makeText(CameraActivity.this, "Erro salvando a foto, verifique permissões de gravação de dados em mídia externa e tente novamente.",Toast.LENGTH_SHORT ).show();
+					CameraActivity.this.finish();
 				}								
 
 				try 
@@ -438,10 +482,12 @@ public class CameraActivity extends AnalyticsActivity
 
 				} catch (FileNotFoundException e) 
 				{
-					
+					Toast.makeText(CameraActivity.this, "Erro salvando a foto, verifique permissões de gravação de dados em mídia externa e tente novamente.",Toast.LENGTH_SHORT ).show();
+					CameraActivity.this.finish();
 				} catch (IOException e)
 				{
-					
+					Toast.makeText(CameraActivity.this, "Erro salvando a foto, verifique permissões de gravação de dados em mídia externa e tente novamente.",Toast.LENGTH_SHORT ).show();
+					CameraActivity.this.finish();
 				}				
 			}			
 		};  
@@ -495,15 +541,21 @@ public class CameraActivity extends AnalyticsActivity
 		String filePath = null;
 		
 		File mediaFile = null;
+		
+		File storeagePath = Environment.getExternalStorageDirectory();
+		File picturePublicPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+
+		storeagePath.mkdirs();
+		picturePublicPath.mkdirs();
 
 		if(isLastThird)
 		{
 			filePath = "IMG_LT"+ timeStamp + ".jpg";
-			mediaFile = new File(Environment.getExternalStorageDirectory(), filePath);	
+			mediaFile = new File(storeagePath, filePath);	
 		}else
 		{
 			filePath = "IMG_"+ timeStamp + ".jpg";
-			mediaFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), filePath);	
+			mediaFile = new File(picturePublicPath, filePath);	
 		}			
 
 		return mediaFile;
@@ -538,8 +590,15 @@ public class CameraActivity extends AnalyticsActivity
 
 			Camera.Size bestPreviewSize = getOptimalCameraSize(previewSizes, desiredPictureWidthAdjusted, desiredPictureHeightAdjusted);
 
-			params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-			params.setFlashMode(FlashModeEnum.getFlashMode(flashStatus));
+			PackageManager packageManager = this.getPackageManager();
+			if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) 
+			{
+				params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);      
+			}
+			if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) 
+			{
+				params.setFlashMode(FlashModeEnum.getFlashMode(flashStatus));
+			}			
 			params.setPreviewSize(bestPreviewSize.width, bestPreviewSize.height);
 			params.setPictureSize(pictureWidth, pictureHeight);
 			params.setJpegQuality(100);	

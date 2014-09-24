@@ -17,8 +17,10 @@ import twitter4j.conf.ConfigurationBuilder;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -367,9 +369,14 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 	 */
 	public void buttonMapaSecoes (View view)
 	{
-		Intent intent = new Intent(FiscalizacaoConcluidaActivity.this, MapsActivity.class);
-		startActivity(intent);
-
+		if(Build.VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB)
+		{
+			Intent intent = new Intent(FiscalizacaoConcluidaActivity.this, MapsActivity.class);
+			startActivity(intent);
+		}else
+		{
+			Toast.makeText(getApplicationContext(), "Desculpe, mas o mapa só é compatível com Android 3.0 ou superior.", Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	//	/**

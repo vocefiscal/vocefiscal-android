@@ -206,7 +206,10 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 		estadoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		estado_spinner.setAdapter(estadoAdapter);
 		ArrayList<String> nomesEstados = municipalities.getNomesEstados();
-		estadoAdapter.addAll(nomesEstados);
+		for(String nomeEstado : nomesEstados)
+		{
+			estadoAdapter.add(nomeEstado);
+		}
 		estado_spinner.setOnItemSelectedListener(new OnItemSelectedListener() 
 		{
 
@@ -216,8 +219,11 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 				estadoSelecionado = (String) parent.getItemAtPosition(position);	
 
 				ArrayList<String> nomesMunicipiosEstadoSelecionado = municipalities.getNomesMunicipiosPorEstado().get(estadoSelecionado);
-				municipioAdapter.clear();  
-				municipioAdapter.addAll(nomesMunicipiosEstadoSelecionado);
+				municipioAdapter.clear(); 
+				for(String nomeMunicipio : nomesMunicipiosEstadoSelecionado)
+				{
+					municipioAdapter.add(nomeMunicipio);
+				}
 				municipio_spinner.setSelection(0);
 				municipioSelecionado = nomesMunicipiosEstadoSelecionado.get(0);
 			}

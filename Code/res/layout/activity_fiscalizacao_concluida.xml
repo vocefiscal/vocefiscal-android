@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:src="@drawable/selector_up_logo_sem_voltar"/>
+            android:src="@drawable/selector_up_logo_sem_voltar" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -187,33 +187,33 @@
                     android:textStyle="bold" />
             </RelativeLayout>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
                 android:paddingBottom="20dp"
-                android:paddingTop="20dp" >
+                android:paddingTop="20dp"
+                android:weightSum="1" >
 
                 <ImageButton
                     android:id="@+id/btn_facebook"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignTop="@+id/twitterButton"
-                    android:layout_marginLeft="30dp"
-                    android:layout_weight="1"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="0.5"
                     android:background="@drawable/selector_facebook_button" />
 
                 <ImageButton
                     android:id="@+id/twitterButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="30dp"
-                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="0.5"
                     android:background="@drawable/selector_twitter_button" />
-
-            </RelativeLayout>
+            </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -249,7 +249,6 @@
                     android:src="@drawable/btn_map" />
             </RelativeLayout>
         </LinearLayout>
-
     </ScrollView>
 
 </LinearLayout>
