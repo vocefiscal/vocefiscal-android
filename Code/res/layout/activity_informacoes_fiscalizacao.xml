@@ -118,7 +118,7 @@
                     android:layout_marginTop="25dp"
                     android:background="@drawable/bg_input"
                     android:hint="Local da votação (opcional)"
-                    android:inputType="number"
+                    android:inputType="text"
                     android:maxLength="4"
                     android:paddingLeft="10dp"
                     android:textColor="@color/preto"
