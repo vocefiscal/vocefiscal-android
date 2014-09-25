@@ -17,10 +17,10 @@ import org.vocefiscal.bitmaps.ImageCache.ImageCacheParams;
 import org.vocefiscal.bitmaps.ImageFetcher;
 import org.vocefiscal.bitmaps.ImageHandler;
 import org.vocefiscal.bitmaps.RecyclingImageView;
-import org.vocefiscal.models.enums.FlashModeEnum;
 import org.vocefiscal.views.CameraPreview;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -30,6 +30,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
+import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.PictureCallback;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -42,6 +43,7 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
 import android.view.Display;
+import android.view.Surface;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
@@ -128,8 +130,6 @@ public class CameraActivity extends AnalyticsActivity
 
 	private ImageView flash_status;
 
-	private int flashStatus = FlashModeEnum.AUTO.ordinal();
-
 	private AnimationDrawable animationDrawable;
 
 	private RecyclingImageView animateImageView;
@@ -161,6 +161,12 @@ public class CameraActivity extends AnalyticsActivity
 		Display display = getWindowManager().getDefaultDisplay();			
 		int width = display.getWidth();
 		int height = display.getHeight();
+		if(height<width)
+		{
+			int aux = height;
+			height = width;
+			width = aux;
+		}
 		float dw = width/720.0f;
 		float dh = height/1184.0f;
 		float deltaDisplay = Math.max(dw, dh);
@@ -256,7 +262,7 @@ public class CameraActivity extends AnalyticsActivity
 			@Override
 			public void onClick(View v) 
 			{
-				finish();				
+				CameraActivity.this.finish();				
 			}
 		});		
 
@@ -276,7 +282,7 @@ public class CameraActivity extends AnalyticsActivity
 
 				intent.putExtras(bundle);
 
-				startActivityForResult(intent, PICTURE_PREVIEW_REQUEST_CODE);
+				CameraActivity.this.startActivityForResult(intent, PICTURE_PREVIEW_REQUEST_CODE);
 			}
 		});
 		
@@ -300,9 +306,9 @@ public class CameraActivity extends AnalyticsActivity
 
 				intent.putExtras(bundle);
 
-				startActivity(intent);
+				CameraActivity.this.startActivity(intent);
 
-				finish();
+				CameraActivity.this.finish();
 				
 			}
 		});
@@ -318,13 +324,29 @@ public class CameraActivity extends AnalyticsActivity
 				@Override
 				public void onClick(View v) 
 				{
-					flashStatus = FlashModeEnum.nextFlashMode(flashStatus);												
-
-					Camera.Parameters params = mCamera.getParameters();				
-					params.setFlashMode(FlashModeEnum.getFlashMode(flashStatus));				
-					mCamera.setParameters(params);
-
-					flash_status.setImageResource(FlashModeEnum.getImageResource(flashStatus));
+					Camera.Parameters params = mCamera.getParameters();	
+					
+					List<String> supportedFlashModes = params.getSupportedFlashModes();
+					if(supportedFlashModes!=null&&supportedFlashModes.size()>0)
+					{
+						int currentFlashModeIndex = -1;
+						String currentFlashMode = params.getFlashMode();
+						for(int i=0;i<supportedFlashModes.size();i++)
+						{
+							String supportedFlashMode = supportedFlashModes.get(i);
+							if(supportedFlashMode.equalsIgnoreCase(currentFlashMode))
+							{
+								currentFlashModeIndex = i;
+								break;
+							}
+						}
+						
+						currentFlashModeIndex++;
+						String nextSupportedFlashMode = supportedFlashModes.get(currentFlashModeIndex%supportedFlashModes.size());
+						params.setFlashMode(nextSupportedFlashMode);						
+						mCamera.setParameters(params);
+						flash_status.setImageResource(getImageResource(nextSupportedFlashMode));
+					}
 				}
 			});	
 		}else
@@ -344,6 +366,8 @@ public class CameraActivity extends AnalyticsActivity
 			@Override
 			public void onClick(View v) 
 			{	
+				preview.setEnabled(false);
+				
 				PackageManager packageManager = CameraActivity.this.getPackageManager();
 				if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) 
 				{
@@ -352,10 +376,13 @@ public class CameraActivity extends AnalyticsActivity
 						@Override
 						public void onAutoFocus(boolean success, Camera camera) 
 						{
-							// do nothing here					
+							preview.setEnabled(true);				
 						}
 					});	
-				}							
+				}else
+				{
+					preview.setEnabled(true);		
+				}
 			}
 		});
 
@@ -370,6 +397,7 @@ public class CameraActivity extends AnalyticsActivity
 				animationDrawable.setVisible(true, true); 
 				animateImageView.setVisibility(View.VISIBLE);
 
+				preview.setEnabled(false);
 				photo_trigger.setVisibility(View.GONE);
 				photo_concluido.setVisibility(View.GONE);
 				editar_foto_anterior.setVisibility(View.GONE);
@@ -465,6 +493,7 @@ public class CameraActivity extends AnalyticsActivity
 						picturePathList.add(pictureFile.getAbsolutePath());
 						picture30PCPathList.add(lastThirdPicture.getAbsolutePath());
 
+						preview.setEnabled(true);
 						photo_trigger.setVisibility(View.VISIBLE);
 						photo_concluido.setVisibility(View.VISIBLE);						
 						trinta_por_cento.setVisibility(View.VISIBLE);
@@ -510,7 +539,7 @@ public class CameraActivity extends AnalyticsActivity
 
 				intent.putExtras(bundle);
 
-				startActivityForResult(intent, PICTURE_PREVIEW_REQUEST_CODE);
+				CameraActivity.this.startActivityForResult(intent, PICTURE_PREVIEW_REQUEST_CODE);
 			}
 		});
 
@@ -578,8 +607,8 @@ public class CameraActivity extends AnalyticsActivity
 
 		if (mCamera != null)
 		{
-			mCamera.setDisplayOrientation(90);
-
+			setCameraDisplayOrientation(this, mCamera);
+			
 			Camera.Parameters params = mCamera.getParameters();
 			List<Camera.Size> pictureSizes = params.getSupportedPictureSizes();
 			List<Camera.Size> previewSizes = params.getSupportedPreviewSizes();
@@ -593,16 +622,37 @@ public class CameraActivity extends AnalyticsActivity
 			PackageManager packageManager = this.getPackageManager();
 			if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) 
 			{
-				params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);      
+				List<String> supportedFocusModes = params.getSupportedFocusModes();
+				boolean focusModeContinuosSupported = false;
+				if(supportedFocusModes!=null)
+				{
+					for(String supportedFocusMode : supportedFocusModes)
+					{
+						if(supportedFocusMode.equalsIgnoreCase(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE))
+						{
+							focusModeContinuosSupported = true;
+							break;
+						}
+					}
+				}
+				if(focusModeContinuosSupported)
+					params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);    
 			}
 			if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) 
 			{
-				params.setFlashMode(FlashModeEnum.getFlashMode(flashStatus));
+				List<String> supportedFlashModes = params.getSupportedFlashModes();
+				if(supportedFlashModes!=null&&supportedFlashModes.size()>0)
+				{
+					String supportedFlashMode = supportedFlashModes.get(0);
+					flash_status.setImageResource(getImageResource(supportedFlashMode));
+					params.setFlashMode(supportedFlashMode);
+				}											
 			}			
 			params.setPreviewSize(bestPreviewSize.width, bestPreviewSize.height);
 			params.setPictureSize(pictureWidth, pictureHeight);
 			params.setJpegQuality(100);	
 			mCamera.setParameters(params);
+						
 
 			//			Log.e("CameraActivity", "pictureWidth: "+String.valueOf(pictureWidth));
 			//			Log.e("CameraActivity", "pictureHeight: "+String.valueOf(pictureHeight));
@@ -616,6 +666,44 @@ public class CameraActivity extends AnalyticsActivity
 			preview.addView(mPreview);
 		}
 	}
+	
+	public static void setCameraDisplayOrientation(Activity activity,Camera camera) 
+	{
+	     CameraInfo info = new CameraInfo();
+	     
+	     int cameraId = -1;
+	     int numberOfCameras = Camera.getNumberOfCameras();
+	     for (int i = 0; i < numberOfCameras; i++) 
+	     {
+	       Camera.getCameraInfo(i, info);
+	       if (info.facing == CameraInfo.CAMERA_FACING_BACK) 
+	       {
+	         cameraId = i;
+	         break;
+	       }
+	     }	     
+	     Camera.getCameraInfo(cameraId, info);
+	     int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+	     int degrees = 0;
+	     switch (rotation) 
+	     {
+	         case Surface.ROTATION_0: degrees = 0; break;
+	         case Surface.ROTATION_90: degrees = 90; break;
+	         case Surface.ROTATION_180: degrees = 180; break;
+	         case Surface.ROTATION_270: degrees = 270; break;
+	     }
+
+	     int result;
+	     if (info.facing == CameraInfo.CAMERA_FACING_FRONT) 
+	     {
+	         result = (info.orientation + degrees) % 360;
+	         result = (360 - result) % 360;  // compensate the mirror
+	     } else 
+	     {  // back-facing
+	         result = (info.orientation - degrees + 360) % 360;
+	     }
+	     camera.setDisplayOrientation(result);
+	 }
 
 	private Camera.Size getOptimalCameraSize(List<Camera.Size> sizes, int w, int h) 
 	{
@@ -788,5 +876,29 @@ public class CameraActivity extends AnalyticsActivity
 				}
 			}
 		}
+	}
+	
+	public static int getImageResource(String flashStatus) 
+	{
+		int imageResource = R.drawable.flash_auto;
+		
+		if(flashStatus.equalsIgnoreCase(Camera.Parameters.FLASH_MODE_AUTO))
+		{
+			imageResource = R.drawable.flash_auto;
+		}else if(flashStatus.equalsIgnoreCase(Camera.Parameters.FLASH_MODE_OFF))
+		{
+			imageResource = R.drawable.flash_off;
+		}else if(flashStatus.equalsIgnoreCase(Camera.Parameters.FLASH_MODE_ON))
+		{
+			imageResource = R.drawable.flash_on;
+		}else if(flashStatus.equalsIgnoreCase(Camera.Parameters.FLASH_MODE_TORCH))
+		{
+			imageResource = R.drawable.flash_tocha;
+		}else if(flashStatus.equalsIgnoreCase(Camera.Parameters.FLASH_MODE_RED_EYE))
+		{
+			imageResource = R.drawable.flash_red_eye;
+		}
+		
+		return imageResource;
 	}
 }
