@@ -275,12 +275,24 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 			}, 300);
 		}
 		
-		zona_eleitoral_et = (EditText) findViewById(R.id.zona_eleitoral_et);
-
+		TextView zona_eleitoral_tv = (TextView) findViewById(R.id.zona_eleitoral_tv);
+		zona_eleitoral_tv.setSelected(true);
+		
+		zona_eleitoral_et = (EditText) findViewById(R.id.zona_eleitoral_et);		
+		
+		TextView local_votacao_tv = (TextView) findViewById(R.id.local_votacao_tv);
+		local_votacao_tv.setSelected(true);
+		
 		local_votacao_et = (EditText) findViewById(R.id.local_votacao_et);
 
+		TextView secao_eleitoral_tv = (TextView) findViewById(R.id.secao_eleitoral_tv);
+		secao_eleitoral_tv.setSelected(true);
+		
 		secao_eleitoral_et = (EditText) findViewById(R.id.secao_eleitoral_et);
 
+		TextView email_tv = (TextView) findViewById(R.id.email_tv);
+		email_tv.setSelected(true);
+		
 		emailET = (EditText) findViewById(R.id.email_et);
 
 		ImageView btn_enviar = (ImageView) findViewById(R.id.btn_enviar);

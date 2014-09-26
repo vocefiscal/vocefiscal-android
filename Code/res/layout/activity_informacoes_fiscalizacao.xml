@@ -97,60 +97,142 @@
                         android:textSize="16sp" />
                 </LinearLayout>
 
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:singleLine="true"
+                    android:text="Zona eleitoral"
+                    android:textColor="@color/preto"
+                    android:textSize="16sp" />
+                
+                <TextView
+                    android:id="@+id/zona_eleitoral_tv"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:singleLine="true"
+                    android:text="4 dígitos com zeros a esquerda, como no B.U."
+                    android:textColor="@color/preto"
+                    android:textSize="12sp" />
+
                 <EditText
                     android:id="@+id/zona_eleitoral_et"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
+                    android:layout_marginTop="5dp"
                     android:background="@drawable/bg_input"
-                    android:hint="Zona eleitoral"
+                    android:hint="0000"
                     android:inputType="number"
                     android:maxLength="4"
                     android:paddingLeft="10dp"
                     android:textColor="@color/preto"
-                    android:textColorHint="@color/preto"
+                    android:textColorHint="@color/preto_claro"
                     android:textSize="16sp" />
+                
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:singleLine="true"
+                    android:text="Local da votação (opcional)"
+                    android:textColor="@color/preto"
+                    android:textSize="16sp" />
+                
+                <TextView
+                    android:id="@+id/local_votacao_tv"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:singleLine="true"
+                    android:text="4 dígitos com zeros a esquerda, como no B.U."
+                    android:textColor="@color/preto"
+                    android:textSize="12sp" />
 
                 <EditText
                     android:id="@+id/local_votacao_et"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
+                    android:layout_marginTop="5dp"
                     android:background="@drawable/bg_input"
-                    android:hint="Local da votação (opcional)"
+                    android:hint="0000"
                     android:inputType="number"
                     android:maxLength="4"
                     android:paddingLeft="10dp"
                     android:textColor="@color/preto"
-                    android:textColorHint="@color/preto"
+                    android:textColorHint="@color/preto_claro"
                     android:textSize="16sp" />
+                
+                <TextView
+                    android:id="@+id/secao_eleitoral_tv"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:singleLine="true"
+                    android:text="Seção eleitoral"
+                    android:textColor="@color/preto"
+                    android:textSize="16sp" />
+                
+                <TextView
+                    android:id="@+id/secao_eleitoral_tv"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:singleLine="true"
+                    android:text="4 dígitos com zeros a esquerda, como no B.U."
+                    android:textColor="@color/preto"
+                    android:textSize="12sp" />
 
                 <EditText
                     android:id="@+id/secao_eleitoral_et"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
+                    android:layout_marginTop="5dp"
                     android:background="@drawable/bg_input"
-                    android:hint="Seção eleitoral"
+                    android:hint="0000"
                     android:inputType="number"
                     android:maxLength="4"
                     android:paddingLeft="10dp"
                     android:textColor="@color/preto"
-                    android:textColorHint="@color/preto"
+                    android:textColorHint="@color/preto_claro"
                     android:textSize="16sp" />
                 
+                <TextView
+                    android:id="@+id/email_tv"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:singleLine="true"
+                    android:text="Seu email (opcional)"
+                    android:textColor="@color/preto"
+                    android:textSize="16sp" />
+
                 <EditText
                     android:id="@+id/email_et"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
+                    android:layout_marginTop="5dp"
                     android:background="@drawable/bg_input"
-                    android:hint="Seu email (opcional)"
+                    android:hint="ze@ze.com"
                     android:inputType="textEmailAddress"
                     android:maxLength="60"
                     android:paddingLeft="10dp"
                     android:textColor="@color/preto"
-                    android:textColorHint="@color/preto"
+                    android:textColorHint="@color/preto_claro"
                     android:textSize="16sp" />
             </LinearLayout>
         </RelativeLayout>
