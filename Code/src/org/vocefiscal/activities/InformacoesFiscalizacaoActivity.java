@@ -277,9 +277,13 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 		
 		zona_eleitoral_et = (EditText) findViewById(R.id.zona_eleitoral_et);
 
+		zona_eleitoral_et.addTextChangedListener(Mask.insert("####", zona_eleitoral_et));
+
 		local_votacao_et = (EditText) findViewById(R.id.local_votacao_et);
 
 		secao_eleitoral_et = (EditText) findViewById(R.id.secao_eleitoral_et);
+
+		secao_eleitoral_et.addTextChangedListener(Mask.insert("####", secao_eleitoral_et));
 
 		emailET = (EditText) findViewById(R.id.email_et);
 
@@ -294,6 +298,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 				String secao_eleitoral = null;
 				String email = null;
 
+				// FIXME: repensar a lógica abaixo para não usar tantos ifs aninhados.
 				if(estadoSelecionado!=null&&estadoSelecionado.length()>0)
 				{										
 					if(municipioSelecionado!=null&&municipioSelecionado.length()>0)
