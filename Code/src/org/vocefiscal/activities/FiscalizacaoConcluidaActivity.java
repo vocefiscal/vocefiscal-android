@@ -536,7 +536,7 @@ public class FiscalizacaoConcluidaActivity extends AnalyticsActivity
 					}
 				} catch (TwitterException e) 
 				{
-					e.printStackTrace();
+					
 				}
 			}
 		};

@@ -360,10 +360,10 @@ public class RestClient
 
 		} catch (ClientProtocolException e)  {
 			client.getConnectionManager().shutdown();
-			e.printStackTrace();
+			
 		} catch (IOException e) {
 			client.getConnectionManager().shutdown();
-			e.printStackTrace();
+			
 		}
 	}
 
@@ -380,12 +380,12 @@ public class RestClient
 				sb.append(line + "\n");
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			
 		} finally {
 			try {
 				is.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				
 			}
 		}
 		return sb.toString();

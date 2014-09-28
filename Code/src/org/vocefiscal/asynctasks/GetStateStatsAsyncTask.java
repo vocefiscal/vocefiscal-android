@@ -60,7 +60,7 @@ public class GetStateStatsAsyncTask extends AsyncTask<Object, Object, StateStats
 							Thread.sleep(sleep);
 						} catch (InterruptedException e) 
 						{
-							e.printStackTrace();
+							
 						}
 					}
 

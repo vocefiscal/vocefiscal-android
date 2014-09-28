@@ -324,7 +324,7 @@ public class FiscalizacaoAdapter extends BaseAdapter
 						porcentagem_envio.setTextColor(mContext.getResources().getColor(R.color.azul_vocefiscal));
 						upload_progress.setProgressDrawable(mContext.getResources().getDrawable(R.drawable.progress_horizontal_vocefical));
 						porcentagem_envio.setVisibility(View.VISIBLE);
-						upload_progress.setVisibility(View.VISIBLE);	
+						upload_progress.setVisibility(View.INVISIBLE);	
 
 					}else if(fiscalizacao.getStatusDoEnvio().equals(StatusEnvioEnum.PAUSADO.ordinal()))										
 					{		
@@ -400,14 +400,15 @@ public class FiscalizacaoAdapter extends BaseAdapter
 		{
 			porcentagem_envio.setTextColor(mContext.getResources().getColor(R.color.azul_vocefiscal));
 			upload_progress.setProgressDrawable(mContext.getResources().getDrawable(R.drawable.progress_horizontal_vocefical));
+			upload_progress.setVisibility(View.INVISIBLE);		
 		}else
 		{
 			porcentagem_envio.setTextColor(mContext.getResources().getColor(R.color.amarelo_envio));
 			upload_progress.setProgressDrawable(mContext.getResources().getDrawable(R.drawable.progress_horizontal_upload_vocefical));
+			upload_progress.setVisibility(View.VISIBLE);		
 		}
 			
-		porcentagem_envio.setVisibility(View.VISIBLE);
-		upload_progress.setVisibility(View.VISIBLE);
+		porcentagem_envio.setVisibility(View.VISIBLE);		
 	}
 	
 	private void reiniciarEnvioFiscalizacao(final Fiscalizacao fiscalizacao,final ProgressBar upload_progress,	final TextView porcentagem_envio, final ImageView status_envio) 

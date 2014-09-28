@@ -231,10 +231,10 @@ public abstract class ImageWorker {
         final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
         if (bitmapWorkerTask != null) {
             bitmapWorkerTask.cancel(true);
-            if (BuildConfig.DEBUG) {
-                final Object bitmapData = bitmapWorkerTask.mData;
-                Log.d(TAG, "cancelWork - cancelled work for " + bitmapData);
-            }
+//            if (BuildConfig.DEBUG) {
+//                final Object bitmapData = bitmapWorkerTask.mData;
+//                Log.d(TAG, "cancelWork - cancelled work for " + bitmapData);
+//            }
         }
     }
 
@@ -252,9 +252,9 @@ public abstract class ImageWorker {
             final Object bitmapData = bitmapWorkerTask.mData;
             if (bitmapData == null || !bitmapData.equals(data)) {
                 bitmapWorkerTask.cancel(true);
-                if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "cancelPotentialWork - cancelled work for " + data);
-                }
+//                if (BuildConfig.DEBUG) {
+//                    Log.d(TAG, "cancelPotentialWork - cancelled work for " + data);
+//                }
             } else {
                 // The same work is already in progress.
                 return false;
@@ -309,10 +309,10 @@ public abstract class ImageWorker {
         protected BitmapDrawable doInBackground(Void... params) 
         {
             //BEGIN_INCLUDE(load_bitmap_in_background)
-            if (BuildConfig.DEBUG) 
-            {
-                Log.d(TAG, "doInBackground - starting work");
-            }
+//            if (BuildConfig.DEBUG) 
+//            {
+//                Log.d(TAG, "doInBackground - starting work");
+//            }
 
             final String dataString = String.valueOf(mData);
             Bitmap bitmap = null;
@@ -371,10 +371,10 @@ public abstract class ImageWorker {
                 }
             }
 
-            if (BuildConfig.DEBUG) 
-            {
-                Log.d(TAG, "doInBackground - finished work");
-            }
+//            if (BuildConfig.DEBUG) 
+//            {
+//                Log.d(TAG, "doInBackground - finished work");
+//            }
 
             return drawable;
             //END_INCLUDE(load_bitmap_in_background)
@@ -396,10 +396,10 @@ public abstract class ImageWorker {
             final ImageView imageView = getAttachedImageView();
             if (value != null && imageView != null) 
             {
-                if (BuildConfig.DEBUG)
-                {
-                    Log.d(TAG, "onPostExecute - setting bitmap");
-                }
+//                if (BuildConfig.DEBUG)
+//                {
+//                    Log.d(TAG, "onPostExecute - setting bitmap");
+//                }
                 setImageDrawable(imageView, value);
                 if(progressBar!=null)
                 	progressBar.setVisibility(View.GONE);   

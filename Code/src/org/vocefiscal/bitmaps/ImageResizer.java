@@ -89,9 +89,9 @@ public class ImageResizer extends ImageWorker {
      * @return
      */
     private Bitmap processBitmap(int resId) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "processBitmap - " + resId);
-        }
+//        if (BuildConfig.DEBUG) {
+//            Log.d(TAG, "processBitmap - " + resId);
+//        }
         return decodeSampledBitmapFromResource(mResources, resId, mImageWidth,
                 mImageHeight, getImageCache());
     }

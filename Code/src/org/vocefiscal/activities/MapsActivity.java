@@ -303,20 +303,20 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 			case Activity.RESULT_OK:
 
 				// Log the result
-				Log.d(LocationUtils.APPTAG, "Resolved");
+				//Log.d(LocationUtils.APPTAG, "Resolved");
 				break;
 
 				// If any other result was returned by Google Play services
 			default:
 				// Log the result
-				Log.d(LocationUtils.APPTAG, "No resolution");
+				//Log.d(LocationUtils.APPTAG, "No resolution");
 				break;
 			}
 
 			// If any other request code was received
 		default:
 			// Report that this Activity received an unknown requestCode
-			Log.d(LocationUtils.APPTAG, "Unkown requestcode: "+requestCode);
+			//Log.d(LocationUtils.APPTAG, "Unkown requestcode: "+requestCode);
 			break;
 		}
 	}
@@ -390,12 +390,12 @@ GooglePlayServicesClient.OnConnectionFailedListener, OnGetStateStatsPostExecuteL
 			} catch (IntentSender.SendIntentException e) 
 			{
 				// Log the error
-				e.printStackTrace();
+				
 			}
 		} else 
 		{
 			// If no resolution is available, display a dialog to the user with the error.
-			Log.e(LocationUtils.APPTAG, String.valueOf(connectionResult.getErrorCode()));
+			//Log.e(LocationUtils.APPTAG, String.valueOf(connectionResult.getErrorCode()));
 		}
 
 	}

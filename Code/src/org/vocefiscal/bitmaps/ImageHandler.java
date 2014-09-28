@@ -49,10 +49,10 @@ public class ImageHandler
 				
 			} catch (FileNotFoundException e) 
 			{
-				e.printStackTrace();
+				
 			} catch (IOException e) 
 			{
-				e.printStackTrace();
+				
 			}
 		}
 
@@ -68,7 +68,7 @@ public class ImageHandler
 			m = MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException e) 
 		{
-			e.printStackTrace();
+			
 		}
 
 		m.update(bytes,0,bytes.length);
@@ -76,7 +76,7 @@ public class ImageHandler
 		return hash;
 	}
 	
-	public static Bitmap cropBitmapLastThird(Bitmap bmp,int height,int cutHeight, int screenWidth)
+	public static Bitmap cropBitmapLastThird(Bitmap bmp,int screenHeight,int cutHeight, int screenWidth)
 	{	    
 	    int pictureWidth = bmp.getWidth();
 	    int pictureHeight = bmp.getHeight();
@@ -86,15 +86,13 @@ public class ImageHandler
 //	    Log.e("ImageHandler", "pictureHeight: "+String.valueOf(pictureHeight));
 //	    Log.e("ImageHandler", "cutHeight: "+String.valueOf(cutHeight));
 	    
-	    int cutWidth = (int) ((pictureWidth-screenWidth)/2.0f);
-	    if(cutWidth<0)
-	    	cutWidth=0;
+	    int beginCutWidth = (int) ((pictureWidth-screenWidth)/2.0f);
+	    if(beginCutWidth<0)
+	    	beginCutWidth=0;
 	    
-	    float dh = pictureHeight/(float) height;
+	    float dh = pictureHeight/(float) screenHeight;
 		
-	    int beginCutHeight = (int) (pictureHeight-1.33333*cutHeight*dh);
-	    
-	    int beginCutWidth = 0+cutWidth;
+	    int beginCutHeight = (int) (pictureHeight-1.5*cutHeight*dh);
 	    
 //	    Log.e("ImageHandler", "beginCut: "+String.valueOf(beginCut));
 	    
@@ -263,7 +261,7 @@ public class ImageHandler
 		}
 		catch (Exception e) 
 		{
-			e.printStackTrace();
+			
 		}
 		return bitmap;
 
@@ -359,7 +357,7 @@ public class ImageHandler
 		}
 		catch (Exception e) 
 		{
-			e.printStackTrace();
+			
 		}
 		return bitmap;
 	}
@@ -465,10 +463,10 @@ public class ImageHandler
 				}								
 			} catch (MalformedURLException e) 
 			{					
-				e.printStackTrace();
+				
 			} catch (IOException e) 
 			{					
-				e.printStackTrace();
+				
 			}						
 		}
 
@@ -524,10 +522,10 @@ public class ImageHandler
 				}								
 			} catch (MalformedURLException e) 
 			{					
-				e.printStackTrace();
+				
 			} catch (IOException e) 
 			{					
-				e.printStackTrace();
+				
 			}						
 		}
 

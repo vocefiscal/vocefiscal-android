@@ -45,14 +45,14 @@
                 android:id="@+id/trinta_por_cento"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="50dp"
                 android:scaleType="fitXY" />
 
             <RelativeLayout
                 android:id="@+id/linha_vermelha_foto_anterior"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="35dp"
                 android:visibility="gone" >
 
                 <ImageView
@@ -78,16 +78,16 @@
                 android:id="@+id/linha_vermelha_foto_anterior_baixo"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="150dp"
                 android:src="@drawable/linha_camera"
                 android:visibility="gone" />
 
             <ProgressBar
                 android:id="@+id/progress_bar_foto_preview"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="62.5dp"
+                android:layout_marginTop="75dp"
                 android:visibility="gone" />
 
             <ImageView
@@ -103,7 +103,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_marginBottom="85dp" >
+                android:layout_marginBottom="135dp" >
 
                 <ImageView
                     android:layout_width="fill_parent"
@@ -129,7 +129,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_marginBottom="25dp"
+                android:layout_marginBottom="50dp"
                 android:src="@drawable/linha_camera" />
 
             <RelativeLayout
@@ -157,7 +157,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="80dp"
+                    android:layout_marginBottom="135dp"
                     android:src="@drawable/selector_photo_trigger" />
 
                 <ImageView
@@ -166,7 +166,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentRight="true"
-                    android:layout_marginBottom="80dp"
+                    android:layout_marginBottom="135dp"
                     android:padding="5dp"
                     android:src="@drawable/flash_auto" />
 
@@ -177,8 +177,8 @@
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentLeft="true"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="90dp"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginBottom="150dp"
+                    android:layout_marginLeft="10dp"
                     android:background="@drawable/selector_concluir"
                     android:gravity="center"
                     android:padding="5dp"

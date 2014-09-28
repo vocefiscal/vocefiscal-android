@@ -91,10 +91,10 @@ public class RecyclingBitmapDrawable extends BitmapDrawable {
         // has been displayed, then recycle
         if (mCacheRefCount <= 0 && mDisplayRefCount <= 0 && mHasBeenDisplayed
                 && hasValidBitmap()) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "No longer being used or cached so recycling. "
-                        + toString());
-            }
+//            if (BuildConfig.DEBUG) {
+//                Log.d(TAG, "No longer being used or cached so recycling. "
+//                        + toString());
+//            }
 
             getBitmap().recycle();
         }

@@ -64,11 +64,11 @@ public class JsonHandler
 		try {
 			mapper.writeValue(strWriter, object);
 		} catch (JsonGenerationException e) {
-			e.printStackTrace();
+			
 		} catch (JsonMappingException e) {
-			e.printStackTrace();
+			
 		} catch (IOException e) {
-			e.printStackTrace();
+			
 		}
 
 		String jsonData = strWriter.toString();

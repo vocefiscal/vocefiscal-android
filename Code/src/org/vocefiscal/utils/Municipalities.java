@@ -54,7 +54,7 @@ public class Municipalities
 		    byteArrayOutputStream.close();
 		} catch (IOException e) 
 		{
-		    e.printStackTrace();
+		    
 		}
 		
 		if(municipiosJSON!=null)

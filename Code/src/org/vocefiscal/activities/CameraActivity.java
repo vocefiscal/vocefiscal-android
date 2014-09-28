@@ -41,6 +41,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
@@ -90,13 +91,7 @@ public class CameraActivity extends AnalyticsActivity
 
 	private WakeLock wl;
 
-	private static final int desiredPictureHeight = 720;
-
-	private static final int desiredPictureWidth = 1088;
-
-	private static final float FOTO_SIZE_REF_30PC_WIDTH = 720;
-
-	private static final float FOTO_SIZE_REF_30PC_HEIGHT = 150;
+	private static final float FOTO_SIZE_REF_30PC_HEIGHT = 100;
 
 	public static final String PICTURE_PREVIEW_PATH = "picture_preview";
 
@@ -114,9 +109,13 @@ public class CameraActivity extends AnalyticsActivity
 
 	private int foto30PCheight = -1;
 
-	private int desiredPictureHeightAdjusted = -1;
+	private int desiredPictureHeightAdjusted = 900;
 
-	private int desiredPictureWidthAdjusted = -1;
+	private int desiredPictureWidthAdjusted = 1200;
+	
+	private int screenWidthForPicture = -1;
+
+	private int screenHeightForPicture = -1;
 
 	private SoundPool spool;
 
@@ -158,29 +157,26 @@ public class CameraActivity extends AnalyticsActivity
 		/*
 		 * Customização de tamanhos para as diferentes telas dos dispositivos Android
 		 */
-		Display display = getWindowManager().getDefaultDisplay();			
+		Display display = getWindowManager().getDefaultDisplay();	
 		int width = display.getWidth();
 		int height = display.getHeight();
-		if(height<width)
-		{
-			int aux = height;
-			height = width;
-			width = aux;
-		}
-		float dw = width/720.0f;
-		float dh = height/1184.0f;
-		float deltaDisplay = Math.max(dw, dh);
+		
+		DisplayMetrics metrics = getResources().getDisplayMetrics();
+		float density = metrics.density;
 
-		foto30PCwidth = (int) (FOTO_SIZE_REF_30PC_WIDTH*deltaDisplay);	
-		foto30PCheight = (int) (FOTO_SIZE_REF_30PC_HEIGHT*deltaDisplay);
+		foto30PCwidth = width;
+		foto30PCheight = (int) (FOTO_SIZE_REF_30PC_HEIGHT*density);
 
-		desiredPictureHeightAdjusted = (int) (desiredPictureHeight*deltaDisplay);	
-		desiredPictureWidthAdjusted = (int) (desiredPictureWidth*deltaDisplay);	
+		screenWidthForPicture = width;
+		screenHeightForPicture = (int) (height - 48*density);
 		//		
 		//		Log.i("CameraActivity", "foto30PCwidth: "+String.valueOf(foto30PCwidth));
 		//		Log.i("CameraActivity", "foto30PCheight: "+String.valueOf(foto30PCheight));
 		//		Log.i("CameraActivity", "desiredPictureHeightAdjusted: "+String.valueOf(desiredPictureHeightAdjusted));
 		//		Log.i("CameraActivity", "desiredPictureWidthAdjusted: "+String.valueOf(desiredPictureWidthAdjusted));
+		
+		desiredPictureHeightAdjusted = width;
+		desiredPictureWidthAdjusted = height;
 
 		/*
 		 * Animação foto camera loader
@@ -250,7 +246,7 @@ public class CameraActivity extends AnalyticsActivity
 					}
 				}catch(Exception e)
 				{
-					Log.i(TAG, e.getMessage());
+					//Log.i(TAG, e.getMessage());
 				}						
 			}
 		};
@@ -285,7 +281,7 @@ public class CameraActivity extends AnalyticsActivity
 				CameraActivity.this.startActivityForResult(intent, PICTURE_PREVIEW_REQUEST_CODE);
 			}
 		});
-		
+
 
 		photo_concluido =  (TextView) findViewById(R.id.photo_concluido);
 		photo_concluido.setTypeface(unisansheavy);
@@ -309,7 +305,7 @@ public class CameraActivity extends AnalyticsActivity
 				CameraActivity.this.startActivity(intent);
 
 				CameraActivity.this.finish();
-				
+
 			}
 		});
 
@@ -325,7 +321,7 @@ public class CameraActivity extends AnalyticsActivity
 				public void onClick(View v) 
 				{
 					Camera.Parameters params = mCamera.getParameters();	
-					
+
 					List<String> supportedFlashModes = params.getSupportedFlashModes();
 					if(supportedFlashModes!=null&&supportedFlashModes.size()>0)
 					{
@@ -340,7 +336,7 @@ public class CameraActivity extends AnalyticsActivity
 								break;
 							}
 						}
-						
+
 						currentFlashModeIndex++;
 						String nextSupportedFlashMode = supportedFlashModes.get(currentFlashModeIndex%supportedFlashModes.size());
 						params.setFlashMode(nextSupportedFlashMode);						
@@ -353,7 +349,7 @@ public class CameraActivity extends AnalyticsActivity
 		{
 			flash_status.setVisibility(View.INVISIBLE);
 		}
-			
+
 
 		photo_counter = (TextView) findViewById(R.id.photo_counter);		
 
@@ -367,7 +363,7 @@ public class CameraActivity extends AnalyticsActivity
 			public void onClick(View v) 
 			{	
 				preview.setEnabled(false);
-				
+
 				PackageManager packageManager = CameraActivity.this.getPackageManager();
 				if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) 
 				{
@@ -468,11 +464,9 @@ public class CameraActivity extends AnalyticsActivity
 					{
 						Matrix matrix = new Matrix();
 						matrix.postRotate(orientation);
-						bMap = Bitmap.createBitmap(bMap, 0, 0, bMap.getWidth(),
-								bMap.getHeight(), matrix, true);
+						bMap = Bitmap.createBitmap(bMap, 0, 0, bMap.getWidth(),	bMap.getHeight(), matrix, true);
 					} else
-						bMap = Bitmap.createScaledBitmap(bMap, bMap.getWidth(),
-								bMap.getHeight(), true);
+						bMap = Bitmap.createScaledBitmap(bMap, bMap.getWidth(),	bMap.getHeight(), true);
 
 
 					FileOutputStream out = new FileOutputStream(pictureFile);
@@ -481,7 +475,7 @@ public class CameraActivity extends AnalyticsActivity
 
 					if (bMap != null) 
 					{
-						bMap = ImageHandler.cropBitmapLastThird(bMap,desiredPictureWidthAdjusted,foto30PCheight,desiredPictureHeightAdjusted);						
+						bMap = ImageHandler.cropBitmapLastThird(bMap,screenHeightForPicture,foto30PCheight,screenWidthForPicture);						
 						File lastThirdPicture = getOutputMediaFile(true);
 						FileOutputStream outLastThirdPicture = new FileOutputStream(lastThirdPicture);
 						bMap.compress(Bitmap.CompressFormat.JPEG, 100, outLastThirdPicture);
@@ -568,9 +562,9 @@ public class CameraActivity extends AnalyticsActivity
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
 		String filePath = null;
-		
+
 		File mediaFile = null;
-		
+
 		File storeagePath = Environment.getExternalStorageDirectory();
 		File picturePublicPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 
@@ -600,7 +594,7 @@ public class CameraActivity extends AnalyticsActivity
 
 		if(wl!=null && !wl.isHeld())
 			wl.acquire();	
-		
+
 		preview.removeAllViews();
 
 		mCamera = getCameraInstance();
@@ -608,7 +602,7 @@ public class CameraActivity extends AnalyticsActivity
 		if (mCamera != null)
 		{
 			setCameraDisplayOrientation(this, mCamera);
-			
+
 			Camera.Parameters params = mCamera.getParameters();
 			List<Camera.Size> pictureSizes = params.getSupportedPictureSizes();
 			List<Camera.Size> previewSizes = params.getSupportedPreviewSizes();
@@ -652,7 +646,7 @@ public class CameraActivity extends AnalyticsActivity
 			params.setPictureSize(pictureWidth, pictureHeight);
 			params.setJpegQuality(100);	
 			mCamera.setParameters(params);
-						
+
 
 			//			Log.e("CameraActivity", "pictureWidth: "+String.valueOf(pictureWidth));
 			//			Log.e("CameraActivity", "pictureHeight: "+String.valueOf(pictureHeight));
@@ -666,49 +660,49 @@ public class CameraActivity extends AnalyticsActivity
 			preview.addView(mPreview);
 		}
 	}
-	
+
 	public static void setCameraDisplayOrientation(Activity activity,Camera camera) 
 	{
-	     CameraInfo info = new CameraInfo();
-	     
-	     int cameraId = -1;
-	     int numberOfCameras = Camera.getNumberOfCameras();
-	     for (int i = 0; i < numberOfCameras; i++) 
-	     {
-	       Camera.getCameraInfo(i, info);
-	       if (info.facing == CameraInfo.CAMERA_FACING_BACK) 
-	       {
-	         cameraId = i;
-	         break;
-	       }
-	     }	     
-	     Camera.getCameraInfo(cameraId, info);
-	     int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-	     int degrees = 0;
-	     switch (rotation) 
-	     {
-	         case Surface.ROTATION_0: degrees = 0; break;
-	         case Surface.ROTATION_90: degrees = 90; break;
-	         case Surface.ROTATION_180: degrees = 180; break;
-	         case Surface.ROTATION_270: degrees = 270; break;
-	     }
+		CameraInfo info = new CameraInfo();
 
-	     int result;
-	     if (info.facing == CameraInfo.CAMERA_FACING_FRONT) 
-	     {
-	         result = (info.orientation + degrees) % 360;
-	         result = (360 - result) % 360;  // compensate the mirror
-	     } else 
-	     {  // back-facing
-	         result = (info.orientation - degrees + 360) % 360;
-	     }
-	     camera.setDisplayOrientation(result);
-	 }
+		int cameraId = -1;
+		int numberOfCameras = Camera.getNumberOfCameras();
+		for (int i = 0; i < numberOfCameras; i++) 
+		{
+			Camera.getCameraInfo(i, info);
+			if (info.facing == CameraInfo.CAMERA_FACING_BACK) 
+			{
+				cameraId = i;
+				break;
+			}
+		}	     
+		Camera.getCameraInfo(cameraId, info);
+		int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+		int degrees = 0;
+		switch (rotation) 
+		{
+		case Surface.ROTATION_0: degrees = 0; break;
+		case Surface.ROTATION_90: degrees = 90; break;
+		case Surface.ROTATION_180: degrees = 180; break;
+		case Surface.ROTATION_270: degrees = 270; break;
+		}
+
+		int result;
+		if (info.facing == CameraInfo.CAMERA_FACING_FRONT) 
+		{
+			result = (info.orientation + degrees) % 360;
+			result = (360 - result) % 360;  // compensate the mirror
+		} else 
+		{  // back-facing
+			result = (info.orientation - degrees + 360) % 360;
+		}
+		camera.setDisplayOrientation(result);
+	}
 
 	private Camera.Size getOptimalCameraSize(List<Camera.Size> sizes, int w, int h) 
 	{
 		final double ASPECT_TOLERANCE = 0.1;
-		double targetRatio=(double)h / w;
+		double targetRatio=(double)w / h;
 
 		if (sizes == null) return null;
 
@@ -784,13 +778,17 @@ public class CameraActivity extends AnalyticsActivity
 		catch (Exception e)
 		{
 			// Camera is not available (in use or does not exist)
+			Toast.makeText(getApplicationContext(), "Não foi possível ter acesso à câmera do celular.", Toast.LENGTH_SHORT).show();
+			setResult(RESULT_CANCELED);
+			
+			finish();
 		}
 		return c; // returns null if camera is unavailable
 	}
 
 	private void releaseCamera()
 	{
-		
+
 		if (mCamera != null)
 		{
 			mCamera.stopPreview();
@@ -800,8 +798,7 @@ public class CameraActivity extends AnalyticsActivity
 				mCamera.setPreviewDisplay(null);
 			} catch (IOException e) 
 			{
-				
-				e.printStackTrace();
+			
 			}
 			mCamera.lock();
 			mCamera.release();        // release the camera for other applications
@@ -877,11 +874,11 @@ public class CameraActivity extends AnalyticsActivity
 			}
 		}
 	}
-	
+
 	public static int getImageResource(String flashStatus) 
 	{
 		int imageResource = R.drawable.flash_auto;
-		
+
 		if(flashStatus.equalsIgnoreCase(Camera.Parameters.FLASH_MODE_AUTO))
 		{
 			imageResource = R.drawable.flash_auto;
@@ -898,7 +895,7 @@ public class CameraActivity extends AnalyticsActivity
 		{
 			imageResource = R.drawable.flash_red_eye;
 		}
-		
+
 		return imageResource;
 	}
 }
