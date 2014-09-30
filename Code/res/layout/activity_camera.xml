@@ -48,6 +48,14 @@
                 android:layout_marginTop="50dp"
                 android:scaleType="fitXY" />
 
+            <ImageView
+                android:id="@+id/editar_foto_anterior"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:src="@drawable/selector_editar"
+                android:visibility="gone" />
+
             <RelativeLayout
                 android:id="@+id/linha_vermelha_foto_anterior"
                 android:layout_width="fill_parent"
@@ -88,14 +96,6 @@
                 android:layout_height="50dp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="75dp"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/editar_foto_anterior"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/linha_vermelha_foto_anterior_baixo"
-                android:src="@drawable/selector_editar"
                 android:visibility="gone" />
 
             <RelativeLayout

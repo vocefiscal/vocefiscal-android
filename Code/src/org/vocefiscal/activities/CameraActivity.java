@@ -450,6 +450,12 @@ public class CameraActivity extends AnalyticsActivity
 				try 
 				{										
 					Bitmap bMap = ImageHandler.decodeByteArrayToBitmap(data,desiredPictureWidthAdjusted, desiredPictureHeightAdjusted);
+					
+					if(bMap==null)
+					{
+						Toast.makeText(CameraActivity.this, "Erro ao tirar a foto. Por favor, tente novamente.",Toast.LENGTH_SHORT ).show();
+						CameraActivity.this.finish();
+					}
 
 					int orientation = 0;
 					if(bMap.getHeight() < bMap.getWidth())
