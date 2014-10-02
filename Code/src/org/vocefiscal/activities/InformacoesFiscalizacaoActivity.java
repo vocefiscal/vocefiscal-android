@@ -260,8 +260,8 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 		SharedPreferences prefs = getSharedPreferences("vocefiscal", 0);
 		if(prefs!=null)
 		{
-			int posicaoInicialEstado = prefs.getInt(POSICAO_INICIAL_ESTADO, 25);
-			final int posicaoInicialMunicipio = prefs.getInt(POSICAO_INICIAL_MUNICIPIO, 38);
+			int posicaoInicialEstado = prefs.getInt(POSICAO_INICIAL_ESTADO, 26);
+			final int posicaoInicialMunicipio = prefs.getInt(POSICAO_INICIAL_MUNICIPIO, 100);
 			
 			estado_spinner.setSelection(posicaoInicialEstado);
 
