@@ -31,6 +31,7 @@ public class ConferirFragment extends Fragment
 	private FiscalizacaoAdapter fiscalizacaoAdapter;
 	private VoceFiscalDatabase voceFiscalDatabase;
 
+	
 	public ConferirFragment(ImageFetcher imageFetcher,ArrayList<Fiscalizacao> listaDeFiscalizacoes,VoceFiscalDatabase voceFiscalDatabase) 
 	{
 		this.imageFetcher = imageFetcher;

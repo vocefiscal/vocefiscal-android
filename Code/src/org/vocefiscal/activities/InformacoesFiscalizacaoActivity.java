@@ -206,6 +206,7 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 		estadoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		estado_spinner.setAdapter(estadoAdapter);
 		ArrayList<String> nomesEstados = municipalities.getNomesEstados();
+		estadoAdapter.add("ESTADO");
 		for(String nomeEstado : nomesEstados)
 		{
 			estadoAdapter.add(nomeEstado);
@@ -216,16 +217,28 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) 
 			{
-				estadoSelecionado = (String) parent.getItemAtPosition(position);	
-
-				ArrayList<String> nomesMunicipiosEstadoSelecionado = municipalities.getNomesMunicipiosPorEstado().get(estadoSelecionado);
-				municipioAdapter.clear(); 
-				for(String nomeMunicipio : nomesMunicipiosEstadoSelecionado)
+				if(position>0)
 				{
-					municipioAdapter.add(nomeMunicipio);
+					estadoSelecionado = (String) parent.getItemAtPosition(position);	
+
+					ArrayList<String> nomesMunicipiosEstadoSelecionado = municipalities.getNomesMunicipiosPorEstado().get(estadoSelecionado);
+					municipioAdapter.clear(); 
+					if(nomesMunicipiosEstadoSelecionado!=null)
+					{
+						for(String nomeMunicipio : nomesMunicipiosEstadoSelecionado)
+						{
+							municipioAdapter.add(nomeMunicipio);
+						}
+						municipio_spinner.setSelection(0);
+						municipioSelecionado = nomesMunicipiosEstadoSelecionado.get(0);
+					}					
+				}else
+				{
+					estadoSelecionado = null;
+					municipioSelecionado = null;
+					municipioAdapter.clear(); 	
+					municipioAdapter.add("MUNICÍPIO");
 				}
-				municipio_spinner.setSelection(0);
-				municipioSelecionado = nomesMunicipiosEstadoSelecionado.get(0);
 			}
 
 			@Override
@@ -245,8 +258,8 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) 
-			{
-				municipioSelecionado = (String) parent.getItemAtPosition(position);			
+			{				
+				municipioSelecionado = (String) parent.getItemAtPosition(position);
 			}
 
 			@Override
@@ -260,19 +273,30 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 		SharedPreferences prefs = getSharedPreferences("vocefiscal", 0);
 		if(prefs!=null)
 		{
-			int posicaoInicialEstado = prefs.getInt(POSICAO_INICIAL_ESTADO, 26);
-			final int posicaoInicialMunicipio = prefs.getInt(POSICAO_INICIAL_MUNICIPIO, 100);
-			
-			estado_spinner.setSelection(posicaoInicialEstado);
+			final int posicaoInicialEstado = prefs.getInt(POSICAO_INICIAL_ESTADO, -1);
+			final int posicaoInicialMunicipio = prefs.getInt(POSICAO_INICIAL_MUNICIPIO, -1);
 
-			handler.postDelayed(new Runnable() 
-			{			
-				@Override
-				public void run() 
+			if(posicaoInicialEstado>=0&&posicaoInicialMunicipio>=0)
+			{
+				
+				handler.postDelayed(new Runnable() 
 				{			
-					municipio_spinner.setSelection(posicaoInicialMunicipio);				
-				}
-			}, 300);
+					@Override
+					public void run() 
+					{			
+						estado_spinner.setSelection(posicaoInicialEstado);		
+					}
+				}, 300);
+				
+				handler.postDelayed(new Runnable() 
+				{			
+					@Override
+					public void run() 
+					{			
+						municipio_spinner.setSelection(posicaoInicialMunicipio);				
+					}
+				}, 800);
+			}		
 		}
 		
 		TextView zona_eleitoral_tv = (TextView) findViewById(R.id.zona_eleitoral_tv);
