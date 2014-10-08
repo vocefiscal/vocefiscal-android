@@ -64,9 +64,9 @@ public class InformacoesFiscalizacaoActivity extends AnalyticsActivity
 
 	public static final String MUNICIPIO = "municipio";
 
-	private static final String POSICAO_INICIAL_ESTADO = "ini_estado";
+	private static final String POSICAO_INICIAL_ESTADO = "inicial_estado";
 
-	private static final String POSICAO_INICIAL_MUNICIPIO = "ini_municipio";
+	private static final String POSICAO_INICIAL_MUNICIPIO = "inicial_municipio";
 
 	private Handler handler;
 
