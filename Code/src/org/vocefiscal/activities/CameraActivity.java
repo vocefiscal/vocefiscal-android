@@ -42,7 +42,6 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.View;
@@ -61,12 +60,6 @@ import android.widget.Toast;
  */
 public class CameraActivity extends AnalyticsActivity
 {
-	private int pictureHeight = -1;
-
-	private int pictureWidth = -1;
-
-	private static final String TAG = "CameraActivity";
-
 	private Camera mCamera;
 
 	private CameraPreview mPreview;
@@ -214,12 +207,12 @@ public class CameraActivity extends AnalyticsActivity
 				// get an image from the camera
 				try
 				{	
-					PackageManager packageManager = CameraActivity.this.getPackageManager();
-					if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) 
-					{
-						mCamera.autoFocus(myAutoFocusCallback);		
-					}else
-					{
+//					PackageManager packageManager = CameraActivity.this.getPackageManager();
+//					if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) 
+//					{
+//						mCamera.autoFocus(myAutoFocusCallback);		
+//					}else
+//					{
 						mCamera.takePicture(null, null, mPicture);
 						handler.post(new Runnable() 
 						{
@@ -243,7 +236,7 @@ public class CameraActivity extends AnalyticsActivity
 						//animacao da camera
 						animationDrawable.setVisible(false, false);
 						animateImageView.setVisibility(View.GONE);
-					}
+//					}
 				}catch(Exception e)
 				{
 					//Log.i(TAG, e.getMessage());
@@ -367,11 +360,16 @@ public class CameraActivity extends AnalyticsActivity
 				PackageManager packageManager = CameraActivity.this.getPackageManager();
 				if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) 
 				{
+					animationDrawable.setVisible(true, true); 
+					animateImageView.setVisibility(View.VISIBLE);
+					
 					mCamera.autoFocus(new AutoFocusCallback() 
 					{					
 						@Override
 						public void onAutoFocus(boolean success, Camera camera) 
 						{
+							animationDrawable.setVisible(false, false);
+							animateImageView.setVisibility(View.GONE);
 							preview.setEnabled(true);				
 						}
 					});	
@@ -407,25 +405,25 @@ public class CameraActivity extends AnalyticsActivity
 			@Override
 			public void onAutoFocus(boolean arg0, Camera arg1) 
 			{
-				mCamera.takePicture(null, null, mPicture);
-				handler.post(new Runnable() 
-				{
-
-					@Override
-					public void run() 
-					{
-						if(soundID!=-1)
-						{
-							if(canPlaySound)
-							{
-								spool.play(soundID, 100, 100, 1, 0, 1.0f);
-							}else
-							{
-								handler.postDelayed(this, 100);
-							}			
-						}			
-					}
-				});	
+//				mCamera.takePicture(null, null, mPicture);
+//				handler.post(new Runnable() 
+//				{
+//
+//					@Override
+//					public void run() 
+//					{
+//						if(soundID!=-1)
+//						{
+//							if(canPlaySound)
+//							{
+//								spool.play(soundID, 100, 100, 1, 0, 1.0f);
+//							}else
+//							{
+//								handler.postDelayed(this, 100);
+//							}			
+//						}			
+//					}
+//				});	
 
 				//animacao da camera
 				animationDrawable.setVisible(false, false);
@@ -481,6 +479,14 @@ public class CameraActivity extends AnalyticsActivity
 
 					if (bMap != null) 
 					{
+						try
+						{
+							ImageHandler.insertImage(getContentResolver(), bMap, "Você Fiscal", "BU parte "+String.valueOf(photoCount));	
+						}catch(Exception e)
+						{
+							
+						}						
+						
 						bMap = ImageHandler.cropBitmapLastThird(bMap,screenHeightForPicture,foto30PCheight,screenWidthForPicture);						
 						File lastThirdPicture = getOutputMediaFile(true);
 						FileOutputStream outLastThirdPicture = new FileOutputStream(lastThirdPicture);
@@ -607,37 +613,43 @@ public class CameraActivity extends AnalyticsActivity
 
 		if (mCamera != null)
 		{
-			setCameraDisplayOrientation(this, mCamera);
+			//setCameraDisplayOrientation(this, mCamera);
+			
+			mCamera.setDisplayOrientation(90);
 
 			Camera.Parameters params = mCamera.getParameters();
 			List<Camera.Size> pictureSizes = params.getSupportedPictureSizes();
 			List<Camera.Size> previewSizes = params.getSupportedPreviewSizes();
 
 			Camera.Size bestPictureSize = getOptimalCameraSize(pictureSizes, desiredPictureWidthAdjusted, desiredPictureHeightAdjusted);
-			pictureWidth = bestPictureSize.width;
-			pictureHeight = bestPictureSize.height;
-
+			
 			Camera.Size bestPreviewSize = getOptimalCameraSize(previewSizes, desiredPictureWidthAdjusted, desiredPictureHeightAdjusted);
+			
+			if(bestPictureSize == null || bestPreviewSize == null)
+			{
+				Toast.makeText(CameraActivity.this, "Não foi possível encontrar uma resolução adequada na sua câmera.",Toast.LENGTH_LONG ).show();
+				CameraActivity.this.finish();
+			}
 
 			PackageManager packageManager = this.getPackageManager();
-			if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) 
-			{
-				List<String> supportedFocusModes = params.getSupportedFocusModes();
-				boolean focusModeContinuosSupported = false;
-				if(supportedFocusModes!=null)
-				{
-					for(String supportedFocusMode : supportedFocusModes)
-					{
-						if(supportedFocusMode.equalsIgnoreCase(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE))
-						{
-							focusModeContinuosSupported = true;
-							break;
-						}
-					}
-				}
-				if(focusModeContinuosSupported)
-					params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);    
-			}
+//			if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) 
+//			{
+//				List<String> supportedFocusModes = params.getSupportedFocusModes();
+//				boolean focusModeContinuosSupported = false;
+//				if(supportedFocusModes!=null)
+//				{
+//					for(String supportedFocusMode : supportedFocusModes)
+//					{
+//						if(supportedFocusMode.equalsIgnoreCase(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE))
+//						{
+//							focusModeContinuosSupported = true;
+//							break;
+//						}
+//					}
+//				}
+//				if(focusModeContinuosSupported)
+//					params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);    
+//			}
 			if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) 
 			{
 				List<String> supportedFlashModes = params.getSupportedFlashModes();
@@ -649,7 +661,7 @@ public class CameraActivity extends AnalyticsActivity
 				}											
 			}			
 			params.setPreviewSize(bestPreviewSize.width, bestPreviewSize.height);
-			params.setPictureSize(pictureWidth, pictureHeight);
+			params.setPictureSize(bestPictureSize.width, bestPictureSize.height);
 			params.setJpegQuality(100);	
 			mCamera.setParameters(params);
 
@@ -664,46 +676,64 @@ public class CameraActivity extends AnalyticsActivity
 			mPreview = new CameraPreview(this, mCamera);			
 
 			preview.addView(mPreview);
-		}
-	}
-
-	public static void setCameraDisplayOrientation(Activity activity,Camera camera) 
-	{
-		CameraInfo info = new CameraInfo();
-
-		int cameraId = -1;
-		int numberOfCameras = Camera.getNumberOfCameras();
-		for (int i = 0; i < numberOfCameras; i++) 
-		{
-			Camera.getCameraInfo(i, info);
-			if (info.facing == CameraInfo.CAMERA_FACING_BACK) 
+						
+			handler.postDelayed(new Runnable() 
 			{
-				cameraId = i;
-				break;
-			}
-		}	     
-		Camera.getCameraInfo(cameraId, info);
-		int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-		int degrees = 0;
-		switch (rotation) 
-		{
-		case Surface.ROTATION_0: degrees = 0; break;
-		case Surface.ROTATION_90: degrees = 90; break;
-		case Surface.ROTATION_180: degrees = 180; break;
-		case Surface.ROTATION_270: degrees = 270; break;
+				
+				@Override
+				public void run() 
+				{
+					PackageManager packageManager = CameraActivity.this.getPackageManager();
+					if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) 
+					{
+						animationDrawable.setVisible(true, true); 
+						animateImageView.setVisibility(View.VISIBLE);
+						
+						mCamera.autoFocus(myAutoFocusCallback);		
+					}				
+				}
+			}, 1000);
+			
 		}
-
-		int result;
-		if (info.facing == CameraInfo.CAMERA_FACING_FRONT) 
-		{
-			result = (info.orientation + degrees) % 360;
-			result = (360 - result) % 360;  // compensate the mirror
-		} else 
-		{  // back-facing
-			result = (info.orientation - degrees + 360) % 360;
-		}
-		camera.setDisplayOrientation(result);
 	}
+
+//	private static void setCameraDisplayOrientation(Activity activity,Camera camera) 
+//	{
+//		CameraInfo info = new CameraInfo();
+//
+//		int cameraId = -1;
+//		int numberOfCameras = Camera.getNumberOfCameras();
+//		for (int i = 0; i < numberOfCameras; i++) 
+//		{
+//			Camera.getCameraInfo(i, info);
+//			if (info.facing == CameraInfo.CAMERA_FACING_BACK) 
+//			{
+//				cameraId = i;
+//				break;
+//			}
+//		}	     
+//		Camera.getCameraInfo(cameraId, info);
+//		int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+//		int degrees = 0;
+//		switch (rotation) 
+//		{
+//		case Surface.ROTATION_0: degrees = 0; break;
+//		case Surface.ROTATION_90: degrees = 90; break;
+//		case Surface.ROTATION_180: degrees = 180; break;
+//		case Surface.ROTATION_270: degrees = 270; break;
+//		}
+//
+//		int result;
+//		if (info.facing == CameraInfo.CAMERA_FACING_FRONT) 
+//		{
+//			result = (info.orientation + degrees) % 360;
+//			result = (360 - result) % 360;  // compensate the mirror
+//		} else 
+//		{  // back-facing
+//			result = (info.orientation - degrees + 360) % 360;
+//		}
+//		camera.setDisplayOrientation(result);
+//	}
 
 	private Camera.Size getOptimalCameraSize(List<Camera.Size> sizes, int w, int h) 
 	{
@@ -715,16 +745,16 @@ public class CameraActivity extends AnalyticsActivity
 		Camera.Size optimalSize = null;
 		double minDiff = Double.MAX_VALUE;
 
-		int targetHeight = h;
+		int targetWidth = w;
 
 		for (Camera.Size size : sizes) 
 		{
 			double ratio = (double) size.width / size.height;
 			if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
-			if (Math.abs(size.height - targetHeight) < minDiff) 
+			if (Math.abs(size.width - targetWidth) < minDiff  && (size.width > size.height)) 
 			{
 				optimalSize = size;
-				minDiff = Math.abs(size.height - targetHeight);
+				minDiff = Math.abs(size.width - targetWidth);
 			}
 		}
 
@@ -733,10 +763,10 @@ public class CameraActivity extends AnalyticsActivity
 			minDiff = Double.MAX_VALUE;
 			for (Camera.Size size : sizes) 
 			{
-				if (Math.abs(size.height - targetHeight) < minDiff) 
+				if (Math.abs(size.width - targetWidth) < minDiff  && (size.width > size.height)) 
 				{
 					optimalSize = size;
-					minDiff = Math.abs(size.height - targetHeight);
+					minDiff = Math.abs(size.width - targetWidth);
 				}
 			}
 		}
